@@ -14,14 +14,19 @@ import {
 import WalletConnect from "@/components/WalletConnect";
 import { cn } from "@/lib/utils";
 
-const nav = [
+const nav: Array<{
+  to: string;
+  label: string;
+  icon: typeof LayoutDashboard;
+  exact?: boolean;
+}> = [
   { to: "/app", label: "Overview", icon: LayoutDashboard, exact: true },
   { to: "/app/insights", label: "Market Insights", icon: Sparkles },
   { to: "/app/strategy", label: "Strategy Builder", icon: Activity },
   { to: "/app/portfolio", label: "Portfolio", icon: LineChart },
   { to: "/app/history", label: "Trade History", icon: History },
   { to: "/app/settings", label: "Withdraw & Settings", icon: Settings },
-] as const;
+];
 
 export default function Layout({
   title,
