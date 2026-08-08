@@ -48,7 +48,7 @@ const steps = [
 ];
 
 function useLondonTime() {
-  const [time, setTime] = useState("");
+  const [time, setTime] = useState("--:--");
   useEffect(() => {
     const tick = () =>
       setTime(
