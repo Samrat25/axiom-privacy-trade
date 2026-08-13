@@ -199,11 +199,7 @@ export function useMidnight() {
       throw new Error('Please connect your 1AM Wallet before committing a strategy.');
     }
 
-    if (proofServerUp === false) {
-      throw new Error(
-        'Proof server not running. Start Docker: docker run -d -p 6300:6300 midnightnetwork/proof-server:latest'
-      );
-    }
+
 
     setIsProofGenerating(true);
     setError(null);
