@@ -45,12 +45,18 @@ export const WalletConnect: React.FC<WalletConnectProps> = ({
   if (connected) {
     return (
       <div className="flex items-center gap-3 font-mono">
-        {/* Proof server indicator */}
-        {proofServerUp !== null && (
-          <div title={proofServerUp ? 'Proof server running' : 'Proof server NOT running — start Docker'}>
-            <Server className={`w-4 h-4 ${proofServerUp ? 'text-emerald-400' : 'text-red-400 animate-pulse'}`} />
-          </div>
-        )}
+        {/* Prover status indicator */}
+        <div
+          title={
+            proofServerUp
+              ? 'Local Docker Prover Running (port 6300)'
+              : 'Using 1AM Wallet Extension Prover & ProofStation'
+          }
+          className="flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-purple-950/60 border border-purple-800/40 text-[11px] font-mono text-purple-300"
+        >
+          <Server className="w-3.5 h-3.5 text-emerald-400" />
+          <span className="hidden sm:inline">1AM Prover Active</span>
+        </div>
 
         <button
           onClick={onOpenModal}
@@ -87,15 +93,17 @@ export const WalletConnect: React.FC<WalletConnectProps> = ({
   return (
     <div className="flex flex-col items-end gap-1 font-mono">
       <div className="flex items-center gap-2">
-        {/* Proof server indicator */}
-        {proofServerUp !== null && (
-          <div
-            title={proofServerUp ? 'Proof server running' : 'Proof server NOT running'}
-            className={`p-2 rounded-xl border ${proofServerUp ? 'border-emerald-800 bg-emerald-950/50' : 'border-red-800 bg-red-950/50'}`}
-          >
-            <Server className={`w-4 h-4 ${proofServerUp ? 'text-emerald-400' : 'text-red-400'}`} />
-          </div>
-        )}
+        {/* Prover status indicator */}
+        <div
+          title={
+            proofServerUp
+              ? 'Local Docker Prover Running (port 6300)'
+              : '1AM Wallet Extension Prover Active'
+          }
+          className="p-2 rounded-xl border border-purple-800/40 bg-purple-950/50"
+        >
+          <Server className="w-4 h-4 text-emerald-400" />
+        </div>
 
         {onScan && (
           <button
@@ -141,13 +149,7 @@ export const WalletConnect: React.FC<WalletConnectProps> = ({
         </div>
       )}
 
-      {/* Proof server warning */}
-      {proofServerUp === false && (
-        <div className="flex items-center gap-1.5 text-[11px] text-amber-300 bg-amber-950/80 px-3 py-1.5 rounded-lg border border-amber-800/60 mt-1">
-          <Server className="w-3.5 h-3.5 text-amber-400 shrink-0" />
-          <span>Proof server not running — start Docker first</span>
-        </div>
-      )}
+
     </div>
   );
 };
