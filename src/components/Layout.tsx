@@ -1,125 +1,203 @@
-import { useState, type ReactNode } from "react";
-import { Link, useRouterState } from "@tanstack/react-router";
+import React from 'react';
 import {
-  Activity,
-  History,
+  Shield,
   LayoutDashboard,
   LineChart,
-  Menu,
-  Settings,
+  Cpu,
+  PieChart,
+  History,
+  ArrowUpRight,
   Sparkles,
-  Wallet,
-  X,
-} from "lucide-react";
-import WalletConnect from "@/components/WalletConnect";
-import { cn } from "@/lib/utils";
+  Blocks
+} from 'lucide-react';
+import { WalletConnect } from './WalletConnect';
+import type { DetectedWallet } from '../lib/lace-wallet';
 
-const nav: Array<{
-  to: string;
-  label: string;
-  icon: typeof LayoutDashboard;
-  exact?: boolean;
-}> = [
-  { to: "/app", label: "Overview", icon: LayoutDashboard, exact: true },
-  { to: "/app/insights", label: "Market Insights", icon: Sparkles },
-  { to: "/app/strategy", label: "Strategy Builder", icon: Activity },
-  { to: "/app/portfolio", label: "Portfolio", icon: LineChart },
-  { to: "/app/history", label: "Trade History", icon: History },
-  { to: "/app/settings", label: "Withdraw & Settings", icon: Settings },
-];
+interface LayoutProps {
+  children: React.ReactNode;
+  activeTab: string;
+  setActiveTab: (tab: string) => void;
+  walletConnected: boolean;
+  walletAddress: string | null;
+  shieldedAddress?: string | null;
+  walletName: string;
+  networkId?: string;
+  balance: string;
+  shieldedBalance?: string;
+  unshieldedBalance?: string;
+  isConnecting: boolean;
+  error: string | null;
+  proofServerUp?: boolean | null;
+  dustReady?: boolean;
+  latestBlockHeight?: number;
+  detectedWallets?: DetectedWallet[];
+  onOpenModal: () => void;
+  onScan?: () => void;
+  onConnect: (wallet?: unknown) => void;
+  onDisconnect: () => void;
+}
 
-export default function Layout({
-  title,
-  subtitle,
+export const Layout: React.FC<LayoutProps> = ({
   children,
-}: {
-  title: string;
-  subtitle?: string;
-  children: ReactNode;
-}) {
-  const [open, setOpen] = useState(false);
-  const pathname = useRouterState({ select: (s) => s.location.pathname });
-
-  const sidebar = (
-    <div className="flex h-full flex-col gap-8 p-5">
-      <Link to="/" className="flex items-center gap-2.5">
-        <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-[12px] font-bold text-primary-foreground">
-          AX
-        </span>
-        <span className="text-[15px] font-semibold tracking-tight">Axiom</span>
-      </Link>
-
-      <nav className="flex flex-1 flex-col gap-1">
-        {nav.map((item) => {
-          const active = item.exact ? pathname === item.to : pathname.startsWith(item.to);
-          return (
-            <Link
-              key={item.to}
-              to={item.to}
-              onClick={() => setOpen(false)}
-              className={cn(
-                "flex items-center gap-3 rounded-lg px-3 py-2.5 text-[13px] transition-colors",
-                active
-                  ? "bg-muted text-foreground"
-                  : "text-muted-foreground hover:bg-muted/50 hover:text-foreground",
-              )}
-            >
-              <item.icon size={16} className={active ? "text-primary" : ""} />
-              {item.label}
-              {active && <span className="ml-auto h-4 w-[2px] rounded-full bg-primary" />}
-            </Link>
-          );
-        })}
-      </nav>
-
-      <div className="rounded-xl border border-border bg-background/50 p-4">
-        <div className="flex items-center gap-2 text-[11px] uppercase tracking-wider text-muted-foreground">
-          <Wallet size={13} className="text-primary" /> Shielded session
-        </div>
-        <p className="mt-2 text-[12px] leading-relaxed text-muted-foreground">
-          Strategy contents stay local. Only commitments and proofs reach the chain.
-        </p>
-      </div>
-    </div>
-  );
+  activeTab,
+  setActiveTab,
+  walletConnected,
+  walletAddress,
+  shieldedAddress,
+  walletName,
+  networkId = 'preview',
+  balance,
+  shieldedBalance,
+  unshieldedBalance,
+  isConnecting,
+  error,
+  proofServerUp,
+  dustReady,
+  latestBlockHeight,
+  detectedWallets = [],
+  onOpenModal,
+  onScan,
+  onConnect,
+  onDisconnect
+}) => {
+  const navItems = [
+    { id: 'overview', label: 'Overview', icon: LayoutDashboard },
+    { id: 'strategy-builder', label: 'Strategy Builder', icon: Cpu, highlight: true },
+    { id: 'market-insights', label: 'Market Insights', icon: LineChart },
+    { id: 'portfolio', label: 'Portfolio', icon: PieChart },
+    { id: 'trade-history', label: 'Trade History', icon: History },
+    { id: 'withdraw', label: 'Withdraw & Settings', icon: ArrowUpRight }
+  ];
 
   return (
-    <div className="flex min-h-screen bg-background">
-      <aside className="hidden w-64 shrink-0 border-r border-border bg-sidebar lg:block">
-        <div className="sticky top-0 h-screen">{sidebar}</div>
-      </aside>
-
-      {open && (
-        <div className="fixed inset-0 z-50 lg:hidden">
-          <div className="absolute inset-0 bg-black/70" onClick={() => setOpen(false)} />
-          <div className="absolute inset-y-0 left-0 w-72 border-r border-border bg-sidebar">
-            {sidebar}
+    <div className="min-h-screen bg-[#0B0E14] text-gray-100 flex flex-col font-sans">
+      {/* Top Navbar */}
+      <header className="h-16 border-b border-gray-800/80 bg-gray-950/80 backdrop-blur-md sticky top-0 z-50 flex items-center justify-between px-4 sm:px-6">
+        <div className="flex items-center gap-3">
+          <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-purple-600 to-indigo-500 flex items-center justify-center shadow-lg shadow-purple-900/30 border border-purple-400/30">
+            <Shield className="w-5 h-5 text-white" />
+          </div>
+          <div>
+            <div className="flex items-center gap-2">
+              <span className="font-bold text-base tracking-tight text-white font-mono">AXIOM</span>
+              <span className="text-[10px] font-mono font-semibold px-2 py-0.5 rounded bg-purple-950 text-purple-300 border border-purple-800/40">
+                MIDNIGHT ZK
+              </span>
+            </div>
+            <span className="text-[11px] text-gray-400 hidden sm:block">
+              Privacy-First Natural-Language Trading Agent
+            </span>
           </div>
         </div>
-      )}
 
-      <div className="flex min-w-0 flex-1 flex-col">
-        <header className="sticky top-0 z-30 flex items-center gap-4 border-b border-border bg-background/80 px-5 py-4 backdrop-blur-xl sm:px-8">
-          <button
-            className="rounded-lg border border-border p-2 text-muted-foreground lg:hidden"
-            onClick={() => setOpen((v) => !v)}
-            aria-label="Toggle navigation"
-          >
-            {open ? <X size={16} /> : <Menu size={16} />}
-          </button>
-          <div className="min-w-0">
-            <h1 className="truncate text-[17px] font-semibold tracking-tight">{title}</h1>
-            {subtitle && (
-              <p className="truncate text-[12px] text-muted-foreground">{subtitle}</p>
-            )}
-          </div>
-          <div className="ml-auto">
-            <WalletConnect />
-          </div>
-        </header>
+        {/* Header Right: Wallet Connect */}
+        <WalletConnect
+          connected={walletConnected}
+          address={walletAddress}
+          shieldedAddress={shieldedAddress}
+          walletName={walletName}
+          networkId={networkId}
+          balance={balance}
+          shieldedBalance={shieldedBalance}
+          unshieldedBalance={unshieldedBalance}
+          isConnecting={isConnecting}
+          error={error}
+          proofServerUp={proofServerUp}
+          dustReady={dustReady}
+          detectedWallets={detectedWallets}
+          onOpenModal={onOpenModal}
+          onScan={onScan}
+          onConnect={onConnect}
+          onDisconnect={onDisconnect}
+        />
+      </header>
 
-        <main className="flex-1 px-5 py-6 sm:px-8 sm:py-8">{children}</main>
+      {/* Main Container with Sidebar + Content */}
+      <div className="flex-1 flex overflow-hidden">
+        {/* Sidebar */}
+        <aside className="w-64 border-r border-gray-800/80 bg-gray-950/50 hidden md:flex flex-col justify-between p-4 shrink-0">
+          <div className="space-y-1">
+            <div className="px-3 py-2 text-[10px] font-mono uppercase tracking-wider text-gray-500 font-semibold">
+              Agent Navigation
+            </div>
+            {navItems.map((item) => {
+              const Icon = item.icon;
+              const isActive = activeTab === item.id;
+              return (
+                <button
+                  key={item.id}
+                  onClick={() => setActiveTab(item.id)}
+                  className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-medium transition-all cursor-pointer ${
+                    isActive
+                      ? 'bg-purple-950/60 border border-purple-700/50 text-white shadow-md shadow-purple-950/50'
+                      : 'text-gray-400 hover:text-gray-200 hover:bg-gray-900/60 border border-transparent'
+                  }`}
+                >
+                  <div className="flex items-center gap-2.5">
+                    <Icon className={`w-4 h-4 ${isActive ? 'text-purple-400' : 'text-gray-500'}`} />
+                    <span>{item.label}</span>
+                  </div>
+                  {item.highlight && (
+                    <span className="w-1.5 h-1.5 rounded-full bg-purple-400 animate-pulse"></span>
+                  )}
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Sidebar Footer Info */}
+          <div className="bg-gray-900/70 border border-gray-800/80 rounded-xl p-3 space-y-2 font-mono">
+            <div className="flex items-center justify-between text-[11px]">
+              <span className="text-gray-400 flex items-center gap-1">
+                <Sparkles className="w-3 h-3 text-purple-400" /> Circuit Model
+              </span>
+              <span className="text-purple-300 text-[10px]">compact v0.24</span>
+            </div>
+            <div className="text-[10px] text-gray-500 space-y-0.5">
+              <div className="capitalize flex items-center justify-between">
+                <span>Network:</span>
+                <span className="text-gray-300">Midnight {networkId}</span>
+              </div>
+              {latestBlockHeight && (
+                <div className="flex items-center justify-between text-emerald-400 font-bold">
+                  <span className="flex items-center gap-1 text-gray-400 font-normal">
+                    <Blocks className="w-3.5 h-3.5 text-emerald-400" /> Block:
+                  </span>
+                  <span>#{latestBlockHeight.toLocaleString()}</span>
+                </div>
+              )}
+              <div>State: Shielded Witnesses</div>
+            </div>
+          </div>
+        </aside>
+
+        {/* Main Content Viewport */}
+        <main className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-6">
+          {children}
+        </main>
       </div>
+
+      {/* Footer Ticker */}
+      <footer className="h-9 border-t border-gray-800/80 bg-gray-950/90 px-4 flex items-center justify-between text-[11px] font-mono text-gray-400">
+        <div className="flex items-center gap-4 overflow-x-auto no-scrollbar">
+          <span className="text-gray-500 font-semibold uppercase">{networkId} FEED:</span>
+          {latestBlockHeight && (
+            <span className="text-emerald-400 font-bold flex items-center gap-1">
+              BLOCK #{latestBlockHeight.toLocaleString()}
+            </span>
+          )}
+          <span className="text-gray-700">|</span>
+          <span>ADA/USD: <span className="text-emerald-400 font-bold">$0.421</span> (+2.4%)</span>
+          <span className="text-gray-700">|</span>
+          <span>BTC/USD: <span className="text-emerald-400 font-bold">$61,250</span> (+1.1%)</span>
+          <span className="text-gray-700">|</span>
+          <span>tNIGHT: <span className="text-purple-400 font-bold">$1.00</span></span>
+        </div>
+        <div className="hidden sm:flex items-center gap-2 text-gray-500">
+          <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
+          <span>Midnight Explorer API Synced</span>
+        </div>
+      </footer>
     </div>
   );
-}
+};

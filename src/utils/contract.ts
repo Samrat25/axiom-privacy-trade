@@ -1,94 +1,91 @@
-/**
- * Midnight circuit call surface.
- *
- * Every function here is a stub with realistic latency + failure modes so the
- * UI's loading and error states are real. Replace the bodies with actual
- * compact-contract calls; the signatures are the integration contract.
- */
+// ============================================================================
+// Axiom — Contract Types, Trade Models & Strategy Utilities
+// ============================================================================
 
-export interface ParsedStrategy {
+export interface StrategyParams {
   asset: string;
-  maxPosition: number; // percent of portfolio
-  stopLoss: number; // percent
+  maxPositionPct: number;
+  stopLossPct: number;
   timelineDays: number;
+  timelineExpiry: bigint;
 }
 
-export interface Commitment {
-  hash: string;
-  blockHeight: number;
-  proofMs: number;
+export interface TradeRecord {
+  id: string;
+  timestamp: string;
+  asset: string;
+  type: 'BUY' | 'SELL' | 'STOP_LOSS';
+  sizeUsd: number;
+  priceUsd: number;
+  pnlUsd: number;
+  pnlPct: number;
+  status: 'executed' | 'rejected';
+  proofTimeMs: number;
+  commitmentHash: string;
+  txHash?: string;
 }
 
-const ASSETS = ["ADA", "BTC", "ETH", "SOL", "DUST", "MID"];
-
-function randomHex(len: number) {
-  const chars = "0123456789abcdef";
-  let out = "";
-  for (let i = 0; i < len; i++) out += chars[Math.floor(Math.random() * chars.length)];
-  return out;
+export interface MarketTicker {
+  symbol: string;
+  name: string;
+  priceUsd: number;
+  change24hPct: number;
+  high24h: number;
+  low24h: number;
+  volume24hUsd: number;
 }
 
-/** Local NL parse — stands in for the off-chain intent parser / AI agent. */
-export function parseStrategyText(text: string): ParsedStrategy | null {
-  const upper = text.toUpperCase();
-  const asset = ASSETS.find((a) => new RegExp(`\\b${a}\\b`).test(upper));
-  const position = upper.match(/(\d{1,3})\s*%\s*(MAX\s*)?POSITION|MAX\s*(\d{1,3})\s*%/);
-  const stop = upper.match(/(\d{1,3})\s*%\s*STOP/);
-  const days = upper.match(/(\d{1,4})\s*(DAY|DAYS|D)\b/);
+// Client-side NLP parser that bounds natural language into circuit witness parameters
+export function parseNaturalLanguageStrategy(prompt: string): StrategyParams {
+  const lower = prompt.toLowerCase();
+  
+  let asset = 'ADA';
+  if (lower.includes('btc') || lower.includes('bitcoin')) asset = 'BTC';
+  else if (lower.includes('eth') || lower.includes('ethereum')) asset = 'ETH';
+  else if (lower.includes('sol') || lower.includes('solana')) asset = 'SOL';
+  else if (lower.includes('night') || lower.includes('tnight')) asset = 'tNIGHT';
 
-  if (!asset && !position && !stop && !days) return null;
+  let maxPositionPct = 20;
+  const maxPosMatch = lower.match(/(?:max|up to|position|size)\s*(\d+)%/);
+  if (maxPosMatch && maxPosMatch[1]) {
+    maxPositionPct = Math.min(100, Math.max(1, parseInt(maxPosMatch[1], 10)));
+  }
+
+  let stopLossPct = 8;
+  const stopLossMatch = lower.match(/(?:stop-loss|stop loss|sl)\s*(\d+)%/);
+  if (stopLossMatch && stopLossMatch[1]) {
+    stopLossPct = Math.min(50, Math.max(1, parseInt(stopLossMatch[1], 10)));
+  }
+
+  let timelineDays = 30;
+  const daysMatch = lower.match(/(\d+)\s*(?:days|day)/);
+  if (daysMatch && daysMatch[1]) {
+    timelineDays = Math.min(365, Math.max(1, parseInt(daysMatch[1], 10)));
+  }
+
+  const currentSeconds = BigInt(Math.floor(Date.now() / 1000));
+  const expirySeconds = currentSeconds + BigInt(timelineDays * 86400);
 
   return {
-    asset: asset ?? "ADA",
-    maxPosition: Number(position?.[1] ?? position?.[3] ?? 20),
-    stopLoss: Number(stop?.[1] ?? 8),
-    timelineDays: Number(days?.[1] ?? 30),
+    asset,
+    maxPositionPct,
+    stopLossPct,
+    timelineDays,
+    timelineExpiry: expirySeconds
   };
 }
 
-export const PROOF_PHASES = [
-  "Normalizing strategy intent",
-  "Building witness from private inputs",
-  "Generating zero-knowledge proof",
-  "Submitting commitment to Midnight",
-] as const;
-
-/** Circuit: commit_strategy(hash) — writes only the commitment on-chain. */
-export async function commitStrategy(
-  strategy: ParsedStrategy,
-  onPhase?: (index: number) => void,
-): Promise<Commitment> {
-  const started = Date.now();
-  for (let i = 0; i < PROOF_PHASES.length; i++) {
-    onPhase?.(i);
-    await wait(700 + Math.random() * 600);
+// Compute strategy hash matching persistentHash in axiom.compact
+export function computeStrategyHash(params: StrategyParams): string {
+  const rawStr = `${params.asset}:${params.maxPositionPct}:${params.stopLossPct}:${params.timelineExpiry.toString()}`;
+  let hash = 0x811c9dc5;
+  for (let i = 0; i < rawStr.length; i++) {
+    hash ^= rawStr.charCodeAt(i);
+    hash += (hash << 1) + (hash << 4) + (hash << 7) + (hash << 8) + (hash << 24);
   }
-  if (Math.random() < 0.12) {
-    throw new Error("Proof rejected by the verifier. Adjust the parameters and retry.");
-  }
-  void strategy;
-  return {
-    hash: `0x${randomHex(64)}`,
-    blockHeight: 4_812_337 + Math.floor(Math.random() * 500),
-    proofMs: Date.now() - started,
-  };
+  const hex = (hash >>> 0).toString(16).padStart(8, '0');
+  return `0x${hex}${hex}${hex}${hex}`;
 }
 
-/** Circuit: withdraw(amount) — shielded balance transfer. */
-export async function withdraw(amount: number): Promise<{ txHash: string }> {
-  await wait(1600);
-  if (amount <= 0) throw new Error("Enter an amount greater than zero.");
-  if (amount > 8421.55) throw new Error("Amount exceeds your shielded balance.");
-  if (Math.random() < 0.1) throw new Error("Network congestion — the transaction was not accepted.");
-  return { txHash: `0x${randomHex(64)}` };
-}
-
-/** Circuit: expire_strategy(commitmentHash) */
-export async function expireStrategy(hash: string): Promise<void> {
-  await wait(1200);
-  if (Math.random() < 0.1) throw new Error(`Could not expire ${hash.slice(0, 10)}… — try again.`);
-}
-
-function wait(ms: number) {
-  return new Promise((r) => setTimeout(r, ms));
-}
+// Trade history initialized as clean empty array for live wallet sessions
+export const INITIAL_TRADE_HISTORY: TradeRecord[] = [];

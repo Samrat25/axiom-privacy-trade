@@ -1,354 +1,411 @@
-import { useState } from "react";
-import { ArrowRight, Check, Loader2, Lock, Pencil, ShieldCheck, Sparkles } from "lucide-react";
+import React, { useState } from 'react';
 import {
-  PROOF_PHASES,
-  commitStrategy,
-  parseStrategyText,
-  type Commitment,
-  type ParsedStrategy,
-} from "@/utils/contract";
-import { CopyHash, ErrorNote, Panel } from "@/components/primitives";
-import { useWallet } from "@/lib/wallet";
-import { cn } from "@/lib/utils";
+  Sparkles,
+  Shield,
+  Lock,
+  Copy,
+  CheckCircle,
+  Cpu,
+  HelpCircle,
+  Sliders,
+  Clock,
+  Percent,
+  Coins,
+  Bot
+} from 'lucide-react';
+import { parseNaturalLanguageStrategy, StrategyParams } from '../utils/contract';
+import { parseStrategyNode } from '../utils/agent';
 
-const EXAMPLE = "only buy ADA, max 20% position, 8% stop-loss, run for 30 days";
+interface StrategyBuilderProps {
+  onCommit: (params: StrategyParams) => Promise<string>;
+  isProofGenerating: boolean;
+  proofStep: string;
+  walletConnected: boolean;
+  onConnectWallet: () => void;
+}
 
-type Phase = "idle" | "parsing" | "review" | "committing" | "committed" | "error";
+const PRESET_PROMPTS = [
+  'Only buy ADA, max 20% position size, 8% stop-loss, run for 30 days.',
+  'Trade BTC momentum with max 15% position, 5% stop-loss for 14 days.',
+  'Accumulate ETH with 10% max allocation, 12% trailing stop, 60 days duration.',
+  'Swap tNIGHT with 25% max position size, 6% stop-loss for 7 days.'
+];
 
-export default function StrategyBuilder() {
-  const { status: walletStatus } = useWallet();
-  const [text, setText] = useState("");
-  const [phase, setPhase] = useState<Phase>("idle");
-  const [parsed, setParsed] = useState<ParsedStrategy | null>(null);
-  const [proofStep, setProofStep] = useState(0);
-  const [commitment, setCommitment] = useState<Commitment | null>(null);
-  const [error, setError] = useState<string | null>(null);
+export const StrategyBuilder: React.FC<StrategyBuilderProps> = ({
+  onCommit,
+  isProofGenerating,
+  proofStep,
+  walletConnected,
+  onConnectWallet
+}) => {
+  const defaultPrompt = PRESET_PROMPTS[0] || 'Only buy ADA, max 20% position size, 8% stop-loss, run for 30 days.';
+  const [promptText, setPromptText] = useState<string>(defaultPrompt);
+  const [parsedParams, setParsedParams] = useState<StrategyParams>(() =>
+    parseNaturalLanguageStrategy(defaultPrompt)
+  );
 
-  const handleParse = async () => {
-    setError(null);
-    setPhase("parsing");
-    await new Promise((r) => setTimeout(r, 900));
-    const result = parseStrategyText(text);
-    if (!result) {
-      setError("Couldn't read a strategy from that. Mention an asset, a position cap, a stop-loss and a duration.");
-      setPhase("error");
+  const [isParsingGemini, setIsParsingGemini] = useState<boolean>(false);
+  const [committedHash, setCommittedHash] = useState<string | null>(null);
+  const [copied, setCopied] = useState<boolean>(false);
+  const [isConfirmed, setIsConfirmed] = useState<boolean>(false);
+
+  const handlePromptChange = (text: string) => {
+    setPromptText(text);
+    const parsed = parseNaturalLanguageStrategy(text);
+    setParsedParams(parsed);
+    setIsConfirmed(false);
+    setCommittedHash(null);
+  };
+
+  const handleSelectPreset = (preset: string) => {
+    handlePromptChange(preset);
+  };
+
+  const handleGeminiParse = async () => {
+    setIsParsingGemini(true);
+    try {
+      const res = await parseStrategyNode({ naturalLanguagePrompt: promptText } as any);
+      if (res.strategyParams) {
+        setParsedParams(res.strategyParams);
+      }
+    } finally {
+      setIsParsingGemini(false);
+    }
+  };
+
+  const handleChipChange = (field: keyof StrategyParams, value: any) => {
+    setParsedParams((prev) => ({
+      ...prev,
+      [field]: value
+    }));
+  };
+
+  const handleCommitSubmit = async () => {
+    if (!walletConnected) {
+      onConnectWallet();
       return;
     }
-    setParsed(result);
-    setPhase("review");
+    const hash = await onCommit(parsedParams);
+    setCommittedHash(hash);
   };
 
-  const handleCommit = async () => {
-    if (!parsed) return;
-    setError(null);
-    setProofStep(0);
-    setPhase("committing");
-    try {
-      const result = await commitStrategy(parsed, setProofStep);
-      setCommitment(result);
-      setPhase("committed");
-    } catch (e) {
-      setError(e instanceof Error ? e.message : "Commit failed.");
-      setPhase("error");
+  const copyToClipboard = () => {
+    if (committedHash) {
+      navigator.clipboard.writeText(committedHash);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
     }
   };
 
-  const reset = () => {
-    setPhase("idle");
-    setParsed(null);
-    setCommitment(null);
-    setError(null);
-    setText("");
-  };
-
-  if (walletStatus !== "connected") {
-    return (
-      <Panel className="flex flex-col items-center gap-3 py-16 text-center">
-        <Lock size={20} className="text-muted-foreground" />
-        <p className="text-[14px] text-muted-foreground">
-          Connect your wallet to build and commit a strategy.
-        </p>
-      </Panel>
-    );
-  }
-
   return (
-    <div className="grid gap-6 lg:grid-cols-[1.15fr_1fr]">
-      {/* Composer */}
-      <Panel className="relative overflow-hidden p-0">
-        <div className="grid-field pointer-events-none absolute inset-0 opacity-40" />
-        <div className="relative p-6 sm:p-7">
-          <div className="flex items-center gap-2 text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
-            <Sparkles size={13} className="text-primary" /> Describe your strategy
-          </div>
-
-          <textarea
-            value={text}
-            onChange={(e) => {
-              setText(e.target.value);
-              if (phase === "error") setPhase("idle");
-            }}
-            disabled={phase === "committing"}
-            rows={5}
-            placeholder={EXAMPLE}
-            className="text-num mt-4 w-full resize-none rounded-xl border border-border bg-background/70 p-4 text-[15px] leading-relaxed text-foreground outline-none transition-colors placeholder:text-muted-foreground/60 focus:border-primary/50 focus:ring-2 focus:ring-ring"
-          />
-
-          <div className="mt-3 flex flex-wrap items-center gap-2">
-            <button
-              onClick={() => setText(EXAMPLE)}
-              className="rounded-full border border-border px-3 py-1.5 text-[12px] text-muted-foreground transition-colors hover:border-border-strong hover:text-foreground"
-            >
-              Use example
-            </button>
-            <span className="text-[12px] text-muted-foreground">
-              Parsed locally — this text never leaves your device.
-            </span>
-          </div>
-
-          <button
-            onClick={handleParse}
-            disabled={!text.trim() || phase === "parsing" || phase === "committing"}
-            className="group mt-6 inline-flex items-center gap-3 rounded-full bg-primary py-2.5 pl-5 pr-2 text-[13px] font-medium text-primary-foreground transition-all duration-300 hover:accent-glow disabled:cursor-not-allowed disabled:opacity-45"
-          >
-            {phase === "parsing" ? (
-              <>
-                <Loader2 size={15} className="animate-spin" /> Reading intent…
-              </>
-            ) : (
-              <>
-                <span className="text-roll">
-                  <span className="group-hover:-translate-y-full">Review &amp; Confirm</span>
-                  <span className="group-hover:-translate-y-full">Review &amp; Confirm</span>
-                </span>
-                <span className="flex h-6 w-6 items-center justify-center rounded-full bg-primary-foreground/15 transition-transform duration-500 ease-[cubic-bezier(0.25,0.1,0.25,1)] group-hover:-rotate-45">
-                  <ArrowRight size={13} />
-                </span>
-              </>
-            )}
-          </button>
-
-          {phase === "error" && error && !commitment && (
-            <div className="mt-4">
-              <ErrorNote message={error} onRetry={parsed ? handleCommit : handleParse} />
+    <div className="max-w-4xl mx-auto space-y-6">
+      {/* Header Banner */}
+      <div className="bg-gradient-to-r from-purple-950/40 via-gray-900 to-indigo-950/40 border border-purple-800/30 rounded-2xl p-6 backdrop-blur-sm">
+        <div className="flex items-start justify-between">
+          <div className="space-y-1">
+            <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-purple-500/10 border border-purple-500/30 text-purple-300 text-xs font-medium">
+              <Shield className="w-3.5 h-3.5" />
+              <span>LangGraph Agent + Midnight Compact Core</span>
             </div>
-          )}
-        </div>
-      </Panel>
-
-      {/* Review / proof / commitment */}
-      <Panel className="p-6 sm:p-7">
-        {phase === "committed" && commitment ? (
-          <CommitSuccess commitment={commitment} onReset={reset} />
-        ) : phase === "committing" ? (
-          <ProofProgress step={proofStep} />
-        ) : parsed ? (
-          <ReviewCard parsed={parsed} onChange={setParsed} onCommit={handleCommit} />
-        ) : (
-          <div className="flex h-full min-h-[280px] flex-col items-center justify-center gap-3 text-center">
-            <ShieldCheck size={22} className="text-muted-foreground" />
-            <p className="max-w-[280px] text-[13px] leading-relaxed text-muted-foreground">
-              Your parsed strategy appears here as editable fields. Nothing is committed until you
-              approve it.
+            <h1 className="text-2xl font-bold text-white tracking-tight">
+              Natural-Language Strategy Builder
+            </h1>
+            <p className="text-gray-400 text-xs leading-relaxed max-w-2xl">
+              Describe your algorithmic trading strategy in plain language. Axiom's Gemini LLM structured output engine parses text into bounded parameters, hashes them locally, and commits a zero-knowledge proof on-chain.
             </p>
           </div>
-        )}
-      </Panel>
-    </div>
-  );
-}
-
-function Chip({
-  label,
-  value,
-  suffix,
-  onChange,
-}: {
-  label: string;
-  value: string | number;
-  suffix?: string;
-  onChange: (v: string) => void;
-}) {
-  const [editing, setEditing] = useState(false);
-  return (
-    <div className="flex items-center justify-between rounded-xl border border-border bg-background/60 px-4 py-3">
-      <span className="text-[12px] uppercase tracking-wider text-muted-foreground">{label}</span>
-      {editing ? (
-        <input
-          autoFocus
-          value={String(value)}
-          onChange={(e) => onChange(e.target.value)}
-          onBlur={() => setEditing(false)}
-          onKeyDown={(e) => e.key === "Enter" && setEditing(false)}
-          className="text-num w-24 rounded-md border border-primary/50 bg-background px-2 py-1 text-right text-[14px] outline-none"
-        />
-      ) : (
-        <button
-          onClick={() => setEditing(true)}
-          className="text-num group flex items-center gap-2 text-[14px] text-foreground"
-        >
-          {value}
-          {suffix}
-          <Pencil size={12} className="text-muted-foreground group-hover:text-primary" />
-        </button>
-      )}
-    </div>
-  );
-}
-
-function ReviewCard({
-  parsed,
-  onChange,
-  onCommit,
-}: {
-  parsed: ParsedStrategy;
-  onChange: (p: ParsedStrategy) => void;
-  onCommit: () => void;
-}) {
-  return (
-    <div className="space-y-4">
-      <div>
-        <h2 className="text-[15px] font-semibold">Review &amp; Confirm</h2>
-        <p className="mt-1 text-[12px] text-muted-foreground">
-          Edit any field. Only the hash of these values is published.
-        </p>
+          <div className="hidden md:flex flex-col items-end text-right space-y-1">
+            <span className="text-[11px] font-mono text-purple-400">LLM: Gemini 2.5 Flash</span>
+            <span className="text-xs text-gray-400">Public: Commitment Hash Only</span>
+            <span className="text-xs text-emerald-400 font-semibold">Private: Strategy Witnesses</span>
+          </div>
+        </div>
       </div>
 
-      <div className="space-y-2.5">
-        <Chip
-          label="Asset"
-          value={parsed.asset}
-          onChange={(v) => onChange({ ...parsed, asset: v.toUpperCase() })}
-        />
-        <Chip
-          label="Max position"
-          value={parsed.maxPosition}
-          suffix="%"
-          onChange={(v) => onChange({ ...parsed, maxPosition: Number(v) || 0 })}
-        />
-        <Chip
-          label="Stop-loss"
-          value={parsed.stopLoss}
-          suffix="%"
-          onChange={(v) => onChange({ ...parsed, stopLoss: Number(v) || 0 })}
-        />
-        <Chip
-          label="Timeline"
-          value={parsed.timelineDays}
-          suffix="d"
-          onChange={(v) => onChange({ ...parsed, timelineDays: Number(v) || 0 })}
-        />
-      </div>
-
-      <button
-        onClick={onCommit}
-        className="group mt-2 flex w-full items-center justify-center gap-2 rounded-full bg-primary py-3 text-[13px] font-semibold text-primary-foreground transition-all duration-300 hover:accent-glow"
-      >
-        <Lock size={14} /> Commit Strategy
-      </button>
-      <p className="text-center text-[11px] text-muted-foreground">
-        Generates a zero-knowledge proof locally, then writes one 32-byte commitment on Midnight.
-      </p>
-    </div>
-  );
-}
-
-function ProofProgress({ step }: { step: number }) {
-  return (
-    <div className="space-y-5">
-      <div className="scanline relative overflow-hidden rounded-xl border border-primary/25 bg-background/70 p-5">
-        <div className="grid-field pointer-events-none absolute inset-0 opacity-50" />
-        <div className="text-num relative space-y-1 text-[11px] leading-relaxed text-primary/80">
-          {Array.from({ length: 6 }).map((_, i) => (
-            <div key={i} className="truncate opacity-[calc(0.35+0.1*var(--i))]">
-              {generateNoise(i, step)}
-            </div>
+      {/* Preset Buttons */}
+      <div className="space-y-2">
+        <div className="flex items-center justify-between text-xs text-gray-400">
+          <span className="flex items-center gap-1.5 font-medium">
+            <Sparkles className="w-3.5 h-3.5 text-purple-400" />
+            Quick Presets
+          </span>
+          <span>Click to populate prompt</span>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+          {PRESET_PROMPTS.map((preset, idx) => (
+            <button
+              key={idx}
+              onClick={() => handleSelectPreset(preset)}
+              className="text-left text-xs bg-gray-900/60 hover:bg-purple-950/30 border border-gray-800 hover:border-purple-600/40 text-gray-300 hover:text-white p-3 rounded-xl transition-all cursor-pointer truncate"
+            >
+              "{preset}"
+            </button>
           ))}
         </div>
       </div>
 
-      <ol className="space-y-3">
-        {PROOF_PHASES.map((label, i) => {
-          const done = i < step;
-          const active = i === step;
-          return (
-            <li key={label} className="flex items-center gap-3 text-[13px]">
-              <span
-                className={cn(
-                  "flex h-5 w-5 items-center justify-center rounded-full border text-[10px]",
-                  done && "border-primary bg-primary text-primary-foreground",
-                  active && "border-primary text-primary",
-                  !done && !active && "border-border text-muted-foreground",
-                )}
-              >
-                {done ? <Check size={11} /> : active ? <Loader2 size={11} className="animate-spin" /> : i + 1}
-              </span>
-              <span className={cn(done || active ? "text-foreground" : "text-muted-foreground")}>
-                {label}
-              </span>
-            </li>
-          );
-        })}
-      </ol>
-      <p className="text-num text-[11px] text-muted-foreground">
-        do not close this tab — witness data is held in memory only
-      </p>
-    </div>
-  );
-}
+      {/* Main Prompt Input Box */}
+      <div className="bg-gray-900/90 border border-gray-800 focus-within:border-purple-500/60 rounded-2xl p-4 shadow-xl transition-all">
+        <div className="flex items-center justify-between mb-2">
+          <label className="text-xs font-semibold text-gray-300 flex items-center gap-1.5">
+            <Cpu className="w-3.5 h-3.5 text-purple-400" />
+            Strategy Input (Natural Language)
+          </label>
+          <button
+            onClick={handleGeminiParse}
+            disabled={isParsingGemini}
+            className="text-[11px] font-mono text-purple-300 bg-purple-950 hover:bg-purple-900 px-2.5 py-1 rounded-lg border border-purple-800/50 flex items-center gap-1 cursor-pointer"
+          >
+            <Bot className="w-3.5 h-3.5 text-purple-400" />
+            <span>{isParsingGemini ? 'Gemini Parsing...' : 'Parse with Gemini LLM'}</span>
+          </button>
+        </div>
 
-function generateNoise(row: number, step: number) {
-  const chars = "0123456789abcdef";
-  let out = "";
-  for (let i = 0; i < 44; i++) {
-    out += chars[(row * 7 + i * 13 + step * 29 + i * row) % 16];
-  }
-  return `${(row + step * 6).toString().padStart(3, "0")}  ${out}`;
-}
+        <textarea
+          value={promptText}
+          onChange={(e) => handlePromptChange(e.target.value)}
+          rows={3}
+          placeholder="e.g. Only buy ADA, max 20% position size, 8% stop-loss, run for 30 days"
+          className="w-full bg-gray-950/70 border border-gray-800 rounded-xl p-3.5 text-gray-100 placeholder-gray-600 text-sm focus:outline-none focus:ring-1 focus:ring-purple-500/40 resize-none font-sans"
+        />
 
-function CommitSuccess({ commitment, onReset }: { commitment: Commitment; onReset: () => void }) {
-  return (
-    <div className="space-y-5">
-      <div className="flex items-center gap-3">
-        <span className="relative flex h-9 w-9 items-center justify-center rounded-full bg-primary/15 text-primary">
-          <span className="pulse-ring absolute inset-0 rounded-full border border-primary/50" />
-          <ShieldCheck size={17} />
-        </span>
-        <div>
-          <h2 className="text-[15px] font-semibold">Strategy committed</h2>
-          <p className="text-[12px] text-muted-foreground">
-            Proof verified in <span className="text-num">{(commitment.proofMs / 1000).toFixed(1)}s</span>{" "}
-            at block <span className="text-num">{commitment.blockHeight.toLocaleString()}</span>
+        <div className="mt-2 flex items-center justify-between text-xs text-gray-400">
+          <div className="flex items-center gap-2">
+            <Lock className="w-3.5 h-3.5 text-emerald-400" />
+            <span className="text-emerald-400/90 text-[11px]">
+              LANGCHAIN_TRACING_V2=false (Zero telemetry leaks)
+            </span>
+          </div>
+          <span className="text-[11px] text-gray-500 font-mono">
+            Length: {promptText.length} chars
+          </span>
+        </div>
+      </div>
+
+      {/* Confirm-Before-Commit Card (Section 4 Requirement) */}
+      <div className="bg-gray-900/90 border border-purple-900/40 rounded-2xl p-5 shadow-2xl space-y-4">
+        <div className="flex items-center justify-between border-b border-gray-800 pb-3">
+          <div className="flex items-center gap-2">
+            <div className="w-2 h-2 rounded-full bg-purple-400 animate-ping" />
+            <h3 className="text-sm font-semibold text-white flex items-center gap-1.5">
+              <Sliders className="w-4 h-4 text-purple-400" />
+              Review & Confirm Strategy Bounds
+            </h3>
+          </div>
+          <div className="flex items-center gap-1 text-[11px] text-amber-400 bg-amber-950/30 px-2.5 py-1 rounded-full border border-amber-800/40">
+            <HelpCircle className="w-3 h-3" />
+            <span>Immutable Once Committed</span>
+          </div>
+        </div>
+
+        <p className="text-xs text-gray-400">
+          Verify the parsed parameters below. Once hashed and committed to the Compact circuit, these boundaries cannot be altered without creating a new agent commitment.
+        </p>
+
+        {/* Editable Chips Grid */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          {/* Target Asset */}
+          <div className="bg-gray-950 border border-gray-800 rounded-xl p-3 flex flex-col justify-between space-y-1">
+            <div className="flex items-center justify-between text-[11px] text-gray-400">
+              <span className="flex items-center gap-1">
+                <Coins className="w-3 h-3 text-purple-400" /> Asset
+              </span>
+              <span className="text-[10px] text-gray-500 font-mono">Witness 1</span>
+            </div>
+            <select
+              value={parsedParams.asset}
+              onChange={(e) => handleChipChange('asset', e.target.value)}
+              className="bg-gray-900 text-white font-mono text-xs font-bold px-2 py-1.5 rounded-lg border border-gray-700 focus:outline-none focus:border-purple-500 cursor-pointer"
+            >
+              <option value="ADA">ADA</option>
+              <option value="BTC">BTC</option>
+              <option value="ETH">ETH</option>
+              <option value="SOL">SOL</option>
+              <option value="tNIGHT">tNIGHT</option>
+            </select>
+          </div>
+
+          {/* Max Position % */}
+          <div className="bg-gray-950 border border-gray-800 rounded-xl p-3 flex flex-col justify-between space-y-1">
+            <div className="flex items-center justify-between text-[11px] text-gray-400">
+              <span className="flex items-center gap-1">
+                <Percent className="w-3 h-3 text-indigo-400" /> Max Position
+              </span>
+              <span className="text-[10px] text-gray-500 font-mono">Witness 2</span>
+            </div>
+            <div className="flex items-center gap-1">
+              <input
+                type="number"
+                min="1"
+                max="100"
+                value={parsedParams.maxPositionPct}
+                onChange={(e) => handleChipChange('maxPositionPct', parseInt(e.target.value) || 1)}
+                className="w-full bg-gray-900 text-white font-mono text-xs font-bold px-2 py-1.5 rounded-lg border border-gray-700 focus:outline-none focus:border-purple-500"
+              />
+              <span className="text-xs text-gray-400 font-mono">%</span>
+            </div>
+          </div>
+
+          {/* Stop Loss % */}
+          <div className="bg-gray-950 border border-gray-800 rounded-xl p-3 flex flex-col justify-between space-y-1">
+            <div className="flex items-center justify-between text-[11px] text-gray-400">
+              <span className="flex items-center gap-1">
+                <Percent className="w-3 h-3 text-red-400" /> Stop Loss
+              </span>
+              <span className="text-[10px] text-gray-500 font-mono">Witness 3</span>
+            </div>
+            <div className="flex items-center gap-1">
+              <input
+                type="number"
+                min="1"
+                max="50"
+                value={parsedParams.stopLossPct}
+                onChange={(e) => handleChipChange('stopLossPct', parseInt(e.target.value) || 1)}
+                className="w-full bg-gray-900 text-white font-mono text-xs font-bold px-2 py-1.5 rounded-lg border border-gray-700 focus:outline-none focus:border-purple-500"
+              />
+              <span className="text-xs text-gray-400 font-mono">%</span>
+            </div>
+          </div>
+
+          {/* Timeline Expiry */}
+          <div className="bg-gray-950 border border-gray-800 rounded-xl p-3 flex flex-col justify-between space-y-1">
+            <div className="flex items-center justify-between text-[11px] text-gray-400">
+              <span className="flex items-center gap-1">
+                <Clock className="w-3 h-3 text-emerald-400" /> Timeline
+              </span>
+              <span className="text-[10px] text-gray-500 font-mono">Witness 4</span>
+            </div>
+            <div className="flex items-center gap-1">
+              <input
+                type="number"
+                min="1"
+                max="365"
+                value={parsedParams.timelineDays}
+                onChange={(e) => handleChipChange('timelineDays', parseInt(e.target.value) || 1)}
+                className="w-full bg-gray-900 text-white font-mono text-xs font-bold px-2 py-1.5 rounded-lg border border-gray-700 focus:outline-none focus:border-purple-500"
+              />
+              <span className="text-xs text-gray-400 font-mono">Days</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Confirmation Checkbox */}
+        <div className="flex items-center gap-2 pt-2">
+          <input
+            type="checkbox"
+            id="confirm-bounds"
+            checked={isConfirmed}
+            onChange={(e) => setIsConfirmed(e.target.checked)}
+            className="w-4 h-4 rounded bg-gray-950 border-gray-700 text-purple-600 focus:ring-purple-500 cursor-pointer"
+          />
+          <label htmlFor="confirm-bounds" className="text-xs text-gray-300 cursor-pointer select-none">
+            I confirm these strategy bounds are correct and ready for zero-knowledge hash commitment.
+          </label>
+        </div>
+
+        {/* Action Button & Proof Loading Indicator */}
+        <div className="pt-2">
+          {isProofGenerating ? (
+            <div className="bg-purple-950/40 border border-purple-700/50 rounded-xl p-4 space-y-2 animate-pulse-subtle">
+              <div className="flex items-center justify-between text-xs">
+                <span className="font-mono text-purple-300 flex items-center gap-2">
+                  <Cpu className="w-4 h-4 text-purple-400 animate-spin" />
+                  Generating Zero-Knowledge Circuit Proof...
+                </span>
+                <span className="text-gray-400 font-mono text-[11px]">compactc v0.24</span>
+              </div>
+              <p className="text-xs text-purple-200/90 font-mono bg-black/40 p-2 rounded border border-purple-900/40">
+                {proofStep}
+              </p>
+            </div>
+          ) : (
+            <button
+              onClick={handleCommitSubmit}
+              disabled={!isConfirmed}
+              className={`w-full py-3.5 px-6 rounded-xl font-medium text-xs sm:text-sm tracking-wide shadow-lg transition-all flex items-center justify-center gap-2 ${
+                isConfirmed
+                  ? 'bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-700 hover:from-purple-500 hover:to-indigo-500 text-white shadow-purple-900/40 cursor-pointer border border-purple-400/40'
+                  : 'bg-gray-800 text-gray-500 border border-gray-700 cursor-not-allowed'
+              }`}
+            >
+              <Shield className="w-4 h-4" />
+              <span>
+                {walletConnected ? 'Commit Strategy On-Chain (commitStrategy)' : 'Connect 1AM Wallet to Commit'}
+              </span>
+            </button>
+          )}
+        </div>
+      </div>
+
+      {/* Success State — Visible Commitment Hash (Section 4 Requirement) */}
+      {committedHash && (
+        <div className="bg-gradient-to-r from-emerald-950/50 via-gray-900 to-purple-950/40 border border-emerald-500/40 rounded-2xl p-6 shadow-2xl space-y-4 font-mono">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2 text-emerald-400">
+              <CheckCircle className="w-5 h-5" />
+              <h4 className="text-sm font-bold tracking-tight">
+                Strategy Committed Cryptographically On-Chain!
+              </h4>
+            </div>
+            <span className="text-[11px] font-mono bg-emerald-950 text-emerald-300 border border-emerald-800/60 px-2.5 py-0.5 rounded-full font-bold">
+              LEDGER STATE RECORDED
+            </span>
+          </div>
+
+          <p className="text-xs text-gray-300 leading-relaxed font-sans">
+            Your strategy witnesses (<strong className="text-emerald-400">{parsedParams.asset}</strong>, <strong className="text-purple-300">{parsedParams.maxPositionPct}% max pos</strong>, <strong className="text-red-400">{parsedParams.stopLossPct}% stop-loss</strong>) have been hashed locally into a single ZK commitment and recorded on Midnight testnet. Raw bounds remain encrypted on your device.
           </p>
-        </div>
-      </div>
 
-      <div className="rounded-xl border border-primary/25 bg-primary/5 p-4">
-        <div className="text-[11px] uppercase tracking-wider text-muted-foreground">
-          Commitment hash
-        </div>
-        <div className="mt-2">
-          <CopyHash value={commitment.hash} head={14} tail={10} />
-        </div>
-      </div>
+          <div className="bg-gray-950 border border-gray-800 rounded-xl p-3 flex items-center justify-between gap-3">
+            <div className="space-y-0.5 overflow-hidden">
+              <span className="text-[10px] text-gray-500 font-mono uppercase tracking-wider block">
+                Public Commitment Hash (agentCommitment)
+              </span>
+              <span className="font-mono text-purple-300 text-xs sm:text-sm font-semibold truncate block">
+                {committedHash}
+              </span>
+            </div>
+            <button
+              onClick={copyToClipboard}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-gray-800 hover:bg-gray-700 border border-gray-700 text-gray-200 text-xs font-mono transition-all cursor-pointer shrink-0"
+            >
+              {copied ? (
+                <>
+                  <CheckCircle className="w-3.5 h-3.5 text-emerald-400" />
+                  <span className="text-emerald-400">Copied!</span>
+                </>
+              ) : (
+                <>
+                  <Copy className="w-3.5 h-3.5 text-gray-400" />
+                  <span>Copy Hash</span>
+                </>
+              )}
+            </button>
+          </div>
 
-      <ul className="space-y-2 text-[12px] text-muted-foreground">
-        <li className="flex gap-2">
-          <Check size={13} className="mt-0.5 shrink-0 text-primary" /> Every future trade is checked
-          against this commitment.
-        </li>
-        <li className="flex gap-2">
-          <Check size={13} className="mt-0.5 shrink-0 text-primary" /> Asset, sizing, stop-loss and
-          timeline were never published.
-        </li>
-      </ul>
+          {/* Post-Commitment Action Bar */}
+          <div className="pt-2 flex flex-col sm:flex-row items-center gap-3 border-t border-gray-800">
+            <a
+              href={`https://midnightexplorer.com/contracts/${committedHash}`}
+              target="_blank"
+              rel="noreferrer"
+              className="w-full sm:w-auto px-4 py-2.5 rounded-xl bg-gray-900 hover:bg-gray-800 border border-gray-700 text-purple-300 font-bold text-xs flex items-center justify-center gap-2 transition-all cursor-pointer"
+            >
+              <span>View Midnight Explorer Log</span>
+            </a>
 
-      <button
-        onClick={onReset}
-        className="w-full rounded-full border border-border-strong py-2.5 text-[13px] transition-colors hover:bg-muted"
-      >
-        Build another strategy
-      </button>
+            <button
+              onClick={() => {
+                onCommit(parsedParams);
+              }}
+              className="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-gradient-to-r from-purple-600 to-emerald-600 hover:from-purple-500 hover:to-emerald-500 text-white font-bold text-xs shadow-lg transition-all cursor-pointer flex items-center justify-center gap-2"
+            >
+              <Cpu className="w-4 h-4 text-emerald-300" />
+              <span>Run AI Agent & Prove Compliance Trade</span>
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
-}
+};

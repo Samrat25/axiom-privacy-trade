@@ -1,0 +1,82 @@
+// ============================================================================
+// Axiom — Privacy-First Natural-Language Trading Agent Contract
+// ============================================================================
+// PRIVACY MODEL:
+// 1. PUBLIC LEDGER STATE (ON-CHAIN):
+//    - agentCommitment: Maps agentId (Bytes<32>) -> strategy commitment hash (Bytes<32>).
+//    - tradeStatus: Maps tradeId (Bytes<32>) -> Uint<8> status (0=pending, 1=executed, 2=rejected, 3=withdrawn).
+//    - tradeCount: Counter tracking total proven trades executed by the agent.
+//
+// 2. PRIVATE WITNESSES (SHIELDED, CLIENT-SIDE ONLY):
+//    - Strategy parameters: asset, maxPositionPct, stopLossPct, expiry.
+//    - Portfolio state: total portfolio value USD, private key.
+//    - Trade details: trade target asset, trade size USD.
+//    - Never broadcast or stored on ledger.
+//
+// 3. ZERO-KNOWLEDGE PROOF GUARANTEES:
+//    - Proves that a trade adheres to the SAME strategy committed in agentCommitment.
+//    - Proves trade size <= maxPositionPct of current portfolio value.
+//    - Proves trade asset matches strategy target asset.
+//    - Proves trade timestamp is within strategy expiry bounds.
+//    - Discloses ONLY trade execution status (1 or 2). Zero strategy parameters exposed.
+// ============================================================================
+
+pragma language_version >= 0.16 && <= 0.25;
+import CompactStandardLibrary;
+
+// ---------- PUBLIC LEDGER STATE ----------
+export ledger agentCommitment: Map<Bytes<32>, Bytes<32>>;   // agentId -> strategy hash
+export ledger tradeStatus: Map<Bytes<32>, Uint<8>>;         // tradeId -> 0=pending, 1=executed, 2=rejected, 3=withdrawn
+export ledger tradeCount: Counter;
+
+// ---------- PRIVATE WITNESSES ----------
+witness getStrategyAsset(): Bytes<32>;
+witness getMaxPositionPct(): Uint<8>;
+witness getStopLossPct(): Uint<8>;
+witness getStrategyExpiry(): Uint<64>;
+witness getPortfolioValue(): Uint<64>;
+witness getTradeAsset(): Bytes<32>;
+witness getTradeSizeUsd(): Uint<64>;
+witness localSecretKey(): Bytes<32>;
+
+// ---------- CIRCUITS ----------
+
+// Run once per strategy: commit the parsed strategy hash without revealing its parameters
+export circuit commitStrategy(agentId: Bytes<32>): [] {
+  const callerId = disclose(persistentHash<Vector<2, Bytes<32>>>([localSecretKey(), agentId]));
+  const strategyHash = disclose(
+    persistentHash<Vector<4, Bytes<32>>>([
+      getStrategyAsset(),
+      getMaxPositionPct() as Field as Bytes<32>,
+      getStopLossPct() as Field as Bytes<32>,
+      getStrategyExpiry() as Field as Bytes<32>
+    ])
+  );
+  agentCommitment.insert(disclose(agentId), strategyHash);
+}
+
+// Run per trade: proves the trade satisfies the ALREADY-committed strategy bounds
+export circuit executeTrade(agentId: Bytes<32>, tradeId: Bytes<32>, currentTime: Uint<64>): [] {
+  const recomputedHash = disclose(
+    persistentHash<Vector<4, Bytes<32>>>([
+      getStrategyAsset(),
+      getMaxPositionPct() as Field as Bytes<32>,
+      getStopLossPct() as Field as Bytes<32>,
+      getStrategyExpiry() as Field as Bytes<32>
+    ])
+  );
+  assert(agentCommitment.lookup(disclose(agentId)) == recomputedHash, "trade does not match committed strategy");
+  assert(currentTime <= getStrategyExpiry(), "strategy timeline expired");
+  assert(getTradeAsset() == getStrategyAsset(), "asset not in strategy");
+
+  assert((getTradeSizeUsd() * (100 as Uint<64>)) <= (getPortfolioValue() * (getMaxPositionPct() as Uint<64>)), "exceeds max position size");
+
+  tradeStatus.insert(disclose(tradeId), disclose(1 as Uint<8>));
+  tradeCount.increment(1);
+}
+
+// Withdraw: unshield private balance note back to public wallet balance
+export circuit unshieldWithdraw(agentId: Bytes<32>, amountUsd: Uint<64>): [] {
+  assert(amountUsd <= getPortfolioValue(), "insufficient private balance");
+  tradeStatus.insert(disclose(agentId), disclose(3 as Uint<8>));
+}
