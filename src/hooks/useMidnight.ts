@@ -33,6 +33,7 @@ import {
   syncStrategyCommitment,
   syncTradeExecution,
   fetchPersistedTrades,
+  fetchPersistedStrategies,
 } from '../lib/supabase-sync';
 
 import { evaluateRiskModel } from '../lib/riskModel';
@@ -129,11 +130,31 @@ export function useMidnight() {
     return found;
   }, []);
 
-  // ─── Load persisted trade history on mount ──────────────────────────
+  // ─── Load persisted trade history & strategies from Supabase on mount ──
   useEffect(() => {
     fetchPersistedTrades().then((persisted) => {
       if (persisted.length > 0) {
         setTrades(persisted);
+      }
+    });
+
+    fetchPersistedStrategies().then((persistedStrats) => {
+      if (persistedStrats.length > 0) {
+        const loaded: ActiveStrategy[] = persistedStrats.map((s) => ({
+          id: `strat_${s.commitment_hash.substring(0, 8)}`,
+          agentId: s.agent_id,
+          params: {
+            asset: 'ADA',
+            maxPositionPct: s.max_allocation_pct || 25,
+            stopLossPct: s.stop_loss_pct || 8,
+            timelineDays: 30,
+            timelineExpiry: BigInt(Math.floor(Date.now() / 1000) + 30 * 86400),
+          },
+          commitmentHash: s.commitment_hash,
+          createdAt: s.created_at ? new Date(s.created_at).toISOString().replace('T', ' ').substring(0, 19) : new Date().toISOString().replace('T', ' ').substring(0, 19),
+          status: 'active',
+        }));
+        setActiveStrategies(loaded);
       }
     });
   }, []);

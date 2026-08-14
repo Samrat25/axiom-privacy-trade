@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Clock, ArrowRight, Menu, X, Shield, Lock, ExternalLink } from 'lucide-react';
+import { Clock, ArrowRight, Menu, X, Shield, Lock, ExternalLink, Cpu, Activity, Zap, CheckCircle2, ChevronRight, Layers } from 'lucide-react';
 import { Shader, Swirl, ChromaFlow, FlutedGlass, FilmGrain } from 'shaders/react';
 
 interface LandingPageProps {
@@ -40,7 +40,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
   return (
     <div className="min-h-screen bg-[#EFEFEF] text-gray-900 font-sans selection:bg-orange-500 selection:text-white">
       {/* ========================================================================= */}
-      {/* SECTION 1: HERO (Full viewport height)                                    */}
+      {/* SECTION 1: HERO (Full viewport height with Animated Shaders)               */}
       {/* ========================================================================= */}
       <section className="relative min-h-screen flex flex-col justify-between overflow-hidden bg-[#EFEFEF]">
         {/* Animated Shader Overlay */}
@@ -99,16 +99,22 @@ export const LandingPage: React.FC<LandingPageProps> = ({
               </a>
 
               <div className="hidden md:flex items-center gap-6">
-                <a href="#about" className="text-[14px] text-gray-900 hover:text-gray-500 transition-colors duration-300 font-medium">Projects</a>
-                <a href="#about" className="text-[14px] text-gray-900 hover:text-gray-500 transition-colors duration-300 font-medium">Studio</a>
-                <a href="#projects" className="text-[14px] text-gray-900 hover:text-gray-500 transition-colors duration-300 font-medium">Journal</a>
-                <a href="#about" className="text-[14px] text-gray-900 hover:text-gray-500 transition-colors duration-300 font-medium">Connect</a>
+                <a href="#architecture" className="text-[14px] text-gray-900 hover:text-gray-500 transition-colors duration-300 font-medium">Architecture</a>
+                <a href="#modules" className="text-[14px] text-gray-900 hover:text-gray-500 transition-colors duration-300 font-medium">Modules</a>
+                <a href="#circuits" className="text-[14px] text-gray-900 hover:text-gray-500 transition-colors duration-300 font-medium">ZK Circuits</a>
+                <a href="https://preview.midnightexplorer.com" target="_blank" rel="noreferrer" className="text-[14px] text-gray-900 hover:text-gray-500 transition-colors duration-300 font-medium flex items-center gap-1">
+                  <span>Explorer</span>
+                  <ExternalLink className="w-3 h-3 text-gray-400" />
+                </a>
               </div>
             </div>
 
             {/* Right Nav */}
             <div className="hidden md:flex items-center gap-4 sm:gap-5 pr-1">
-              <span className="text-[13px] text-gray-600 hidden lg:block font-medium">Taking on projects for Q1 2026</span>
+              <div className="flex items-center gap-2 text-[12px] font-semibold bg-emerald-50 text-emerald-800 px-3 py-1 rounded-full border border-emerald-200/80">
+                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                <span>Midnight Preview Live</span>
+              </div>
 
               <div className="flex items-center gap-1.5 text-[13px] text-gray-600 font-medium">
                 <Clock className="w-3.5 h-3.5 text-gray-500 shrink-0" />
@@ -122,10 +128,10 @@ export const LandingPage: React.FC<LandingPageProps> = ({
               >
                 <div className="flex flex-col overflow-hidden h-[20px]">
                   <span className="transition-transform duration-500 ease-[cubic-bezier(0.25,0.1,0.25,1)] group-hover:-translate-y-full">
-                    {walletConnected ? 'Launch Dashboard' : 'Book a strategy call'}
+                    {walletConnected ? 'Launch Dashboard' : 'Launch Axiom Trade'}
                   </span>
                   <span className="transition-transform duration-500 ease-[cubic-bezier(0.25,0.1,0.25,1)] group-hover:-translate-y-full">
-                    {walletConnected ? 'Enter Axiom Trade' : 'Connect Wallet'}
+                    {walletConnected ? 'Enter Protocol' : 'Connect 1AM Wallet'}
                   </span>
                 </div>
 
@@ -167,14 +173,19 @@ export const LandingPage: React.FC<LandingPageProps> = ({
               </div>
 
               <div className="flex flex-col space-y-3 pt-2">
-                {['Projects', 'Studio', 'Journal', 'Connect'].map((link) => (
+                {[
+                  { name: 'Architecture', href: '#architecture' },
+                  { name: 'Modules', href: '#modules' },
+                  { name: 'ZK Circuits', href: '#circuits' },
+                  { name: 'Midnight Explorer', href: 'https://preview.midnightexplorer.com' }
+                ].map((link) => (
                   <a
-                    key={link}
-                    href="#projects"
+                    key={link.name}
+                    href={link.href}
                     onClick={() => setMobileMenuOpen(false)}
                     className="text-[28px] sm:text-[32px] font-medium text-gray-900 hover:text-orange-600 transition-colors"
                   >
-                    {link}
+                    {link.name}
                   </a>
                 ))}
               </div>
@@ -188,7 +199,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
                   }}
                   className="w-full bg-[#F26522] hover:bg-[#e05a1a] text-white text-[15px] font-medium rounded-full py-3.5 px-6 flex items-center justify-between cursor-pointer transition-colors shadow-lg"
                 >
-                  <span>{walletConnected ? 'Launch Dashboard' : 'Start a project'}</span>
+                  <span>{walletConnected ? 'Launch Dashboard' : 'Connect 1AM Wallet'}</span>
                   <div className="w-7 h-7 rounded-full bg-white flex items-center justify-center">
                     <ArrowRight className="w-3.5 h-3.5 text-[#F26522]" />
                   </div>
@@ -199,23 +210,27 @@ export const LandingPage: React.FC<LandingPageProps> = ({
         )}
 
         {/* Hero Content (z-20, Bottom aligned) */}
-        <div className="relative z-20 flex-1 flex flex-col justify-end max-w-[1440px] w-full mx-auto px-5 sm:px-8 lg:px-12 pb-14 sm:pb-16 lg:pb-20">
+        <div id="hero" className="relative z-20 flex-1 flex flex-col justify-end max-w-[1440px] w-full mx-auto px-5 sm:px-8 lg:px-12 pb-14 sm:pb-16 lg:pb-20">
           {/* Small Label */}
           <div className="mb-5 sm:mb-8 flex items-center gap-2">
-            <span className="text-[13px] sm:text-[14px] text-gray-900 tracking-wide font-medium">Axion Studio</span>
+            <span className="text-[13px] sm:text-[14px] text-gray-900 tracking-wide font-bold">Axiom Trade</span>
             <span className="text-gray-400">•</span>
-            <span className="text-[12px] sm:text-[13px] text-gray-600 font-medium tracking-wide">Private moves. Public proof.</span>
+            <span className="text-[12px] sm:text-[13px] text-gray-700 font-medium tracking-wide">Private moves. Public proof.</span>
           </div>
 
           {/* Main Headline */}
           <h1 className="text-[clamp(1.75rem,7vw,4.2rem)] sm:text-[clamp(2.5rem,5vw,4.2rem)] font-medium leading-[1.08] tracking-[-0.03em] text-gray-900 max-w-5xl">
-            We craft digital experiences <br className="hidden sm:block" />
-            <span className="sm:hidden"> </span>for brands ready to dominate <br className="hidden sm:block" />
-            <span className="sm:hidden"> </span>their category online.
+            Autonomous trading with <br className="hidden sm:block" />
+            <span className="sm:hidden"> </span>zero-knowledge privacy <br className="hidden sm:block" />
+            <span className="sm:hidden"> </span>on Midnight Network.
           </h1>
 
+          <p className="mt-4 sm:mt-6 text-[15px] sm:text-[17px] text-gray-700 max-w-2xl leading-relaxed font-normal">
+            Axiom combines client-side Gemini AI strategy synthesis, Compact smart contracts, and EZKL risk verification. Your trade secrets stay private — execution is proven on-chain.
+          </p>
+
           {/* CTA Row */}
-          <div className="mt-8 sm:mt-12 flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-5">
+          <div className="mt-8 sm:mt-10 flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-5">
             {/* Orange Button */}
             <button
               onClick={walletConnected ? onEnterDashboard : onConnectWallet}
@@ -223,10 +238,10 @@ export const LandingPage: React.FC<LandingPageProps> = ({
             >
               <div className="flex flex-col overflow-hidden h-[20px]">
                 <span className="transition-transform duration-500 ease-[cubic-bezier(0.25,0.1,0.25,1)] group-hover:-translate-y-full">
-                  {walletConnected ? 'Enter Trading App' : 'Start a project'}
+                  {walletConnected ? 'Enter Trading App' : 'Launch Axiom Protocol'}
                 </span>
                 <span className="transition-transform duration-500 ease-[cubic-bezier(0.25,0.1,0.25,1)] group-hover:-translate-y-full">
-                  {walletConnected ? 'Launch Axiom Studio' : 'Connect 1AM Wallet'}
+                  {walletConnected ? 'Launch Dashboard' : 'Connect 1AM Wallet'}
                 </span>
               </div>
 
@@ -235,22 +250,25 @@ export const LandingPage: React.FC<LandingPageProps> = ({
               </div>
             </button>
 
-            {/* Partner Badge */}
-            <div className="bg-white shadow-[0_2px_8px_rgba(0,0,0,0.08)] hover:shadow-[0_4px_16px_rgba(0,0,0,0.12)] rounded-[4px] px-3 py-1.5 sm:px-3.5 sm:py-2 flex items-center gap-2.5 transition-shadow cursor-pointer">
-              <svg className="w-5 h-5 sm:w-6 sm:h-6 fill-current text-[#E8704E] shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
-                <path d="m19.6 66.5 19.7-11 .3-1-.3-.5h-1l-3.3-.2-11.2-.3L14 53l-9.5-.5-2.4-.5L0 49l.2-1.5 2-1.3 2.9.2 6.3.5 9.5.6 6.9.4L38 49.1h1.6l.2-.7-.5-.4-.4-.4L29 41l-10.6-7-5.6-4.1-3-2-1.5-2-.6-4.2 2.7-3 3.7.3.9.2 3.7 2.9 8 6.1L37 36l1.5 1.2.6-.4.1-.3-.7-1.1L33 25l-6-10.4-2.7-4.3-.7-2.6c-.3-1-.4-2-.4-3l3-4.2L28 0l4.2.6L33.8 2l2.6 6 4.1 9.3L47 29.9l2 3.8 1 3.4.3 1h.7v-.5l.5-7.2 1-8.7 1-11.2.3-3.2 1.6-3.8 3-2L61 2.6l2 2.9-.3 1.8-1.1 7.7L59 27.1l-1.5 8.2h.9l1-1.1 4.1-5.4 6.9-8.6 3-3.5L77 13l2.3-1.8h4.3l3.1 4.7-1.4 4.9-4.4 5.6-3.7 4.7-5.3 7.1-3.2 5.7.3.4h.7l12-2.6 6.4-1.1 7.6-1.3 3.5 1.6.4 1.6-1.4 3.4-8.2 2-9.6 2-14.3 3.3-.2.1.2.3 6.4.6 2.8.2h6.8l12.6 1 3.3 2 1.9 2.7-.3 2-5.1 2.6-6.8-1.6-16-3.8-5.4-1.3h-.8v.4l4.6 4.5 8.3 7.5L89 80.1l.5 2.4-1.3 2-1.4-.2-9.2-7-3.6-3-8-6.8h-.5v.7l1.8 2.7 9.8 14.7.5 4.5-.7 1.4-2.6 1-2.7-.6-5.8-8-6-9-4.7-8.2-.5.4-2.9 30.2-1.3 1.5-3 1.2-2.5-2-1.4-3 1.4-6.2 1.6-8 1.3-6.4 1.2-7.9.7-2.6v-.2H49L43 72l-9 12.3-7.2 7.6-1.7.7-3-1.5.3-2.8L24 86l10-12.8 6-7.9 4-4.6-.1-.5h-.3L17.2 77.4l-4.7.6-2-2 .2-3 1-1 8-5.5Z"/>
-              </svg>
-              <span className="text-[13px] sm:text-[14px] font-medium text-gray-900">Certified Partner</span>
-              <span className="text-[10px] sm:text-[11px] bg-gray-900 text-white px-1.5 sm:px-2 py-0.5 rounded font-medium">Featured</span>
-            </div>
+            {/* Midnight Featured Partner Badge */}
+            <a
+              href="https://midnight.network"
+              target="_blank"
+              rel="noreferrer"
+              className="bg-white shadow-[0_2px_8px_rgba(0,0,0,0.08)] hover:shadow-[0_4px_16px_rgba(0,0,0,0.12)] rounded-full px-4 py-2 flex items-center gap-2.5 transition-shadow cursor-pointer border border-gray-200/60"
+            >
+              <Shield className="w-4 h-4 text-[#F26522]" />
+              <span className="text-[13px] sm:text-[14px] font-semibold text-gray-900">Featured by Midnight Network</span>
+              <span className="text-[10px] sm:text-[11px] bg-gray-900 text-white px-2 py-0.5 rounded-full font-medium">Preprod & Preview</span>
+            </a>
           </div>
         </div>
       </section>
 
       {/* ========================================================================= */}
-      {/* SECTION 2: ABOUT (White background)                                       */}
+      {/* SECTION 2: ARCHITECTURE (White background)                                */}
       {/* ========================================================================= */}
-      <section id="about" className="bg-white pt-16 sm:pt-20 lg:pt-32 pb-12 sm:pb-16 lg:pb-24 overflow-hidden">
+      <section id="architecture" className="bg-white pt-16 sm:pt-20 lg:pt-32 pb-16 sm:pb-20 lg:pb-28 overflow-hidden">
         <div className="max-w-[1440px] mx-auto px-5 sm:px-8 lg:px-12">
           {/* Badge Row */}
           <div className="flex items-center gap-3 mb-6 sm:mb-8">
@@ -258,112 +276,73 @@ export const LandingPage: React.FC<LandingPageProps> = ({
               1
             </div>
             <div className="text-[12px] sm:text-[13px] font-medium border border-gray-200 rounded-full px-3 sm:px-4 py-1 sm:py-1.5 text-gray-900">
-              Introducing Axion
+              The Axiom ZK Architecture
             </div>
           </div>
 
           {/* Heading h2 */}
-          <h2 className="text-[clamp(1.5rem,4vw,3.2rem)] font-medium leading-[1.12] tracking-[-0.02em] text-gray-900 mb-12 sm:mb-16 lg:mb-28 max-w-4xl">
-            Strategy-led creatives, delivering <br className="hidden sm:block" />
-            results in digital and beyond.
+          <h2 className="text-[clamp(1.5rem,4vw,3.2rem)] font-medium leading-[1.12] tracking-[-0.02em] text-gray-900 mb-12 sm:mb-16 lg:mb-20 max-w-4xl">
+            Confidential strategy execution, <br className="hidden sm:block" />
+            mathematically proven on-chain.
           </h2>
 
-          {/* Mobile / Tablet Content (Stacked) */}
-          <div className="lg:hidden flex flex-col space-y-8">
-            <p className="text-[15px] sm:text-[17px] leading-[1.6] font-medium text-gray-900 max-w-xl">
-              Through research, creative thinking and iteration we help growing brands realize their digital full potential.
-            </p>
-
-            <div>
-              <button
-                onClick={walletConnected ? onEnterDashboard : onConnectWallet}
-                className="bg-[#F26522] hover:bg-[#e05a1a] text-white text-[13px] sm:text-[14px] font-medium rounded-full pl-5 sm:pl-6 pr-2 py-2 group inline-flex items-center gap-3 transition-all duration-300 shadow-md cursor-pointer"
-              >
-                <div className="flex flex-col overflow-hidden h-[20px]">
-                  <span className="transition-transform duration-500 ease-[cubic-bezier(0.25,0.1,0.25,1)] group-hover:-translate-y-full">
-                    About our studio
-                  </span>
-                  <span className="transition-transform duration-500 ease-[cubic-bezier(0.25,0.1,0.25,1)] group-hover:-translate-y-full">
-                    Enter Platform
-                  </span>
-                </div>
-                <div className="w-7 h-7 rounded-full bg-white flex items-center justify-center transition-transform duration-500 ease-[cubic-bezier(0.25,0.1,0.25,1)] group-hover:-rotate-45">
-                  <ArrowRight className="w-3.5 h-3.5 text-[#F26522]" />
-                </div>
-              </button>
-            </div>
-
-            <div className="flex flex-col sm:flex-row gap-4 sm:gap-5 pt-4">
-              <img
-                src="https://images.higgs.ai/?default=1&output=webp&url=https%3A%2F%2Fd8j0ntlcm91z4.cloudfront.net%2Fuser_38xzZboKViGWJOttwIXH07lWA1P%2Fhf_20260516_090123_74be96d4-9c1b-40cf-932a-96f4f4babed3.png&w=1280&q=85"
-                alt="Axion studio detail"
-                className="w-full sm:w-[45%] aspect-[438/346] rounded-xl sm:rounded-2xl object-cover shadow-sm"
-                loading="lazy"
-              />
-              <img
-                src="https://images.higgs.ai/?default=1&output=webp&url=https%3A%2F%2Fd8j0ntlcm91z4.cloudfront.net%2Fuser_38xzZboKViGWJOttwIXH07lWA1P%2Fhf_20260516_090133_c157d30b-a99a-4477-bec1-a446149ec3f2.png&w=1280&q=85"
-                alt="Axion design showcase"
-                className="w-full sm:w-[55%] aspect-[900/600] rounded-xl sm:rounded-2xl object-cover shadow-sm"
-                loading="lazy"
-              />
-            </div>
-          </div>
-
-          {/* Desktop Content (3-column asymmetric layout) */}
-          <div className="hidden lg:grid grid-cols-[26%_1fr_48%] items-end gap-6 xl:gap-8">
-            {/* Left Column (Small Image) */}
-            <div className="self-end">
-              <img
-                src="https://images.higgs.ai/?default=1&output=webp&url=https%3A%2F%2Fd8j0ntlcm91z4.cloudfront.net%2Fuser_38xzZboKViGWJOttwIXH07lWA1P%2Fhf_20260516_090123_74be96d4-9c1b-40cf-932a-96f4f4babed3.png&w=1280&q=85"
-                alt="Axion studio detail"
-                className="w-full aspect-[438/346] rounded-2xl object-cover shadow-md"
-                loading="lazy"
-              />
-            </div>
-
-            {/* Center Column (Paragraph & Button) */}
-            <div className="self-start flex flex-col justify-end items-start pl-2">
-              <p className="text-[16px] xl:text-[18px] leading-[1.65] font-medium text-gray-900 whitespace-nowrap mb-8">
-                Through research, creative thinking <br />
-                and iteration we help growing brands <br />
-                realize their digital full potential.
+          {/* 3 Pillar Cards Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8">
+            {/* Pillar 1 */}
+            <div className="bg-[#F9F9F9] border border-gray-200/80 rounded-2xl p-6 sm:p-8 space-y-4 hover:shadow-md transition-shadow">
+              <div className="w-10 h-10 rounded-full bg-white border border-gray-200 flex items-center justify-center shadow-xs">
+                <Cpu className="w-5 h-5 text-orange-500" />
+              </div>
+              <h3 className="text-lg font-bold text-gray-900">Client-Side AI Synthesis</h3>
+              <p className="text-xs sm:text-sm text-gray-600 leading-relaxed font-normal">
+                Gemini 2.5 Flash compiles natural language trading logic into local cryptographic parameters without exposing your alpha to external oracles or RPC nodes.
               </p>
-
-              <button
-                onClick={walletConnected ? onEnterDashboard : onConnectWallet}
-                className="bg-[#F26522] hover:bg-[#e05a1a] text-white text-[13px] sm:text-[14px] font-medium rounded-full pl-5 sm:pl-6 pr-2 py-2 group inline-flex items-center gap-3 transition-all duration-300 shadow-md cursor-pointer"
-              >
-                <div className="flex flex-col overflow-hidden h-[20px]">
-                  <span className="transition-transform duration-500 ease-[cubic-bezier(0.25,0.1,0.25,1)] group-hover:-translate-y-full">
-                    About our studio
-                  </span>
-                  <span className="transition-transform duration-500 ease-[cubic-bezier(0.25,0.1,0.25,1)] group-hover:-translate-y-full">
-                    Connect & Trade
-                  </span>
-                </div>
-                <div className="w-7 h-7 rounded-full bg-white flex items-center justify-center transition-transform duration-500 ease-[cubic-bezier(0.25,0.1,0.25,1)] group-hover:-rotate-45">
-                  <ArrowRight className="w-3.5 h-3.5 text-[#F26522]" />
-                </div>
-              </button>
+              <div className="pt-2">
+                <span className="text-[11px] font-semibold text-gray-900 bg-white border border-gray-200 px-2.5 py-1 rounded-full">
+                  Zero Prompt Exposure
+                </span>
+              </div>
             </div>
 
-            {/* Right Column (Large Image) */}
-            <div className="self-end">
-              <img
-                src="https://images.higgs.ai/?default=1&output=webp&url=https%3A%2F%2Fd8j0ntlcm91z4.cloudfront.net%2Fuser_38xzZboKViGWJOttwIXH07lWA1P%2Fhf_20260516_090133_c157d30b-a99a-4477-bec1-a446149ec3f2.png&w=1280&q=85"
-                alt="Axion design showcase"
-                className="w-full aspect-[3/2] rounded-2xl object-cover shadow-md"
-                loading="lazy"
-              />
+            {/* Pillar 2 */}
+            <div className="bg-[#F9F9F9] border border-gray-200/80 rounded-2xl p-6 sm:p-8 space-y-4 hover:shadow-md transition-shadow">
+              <div className="w-10 h-10 rounded-full bg-white border border-gray-200 flex items-center justify-center shadow-xs">
+                <Shield className="w-5 h-5 text-orange-500" />
+              </div>
+              <h3 className="text-lg font-bold text-gray-900">Compact ZK Smart Contracts</h3>
+              <p className="text-xs sm:text-sm text-gray-600 leading-relaxed font-normal">
+                Dual-shielded state machine running natively on Midnight. Enforces risk rules and executes trades via <code className="text-gray-900 font-semibold">commitStrategy</code> and <code className="text-gray-900 font-semibold">executeTrade</code>.
+              </p>
+              <div className="pt-2">
+                <span className="text-[11px] font-semibold text-gray-900 bg-white border border-gray-200 px-2.5 py-1 rounded-full">
+                  Midnight Compact v0.24
+                </span>
+              </div>
+            </div>
+
+            {/* Pillar 3 */}
+            <div className="bg-[#F9F9F9] border border-gray-200/80 rounded-2xl p-6 sm:p-8 space-y-4 hover:shadow-md transition-shadow">
+              <div className="w-10 h-10 rounded-full bg-white border border-gray-200 flex items-center justify-center shadow-xs">
+                <Lock className="w-5 h-5 text-orange-500" />
+              </div>
+              <h3 className="text-lg font-bold text-gray-900">EZKL Verifiable Risk Boundary</h3>
+              <p className="text-xs sm:text-sm text-gray-600 leading-relaxed font-normal">
+                Client-side halo2 zero-knowledge ML proofs ensure every trade respects strict volatility and drawdown limits before submitting transactions to the wallet.
+              </p>
+              <div className="pt-2">
+                <span className="text-[11px] font-semibold text-gray-900 bg-white border border-gray-200 px-2.5 py-1 rounded-full">
+                  ZK-ML Proof Verification
+                </span>
+              </div>
             </div>
           </div>
         </div>
       </section>
 
       {/* ========================================================================= */}
-      {/* SECTION 3: CASE STUDIES (Light gray background)                           */}
+      {/* SECTION 3: LIVE MODULES (Light gray background)                           */}
       {/* ========================================================================= */}
-      <section id="projects" className="bg-[#F5F5F5] pt-16 sm:pt-20 lg:pt-28 pb-16 sm:pb-20 lg:pb-28">
+      <section id="modules" className="bg-[#F5F5F5] pt-16 sm:pt-20 lg:pt-28 pb-16 sm:pb-20 lg:pb-28">
         <div className="max-w-[1440px] mx-auto">
           {/* Badge Row */}
           <div className="px-5 sm:px-8 lg:px-12 flex items-center gap-3 mb-6 sm:mb-8">
@@ -371,90 +350,87 @@ export const LandingPage: React.FC<LandingPageProps> = ({
               2
             </div>
             <div className="text-[12px] sm:text-[13px] font-medium border border-gray-300 rounded-full px-3 sm:px-4 py-1 sm:py-1.5 text-gray-900">
-              Featured client work
+              Live Midnight Modules
             </div>
           </div>
 
           {/* Heading h2 */}
           <h2 className="text-[clamp(1.75rem,7vw,4.2rem)] sm:text-[clamp(2.5rem,5vw,4.2rem)] font-medium leading-[1.08] tracking-[-0.03em] text-gray-900 px-5 sm:px-8 lg:px-12 mb-10 sm:mb-14 lg:mb-16">
-            Our projects
+            Protocol capabilities
           </h2>
 
           {/* Cards Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5 sm:gap-6 lg:gap-7 px-5 sm:px-8 lg:px-12">
-            {/* Card 1 (Narrativ) */}
-            <div className="flex flex-col group">
-              <div
-                onClick={walletConnected ? onEnterDashboard : onConnectWallet}
-                className="aspect-[329/246] rounded-2xl overflow-hidden bg-[#1a1d2e] relative cursor-pointer shadow-md transition-transform duration-300 group-hover:scale-[1.01]"
-              >
-                <video
-                  src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260516_122702_390f5305-8719-41d5-ae80-d23ab3796c28.mp4"
-                  autoPlay
-                  muted
-                  loop
-                  playsInline
-                  className="w-full h-full object-cover"
-                />
-
-                {/* Hover button (bottom-left) */}
-                <div className="absolute bottom-4 left-4 flex items-center bg-white rounded-full h-9 w-9 group-hover:w-[148px] px-2.5 overflow-hidden transition-all duration-300 ease-in-out shadow-lg">
-                  <span className="text-[13px] font-medium text-gray-900 whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-200 delay-100 mr-2">
-                    Learn more
-                  </span>
-                  <svg
-                    className="w-3.5 h-3.5 text-gray-900 -rotate-45 group-hover:rotate-0 transition-transform duration-300 ml-auto shrink-0"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
-                    <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
-                  </svg>
+            {/* Card 1: Shielded Strategy Builder */}
+            <div className="flex flex-col bg-white border border-gray-200/80 rounded-2xl p-6 sm:p-8 space-y-4 shadow-sm hover:shadow-md transition-all">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2 font-bold text-gray-900">
+                  <Layers className="w-5 h-5 text-orange-500" />
+                  <span>Shielded Strategy Builder</span>
                 </div>
+                <span className="text-[10px] bg-gray-100 text-gray-800 px-2.5 py-0.5 rounded-full font-bold">MODULE 01</span>
               </div>
-
-              <p className="text-[13px] sm:text-[14px] text-gray-600 mt-4 leading-relaxed">
-                Winner of Site of the Month 2025 - an interactive 3D showcase driving record engagement
+              <p className="text-xs sm:text-sm text-gray-600 leading-relaxed font-normal">
+                Synthesize high-frequency parameters from natural language prompts. Strategy hashes are committed to Midnight's ledger while threshold witnesses remain decrypted strictly on your device.
               </p>
-              <h3 className="text-[14px] sm:text-[15px] font-semibold text-gray-900 mt-1">
-                Narrativ
-              </h3>
+              <div className="p-4 bg-gray-50 rounded-xl border border-gray-200 text-xs font-mono text-gray-700 space-y-1">
+                <div>Commitment Hash: <span className="text-orange-600 font-bold">0x811c9dc5…d9</span></div>
+                <div>Witness Storage: <span className="text-emerald-700 font-bold">Client-Side Encrypted</span></div>
+              </div>
             </div>
 
-            {/* Card 2 (Luminar) */}
-            <div className="flex flex-col group">
-              <div
-                onClick={walletConnected ? onEnterDashboard : onConnectWallet}
-                className="aspect-square rounded-2xl overflow-hidden bg-[#6b6b6b] relative cursor-pointer shadow-md transition-transform duration-300 group-hover:scale-[1.01]"
-              >
-                <video
-                  src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260516_123323_f909c2b8-ff6c-4edf-882b-8ebcdbe389b5.mp4"
-                  autoPlay
-                  muted
-                  loop
-                  playsInline
-                  className="w-full h-full object-cover"
-                />
-
-                {/* Hover button (bottom-left) */}
-                <div className="absolute bottom-4 left-4 flex items-center bg-gray-900 rounded-full h-9 w-9 group-hover:w-[168px] px-2.5 overflow-hidden transition-all duration-300 ease-in-out shadow-lg">
-                  <span className="text-[13px] font-medium text-white whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-200 delay-100 mr-2">
-                    View case study
-                  </span>
-                  <ArrowRight className="w-3.5 h-3.5 text-white -rotate-45 group-hover:rotate-0 transition-transform duration-300 ml-auto shrink-0" />
+            {/* Card 2: 1AM Wallet & Midnight Explorer */}
+            <div className="flex flex-col bg-white border border-gray-200/80 rounded-2xl p-6 sm:p-8 space-y-4 shadow-sm hover:shadow-md transition-all">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2 font-bold text-gray-900">
+                  <Zap className="w-5 h-5 text-orange-500" />
+                  <span>1AM Wallet & ProofStation</span>
                 </div>
+                <span className="text-[10px] bg-gray-100 text-gray-800 px-2.5 py-0.5 rounded-full font-bold">MODULE 02</span>
               </div>
-
-              <p className="text-[13px] sm:text-[14px] text-gray-600 mt-4 leading-relaxed">
-                Transforming a dated platform into a conversion-focused brand experience
+              <p className="text-xs sm:text-sm text-gray-600 leading-relaxed font-normal">
+                Direct integration with Midnight's 1AM wallet. Execute zero-gas sponsored transactions via ProofStation and track real-time confirmations on <a href="https://preview.midnightexplorer.com" target="_blank" rel="noreferrer" className="text-orange-600 underline font-medium">preview.midnightexplorer.com</a>.
               </p>
-              <h3 className="text-[14px] sm:text-[15px] font-semibold text-gray-900 mt-1">
-                Luminar
-              </h3>
+              <div className="p-4 bg-gray-50 rounded-xl border border-gray-200 text-xs font-mono text-gray-700 space-y-1">
+                <div>Gas Model: <span className="text-emerald-700 font-bold">ProofStation Sponsored</span></div>
+                <div>Explorer Link: <span className="text-orange-600 font-bold">preview.midnightexplorer.com/tx/…</span></div>
+              </div>
+            </div>
+
+            {/* Card 3: Shielded Vault (vUSD) */}
+            <div className="flex flex-col bg-white border border-gray-200/80 rounded-2xl p-6 sm:p-8 space-y-4 shadow-sm hover:shadow-md transition-all">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2 font-bold text-gray-900">
+                  <Shield className="w-5 h-5 text-orange-500" />
+                  <span>Shielded Vault (vUSD)</span>
+                </div>
+                <span className="text-[10px] bg-gray-100 text-gray-800 px-2.5 py-0.5 rounded-full font-bold">MODULE 03</span>
+              </div>
+              <p className="text-xs sm:text-sm text-gray-600 leading-relaxed font-normal">
+                Convert public tNIGHT collateral into private USDC-equivalent vault notes. Deposit, trade, and withdraw without linking your public wallet address to trading history.
+              </p>
+              <div className="p-4 bg-gray-50 rounded-xl border border-gray-200 text-xs font-mono text-gray-700 space-y-1">
+                <div>Circuits: <span className="text-gray-900 font-bold">mintVaultBalance • burnVaultBalance</span></div>
+                <div>Privacy Layer: <span className="text-emerald-700 font-bold">Zero Address Linkability</span></div>
+              </div>
+            </div>
+
+            {/* Card 4: Gemini Market Intelligence */}
+            <div className="flex flex-col bg-white border border-gray-200/80 rounded-2xl p-6 sm:p-8 space-y-4 shadow-sm hover:shadow-md transition-all">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2 font-bold text-gray-900">
+                  <Activity className="w-5 h-5 text-orange-500" />
+                  <span>Gemini Technical Signals</span>
+                </div>
+                <span className="text-[10px] bg-gray-100 text-gray-800 px-2.5 py-0.5 rounded-full font-bold">MODULE 04</span>
+              </div>
+              <p className="text-xs sm:text-sm text-gray-600 leading-relaxed font-normal">
+                Live cryptocurrency price feeds and automated technical analysis generated by Gemini 2.5 Flash with custom prompt queries and risk metrics.
+              </p>
+              <div className="p-4 bg-gray-50 rounded-xl border border-gray-200 text-xs font-mono text-gray-700 space-y-1">
+                <div>Live Feeds: <span className="text-gray-900 font-bold">ADA • BTC • ETH • SOL • tNIGHT</span></div>
+                <div>Model: <span className="text-orange-600 font-bold">Gemini 2.5 Flash</span></div>
+              </div>
             </div>
           </div>
         </div>
@@ -471,7 +447,12 @@ export const LandingPage: React.FC<LandingPageProps> = ({
           </div>
 
           <div className="flex items-center gap-6">
-            <span>Midnight Testnet Enabled</span>
+            <a href="https://preview.midnightexplorer.com" target="_blank" rel="noreferrer" className="text-gray-600 hover:text-gray-900 transition-colors">
+              Midnight Explorer
+            </a>
+            <a href="https://faucet.preview.midnight.network" target="_blank" rel="noreferrer" className="text-gray-600 hover:text-gray-900 transition-colors">
+              Testnet Faucet
+            </a>
             <button
               onClick={walletConnected ? onEnterDashboard : onConnectWallet}
               className="text-orange-600 hover:text-orange-700 font-bold underline cursor-pointer"
