@@ -306,14 +306,23 @@ async function parseConnectedSession(
     };
   }
 
+  // Detect actual network reported by 1AM extension
+  let activeNetwork: MidnightNetwork = networkId;
+  if (serviceConfig?.networkId) {
+    const rawNet = serviceConfig.networkId.toLowerCase();
+    if (rawNet.includes('preprod')) activeNetwork = 'preprod';
+    else if (rawNet.includes('preview')) activeNetwork = 'preview';
+    else if (rawNet.includes('mainnet')) activeNetwork = 'mainnet';
+  }
+
   return {
     address: unshieldedAddress,
     shieldedAddress,
     dustAddress,
     coinPublicKey: coinPublicKey || shieldedAddress,
     encryptionPublicKey: encryptionPublicKey || unshieldedAddress,
-    network: `Midnight ${networkId.charAt(0).toUpperCase() + networkId.slice(1)} (1AM)`,
-    networkId,
+    network: `Midnight ${activeNetwork.charAt(0).toUpperCase() + activeNetwork.slice(1)} (1AM)`,
+    networkId: activeNetwork,
     walletName,
     walletIcon: "",
     apiVersion: apiVersion || "4.0.0",
@@ -352,5 +361,7 @@ export async function signAuthChallenge(
 // ─── Constants ────────────────────────────────────────────────────────────────
 
 export const ONE_AM_INSTALL_URL = "https://1am.xyz";
-export const MIDNIGHT_FAUCET_URL = "https://faucet.preview.midnight.network";
+export const MIDNIGHT_PREVIEW_FAUCET_URL = "https://faucet.preview.midnight.network";
+export const MIDNIGHT_PREPROD_FAUCET_URL = "https://faucet.preprod.midnight.network";
+export const MIDNIGHT_FAUCET_URL = MIDNIGHT_PREVIEW_FAUCET_URL;
 export const MIDNIGHT_DOCS_URL = "https://1am.xyz/developers";

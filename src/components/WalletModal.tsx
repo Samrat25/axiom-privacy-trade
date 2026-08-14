@@ -168,9 +168,14 @@ export const WalletModal: React.FC<WalletModalProps> = ({
 
             {/* NETWORK SELECTOR */}
             <div className="space-y-1.5 pt-1">
-              <label className="text-[11px] font-semibold text-gray-500 uppercase tracking-wider">
-                Target Network
-              </label>
+              <div className="flex items-center justify-between">
+                <label className="text-[11px] font-semibold text-gray-500 uppercase tracking-wider">
+                  Target Network
+                </label>
+                <span className="text-[10px] font-bold text-orange-600 capitalize">
+                  Active: {networkId}
+                </span>
+              </div>
               <div className="grid grid-cols-3 gap-2 p-1 bg-gray-100 rounded-xl">
                 {(['preview', 'preprod', 'undeployed'] as MidnightNetwork[]).map((net) => (
                   <button
@@ -178,7 +183,7 @@ export const WalletModal: React.FC<WalletModalProps> = ({
                     onClick={() => onSelectNetwork(net)}
                     className={`py-1.5 rounded-lg text-xs font-semibold capitalize transition-all cursor-pointer ${
                       networkId === net
-                        ? 'bg-white text-gray-900 shadow-sm border border-gray-200'
+                        ? 'bg-white text-gray-900 shadow-sm border border-gray-200 font-bold'
                         : 'text-gray-600 hover:text-gray-900'
                     }`}
                   >
@@ -188,15 +193,21 @@ export const WalletModal: React.FC<WalletModalProps> = ({
               </div>
             </div>
 
+            {/* 1AM Extension Network Alignment Notice */}
+            <div className="bg-orange-50/80 border border-orange-200 rounded-xl p-3 text-[11px] text-orange-900 leading-relaxed">
+              <span className="font-bold">💡 1AM Extension Tip: </span>
+              <span>Open your 1AM extension from your browser toolbar and ensure the top network dropdown matches <strong className="capitalize">{networkId}</strong> to sync your {networkId} address and balance.</span>
+            </div>
+
             {/* BUTTONS */}
-            <div className="space-y-2 pt-2">
+            <div className="space-y-2 pt-1">
               <a
-                href="https://faucet.preview.midnight.network"
+                href={networkId === 'preprod' ? 'https://faucet.preprod.midnight.network' : 'https://faucet.preview.midnight.network'}
                 target="_blank"
                 rel="noreferrer"
                 className="w-full py-2.5 rounded-full bg-gray-100 hover:bg-gray-200 border border-gray-200 text-gray-800 text-xs font-semibold flex items-center justify-center gap-2 transition-all cursor-pointer"
               >
-                <span>Get Testnet Tokens (Midnight Faucet)</span>
+                <span>Get {networkId === 'preprod' ? 'Preprod' : 'Preview'} Tokens (Midnight Faucet)</span>
                 <ExternalLink className="w-3.5 h-3.5" />
               </a>
 

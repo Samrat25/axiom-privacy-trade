@@ -274,12 +274,42 @@ export function useMidnight() {
   }, [clearWalletCache]);
 
   // ─── Switch network ────────────────────────────────────────────────
-  const handleSelectNetwork = useCallback((net: MidnightNetwork) => {
+  const handleSelectNetwork = useCallback(async (net: MidnightNetwork) => {
     setNetworkId(net);
-    if (walletConnected) {
-      connectWallet(undefined, net);
+    setIsConnecting(true);
+    setError(null);
+
+    try {
+      addLog('info', 'Switching Network', `Initiating 1AM connection on Midnight ${net}...`);
+      setLiveSession(null);
+
+      const live = await connect1AMWallet(net);
+      setSession(live);
+      setLiveSession(live);
+      setWalletConnected(true);
+      setDustReady(isDustReady());
+
+      if (live.networkId !== net && net !== 'undeployed') {
+        const netNotice = `Note: 1AM extension reported '${live.networkId}'. Please open your 1AM extension popup and select '${net.toUpperCase()}' in the network dropdown for full ${net} sync.`;
+        addLog('info', '1AM Network Alignment', netNotice);
+      }
+
+      // Fetch saved vault balance for this specific wallet from Supabase
+      const currentAddr = live.shieldedAddress || live.address;
+      const savedVault = await fetchWalletVaultBalance(currentAddr);
+      setLocalVaultBalance(savedVault);
+      setVaultBalance(savedVault);
+
+      addLog('success', 'Network Active', `Active on ${live.network} — ${live.address.substring(0, 18)}…`);
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Network switch failed';
+      console.error('[Axiom] Network switch error:', err);
+      setError(msg);
+      addLog('error', 'Network Switch Failed', msg);
+    } finally {
+      setIsConnecting(false);
     }
-  }, [walletConnected, connectWallet]);
+  }, [addLog]);
 
   // ─── Shielded Vault Actions ────────────────────────────────────────
   const mintVault = useCallback(async (amountVusd: number) => {
