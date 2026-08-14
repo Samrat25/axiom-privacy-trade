@@ -50,6 +50,7 @@ export function App() {
     handleSelectNetwork,
     connectWallet,
     disconnectWallet,
+    clearWalletCache,
     mintVault,
     burnVault,
     activeStrategies,
@@ -626,6 +627,7 @@ export function App() {
         onSelectNetwork={handleSelectNetwork}
         onConnect={connectWallet}
         onDisconnect={disconnectWallet}
+        onClearCache={clearWalletCache}
       />
     </>
   );

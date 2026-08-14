@@ -1,5 +1,5 @@
-import React from 'react';
-import { X, Copy, Check, ExternalLink, ShieldCheck, RefreshCw } from 'lucide-react';
+import React, { useState } from 'react';
+import { X, Copy, Check, ExternalLink, ShieldCheck, RefreshCw, Trash2 } from 'lucide-react';
 import type { MidnightNetwork } from '../lib/lace-wallet';
 
 interface WalletModalProps {
@@ -16,6 +16,7 @@ interface WalletModalProps {
   onSelectNetwork: (net: MidnightNetwork) => void;
   onConnect: () => void;
   onDisconnect: () => void;
+  onClearCache?: () => void;
 }
 
 export const WalletModal: React.FC<WalletModalProps> = ({
@@ -31,12 +32,27 @@ export const WalletModal: React.FC<WalletModalProps> = ({
   networkId,
   onSelectNetwork,
   onConnect,
-  onDisconnect
+  onDisconnect,
+  onClearCache
 }) => {
-  const [copiedAddr, setCopiedAddr] = React.useState<boolean>(false);
-  const [copiedShielded, setCopiedShielded] = React.useState<boolean>(false);
+  const [copiedAddr, setCopiedAddr] = useState<boolean>(false);
+  const [copiedShielded, setCopiedShielded] = useState<boolean>(false);
+  const [cacheCleared, setCacheCleared] = useState<boolean>(false);
 
   if (!isOpen) return null;
+
+  const handleClearCache = () => {
+    if (onClearCache) {
+      onClearCache();
+    } else {
+      onDisconnect();
+    }
+    setCacheCleared(true);
+    setTimeout(() => {
+      setCacheCleared(false);
+      onClose();
+    }, 1200);
+  };
 
   const copyToClipboard = (text: string, isShielded: boolean) => {
     navigator.clipboard.writeText(text);
@@ -184,15 +200,25 @@ export const WalletModal: React.FC<WalletModalProps> = ({
                 <ExternalLink className="w-3.5 h-3.5" />
               </a>
 
-              <button
-                onClick={() => {
-                  onDisconnect();
-                  onClose();
-                }}
-                className="w-full py-2.5 rounded-full bg-red-50 hover:bg-red-100 border border-red-200 text-red-700 text-xs font-bold transition-all cursor-pointer"
-              >
-                Disconnect Session
-              </button>
+              <div className="grid grid-cols-2 gap-2">
+                <button
+                  onClick={handleClearCache}
+                  className="py-2.5 px-3 rounded-full bg-gray-100 hover:bg-gray-200 border border-gray-200 text-gray-700 text-xs font-bold transition-all cursor-pointer flex items-center justify-center gap-1.5"
+                >
+                  <Trash2 className="w-3.5 h-3.5 text-gray-500" />
+                  <span>{cacheCleared ? 'Cache Cleared!' : 'Clear All Cache'}</span>
+                </button>
+
+                <button
+                  onClick={() => {
+                    onDisconnect();
+                    onClose();
+                  }}
+                  className="py-2.5 px-3 rounded-full bg-red-50 hover:bg-red-100 border border-red-200 text-red-700 text-xs font-bold transition-all cursor-pointer"
+                >
+                  Disconnect
+                </button>
+              </div>
             </div>
           </div>
         ) : (
@@ -244,12 +270,22 @@ export const WalletModal: React.FC<WalletModalProps> = ({
               </div>
 
               {!isConnecting && (
-                <button
-                  onClick={onConnect}
-                  className="w-full py-3 rounded-full bg-[#F26522] hover:bg-[#e05a1a] text-white font-bold text-xs shadow-md transition-all cursor-pointer"
-                >
-                  Connect 1AM Extension
-                </button>
+                <div className="space-y-2 pt-1">
+                  <button
+                    onClick={onConnect}
+                    className="w-full py-3 rounded-full bg-[#F26522] hover:bg-[#e05a1a] text-white font-bold text-xs shadow-md transition-all cursor-pointer"
+                  >
+                    Connect 1AM Extension
+                  </button>
+
+                  <button
+                    onClick={handleClearCache}
+                    className="w-full py-2 rounded-full bg-white hover:bg-gray-100 border border-gray-200 text-gray-600 text-xs font-semibold transition-all cursor-pointer flex items-center justify-center gap-1.5"
+                  >
+                    <Trash2 className="w-3.5 h-3.5 text-gray-400" />
+                    <span>{cacheCleared ? 'Wallet Cache Cleared!' : 'Clear All Wallet Cache & Reset'}</span>
+                  </button>
+                </div>
               )}
             </div>
           </div>

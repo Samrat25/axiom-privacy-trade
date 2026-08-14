@@ -213,14 +213,38 @@ export function useMidnight() {
     }
   }, [networkId, addLog]);
 
-  // ─── Disconnect wallet ─────────────────────────────────────────────
-  const disconnectWallet = useCallback(() => {
+  // ─── Disconnect & Clear Wallet Cache ──────────────────────────────
+  const clearWalletCache = useCallback(() => {
     setSession(null);
     setLiveSession(null);
     setWalletConnected(false);
     setDustReady(false);
-    addLog('info', 'Wallet Disconnected', '1AM session closed.');
+    setActiveStrategies([]);
+    setTrades([]);
+    setVaultBalance(0);
+    setRecommendationMap({});
+    setError(null);
+
+    if (typeof window !== 'undefined') {
+      try {
+        window.localStorage.removeItem('axiom.wallet.connected');
+        window.localStorage.removeItem('axiom_active_strategies');
+        window.localStorage.removeItem('axiom_trade_records');
+        window.localStorage.removeItem('axiom_protocol_logs');
+        window.localStorage.removeItem('axiom_shielded_vault_balance');
+        window.localStorage.removeItem('axiom_vault_usd');
+        window.localStorage.removeItem('axiom_vault_balance');
+      } catch (err) {
+        console.warn('[Axiom] Local storage clear error:', err);
+      }
+    }
+
+    addLog('info', 'Wallet Cache Cleared', 'All connected wallet sessions, local strategies, and trade caches have been cleared.');
   }, [addLog]);
+
+  const disconnectWallet = useCallback(() => {
+    clearWalletCache();
+  }, [clearWalletCache]);
 
   // ─── Switch network ────────────────────────────────────────────────
   const handleSelectNetwork = useCallback((net: MidnightNetwork) => {
@@ -528,6 +552,7 @@ export function useMidnight() {
     handleSelectNetwork,
     connectWallet,
     disconnectWallet,
+    clearWalletCache,
     mintVault,
     burnVault,
 
