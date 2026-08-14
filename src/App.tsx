@@ -87,7 +87,7 @@ export function App() {
       : walletAddress
     : 'Connect 1AM Wallet';
 
-  const explorerBaseUrl = networkId === 'preprod' ? 'https://preprod.midnightexplorer.com' : 'https://midnightexplorer.com';
+  const explorerBaseUrl = networkId === 'preprod' ? 'https://preprod.midnightexplorer.com' : 'https://preview.midnightexplorer.com';
 
   return (
     <>

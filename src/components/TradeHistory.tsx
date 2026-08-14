@@ -216,12 +216,12 @@ export const TradeHistory: React.FC<TradeHistoryProps> = ({
                   filteredTrades.map((trade) => {
                     const isExecuted = trade.status === 'executed';
                     const isProfit = (trade.pnlUsd || 0) >= 0;
-                    const hasRealTx = Boolean(trade.txHash && trade.txHash.startsWith('0x') && trade.txHash.length > 20);
-                    const cleanHash = hasRealTx && trade.txHash ? (trade.txHash.startsWith('0x') ? trade.txHash.slice(2) : trade.txHash) : '';
-                    const explorerUrl = cleanHash
-                      ? `https://preview.midnightexplorer.com/tx/${cleanHash}`
-                      : 'https://preview.midnightexplorer.com/contract/0x62a27ceda5eb600263e208768d5d285c659d47f2cd6b14a20c62b160f4da46f3';
-                    const displayLabel = cleanHash ? `Tx: ${cleanHash.substring(0, 10)}…` : 'Contract Verified';
+                    const hasRealTx = Boolean(trade.txHash && trade.txHash.length > 20);
+                    const formattedHash = hasRealTx && trade.txHash ? (trade.txHash.startsWith('0x') ? trade.txHash : `0x${trade.txHash}`) : '';
+                    const explorerUrl = formattedHash
+                      ? `https://preview.midnightexplorer.com/transactions/${formattedHash}`
+                      : 'https://preview.midnightexplorer.com/transactions';
+                    const displayLabel = formattedHash ? `Tx: ${formattedHash.substring(0, 12)}…` : 'Midnight Transactions';
 
                     return (
                       <tr key={trade.id} className="hover:bg-gray-50/80 transition-colors">
@@ -368,7 +368,8 @@ export const TradeHistory: React.FC<TradeHistoryProps> = ({
               </thead>
               <tbody className="divide-y divide-gray-100 text-gray-800">
                 {explorerTxs.map((tx) => {
-                  const url = `https://preview.midnightexplorer.com/tx/${tx.txHash.replace('0x', '')}`;
+                  const formattedTx = tx.txHash.startsWith('0x') ? tx.txHash : `0x${tx.txHash}`;
+                  const url = `https://preview.midnightexplorer.com/transactions/${formattedTx}`;
                   return (
                     <tr key={tx.txHash} className="hover:bg-gray-50/80 transition-colors">
                       <td className="p-3.5 font-bold text-gray-900 truncate max-w-[200px]">

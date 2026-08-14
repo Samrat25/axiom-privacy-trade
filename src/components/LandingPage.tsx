@@ -102,7 +102,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
                 <a href="#architecture" className="text-[14px] text-gray-900 hover:text-gray-500 transition-colors duration-300 font-medium">Architecture</a>
                 <a href="#modules" className="text-[14px] text-gray-900 hover:text-gray-500 transition-colors duration-300 font-medium">Modules</a>
                 <a href="#circuits" className="text-[14px] text-gray-900 hover:text-gray-500 transition-colors duration-300 font-medium">ZK Circuits</a>
-                <a href="https://preview.midnightexplorer.com" target="_blank" rel="noreferrer" className="text-[14px] text-gray-900 hover:text-gray-500 transition-colors duration-300 font-medium flex items-center gap-1">
+                <a href="https://preview.midnightexplorer.com/transactions" target="_blank" rel="noreferrer" className="text-[14px] text-gray-900 hover:text-gray-500 transition-colors duration-300 font-medium flex items-center gap-1">
                   <span>Explorer</span>
                   <ExternalLink className="w-3 h-3 text-gray-400" />
                 </a>
@@ -177,7 +177,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
                   { name: 'Architecture', href: '#architecture' },
                   { name: 'Modules', href: '#modules' },
                   { name: 'ZK Circuits', href: '#circuits' },
-                  { name: 'Midnight Explorer', href: 'https://preview.midnightexplorer.com' }
+                  { name: 'Midnight Explorer', href: 'https://preview.midnightexplorer.com/transactions' }
                 ].map((link) => (
                   <a
                     key={link.name}
@@ -389,11 +389,11 @@ export const LandingPage: React.FC<LandingPageProps> = ({
                 <span className="text-[10px] bg-gray-100 text-gray-800 px-2.5 py-0.5 rounded-full font-bold">MODULE 02</span>
               </div>
               <p className="text-xs sm:text-sm text-gray-600 leading-relaxed font-normal">
-                Direct integration with Midnight's 1AM wallet. Execute zero-gas sponsored transactions via ProofStation and track real-time confirmations on <a href="https://preview.midnightexplorer.com" target="_blank" rel="noreferrer" className="text-orange-600 underline font-medium">preview.midnightexplorer.com</a>.
+                Direct integration with Midnight's 1AM wallet. Execute zero-gas sponsored transactions via ProofStation and track real-time confirmations on <a href="https://preview.midnightexplorer.com/transactions" target="_blank" rel="noreferrer" className="text-orange-600 underline font-medium">preview.midnightexplorer.com/transactions</a>.
               </p>
               <div className="p-4 bg-gray-50 rounded-xl border border-gray-200 text-xs font-mono text-gray-700 space-y-1">
                 <div>Gas Model: <span className="text-emerald-700 font-bold">ProofStation Sponsored</span></div>
-                <div>Explorer Link: <span className="text-orange-600 font-bold">preview.midnightexplorer.com/tx/…</span></div>
+                <div>Explorer Link: <span className="text-orange-600 font-bold">preview.midnightexplorer.com/transactions/…</span></div>
               </div>
             </div>
 
@@ -447,7 +447,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
           </div>
 
           <div className="flex items-center gap-6">
-            <a href="https://preview.midnightexplorer.com" target="_blank" rel="noreferrer" className="text-gray-600 hover:text-gray-900 transition-colors">
+            <a href="https://preview.midnightexplorer.com/transactions" target="_blank" rel="noreferrer" className="text-gray-600 hover:text-gray-900 transition-colors">
               Midnight Explorer
             </a>
             <a href="https://faucet.preview.midnight.network" target="_blank" rel="noreferrer" className="text-gray-600 hover:text-gray-900 transition-colors">

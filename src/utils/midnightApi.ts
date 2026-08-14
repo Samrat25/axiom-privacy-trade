@@ -24,22 +24,22 @@ export interface MidnightApiTransaction {
 // ─── Midnight Explorer URL Builders ──────────────────────────────────────────
 
 /**
- * Midnight Explorer Transaction Log URL
+ * Midnight Explorer Transaction URL
+ * Target format: https://preview.midnightexplorer.com/transactions/0x8cc0af6d1ac076b0da4a356b84173ae5e92128f3417b94d685b36c47ba0f126d
  */
 export function getMidnightExplorerTxUrl(txHash: string, network: string = 'preview'): string {
-  const cleanHash = txHash ? (txHash.startsWith('0x') ? txHash.slice(2) : txHash) : '';
+  const formattedHash = txHash ? (txHash.startsWith('0x') ? txHash : `0x${txHash}`) : '';
   const domain = network === 'preprod' ? 'preprod.midnightexplorer.com' : 'preview.midnightexplorer.com';
-  return cleanHash ? `https://${domain}/tx/${cleanHash}` : `https://${domain}`;
+  return formattedHash ? `https://${domain}/transactions/${formattedHash}` : `https://${domain}/transactions`;
 }
 
 /**
  * Midnight Explorer Contract / Commitment URL
  */
 export function getMidnightExplorerContractUrl(hashOrAddr: string, network: string = 'preview'): string {
-  const clean = hashOrAddr ? (hashOrAddr.startsWith('0x') ? hashOrAddr.slice(2) : hashOrAddr) : '';
+  const formattedAddr = hashOrAddr ? (hashOrAddr.startsWith('0x') ? hashOrAddr : `0x${hashOrAddr}`) : '';
   const domain = network === 'preprod' ? 'preprod.midnightexplorer.com' : 'preview.midnightexplorer.com';
-  // Use /contract/${clean} or /address/${clean}
-  return clean ? `https://${domain}/contract/${clean}` : `https://${domain}`;
+  return formattedAddr ? `https://${domain}/contract/${formattedAddr}` : `https://${domain}/transactions`;
 }
 
 /**
@@ -54,9 +54,9 @@ export function getMidnightExplorerBlockUrl(blockHeight: number, network: string
  * Midnight Explorer Address URL
  */
 export function getMidnightExplorerAddressUrl(address: string, network: string = 'preview'): string {
-  const clean = address ? (address.startsWith('0x') ? address.slice(2) : address) : '';
+  const formattedAddr = address ? (address.startsWith('0x') ? address : `0x${address}`) : '';
   const domain = network === 'preprod' ? 'preprod.midnightexplorer.com' : 'preview.midnightexplorer.com';
-  return clean ? `https://${domain}/address/${clean}` : `https://${domain}`;
+  return formattedAddr ? `https://${domain}/address/${formattedAddr}` : `https://${domain}/transactions`;
 }
 
 // Aliases for backwards compatibility
