@@ -123,6 +123,19 @@ export const ProtocolLog: React.FC<ProtocolLogProps> = ({ logs }) => {
                 <p className="text-[11px] font-mono text-gray-600 leading-relaxed pl-5 break-all">
                   {log.detail}
                 </p>
+
+                {log.detail.includes('TX:') && (
+                  <div className="pl-5 pt-1">
+                    <a
+                      href="https://preview.midnightexplorer.com/transactions"
+                      target="_blank"
+                      rel="noreferrer"
+                      className="inline-flex items-center gap-1 text-[10px] font-bold text-orange-600 hover:text-orange-700 hover:underline"
+                    >
+                      <span>Verify on Midnight Explorer →</span>
+                    </a>
+                  </div>
+                )}
               </div>
             );
           })
@@ -130,10 +143,15 @@ export const ProtocolLog: React.FC<ProtocolLogProps> = ({ logs }) => {
       </div>
 
       {/* Footer Info */}
-      <div className="pt-2 border-t border-gray-100 flex items-center justify-between text-[10px] text-gray-400 font-mono">
-        <span className="flex items-center gap-1">
-          <Terminal className="w-3 h-3 text-gray-400" /> ProofStation v4.2
-        </span>
+      <div className="pt-2 border-t border-gray-100 flex items-center justify-between text-[10px] text-gray-500 font-mono">
+        <a
+          href="https://preview.midnightexplorer.com"
+          target="_blank"
+          rel="noreferrer"
+          className="flex items-center gap-1 text-gray-500 hover:text-orange-600 transition-colors"
+        >
+          <Terminal className="w-3 h-3 text-gray-400" /> Midnight Explorer Live
+        </a>
         <span className="text-emerald-700 font-bold">● Synchronized</span>
       </div>
     </div>

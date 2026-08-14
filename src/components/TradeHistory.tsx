@@ -123,6 +123,17 @@ export const TradeHistory: React.FC<TradeHistoryProps> = ({
             </button>
           </div>
 
+          <a
+            href={networkId === 'preprod' ? 'https://preprod.midnightexplorer.com/contracts/0x62a27ceda5eb600263e208768d5d285c659d47f2cd6b14a20c62b160f4da46f3' : 'https://preview.midnightexplorer.com/contracts/0x62a27ceda5eb600263e208768d5d285c659d47f2cd6b14a20c62b160f4da46f3'}
+            target="_blank"
+            rel="noreferrer"
+            className="hidden sm:flex items-center gap-1.5 px-3.5 py-2.5 rounded-full bg-white hover:bg-gray-100 border border-gray-200 text-gray-800 text-xs font-bold transition-all shadow-xs cursor-pointer"
+          >
+            <Globe className="w-3.5 h-3.5 text-orange-500" />
+            <span>Contract Explorer</span>
+            <ExternalLink className="w-3 h-3 text-gray-400" />
+          </a>
+
           <button
             onClick={() => {
               if (!walletConnected) {
