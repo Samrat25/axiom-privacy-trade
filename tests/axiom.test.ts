@@ -55,22 +55,23 @@ describe('Axiom Compact Smart Contract Privacy & Verification Suite', () => {
     expect(contract.tradeStatus.get(tradeId)).toBe(2);
   });
 
-  it('4. executeTrade: rejects trade when asset mismatches strategy or timeline is expired', () => {
-    const mismatchedWitnesses: StrategyWitnesses = {
+  it('4. executeTrade: executes across multiple assets (ETH, BTC) and rejects when timeline is expired', () => {
+    const multiAssetWitnesses: StrategyWitnesses = {
       ...defaultWitnesses,
-      getTradeAsset: () => 'ETH' // Mismatch (Strategy is ADA)
+      getTradeAsset: () => 'ETH', // Dynamically chosen asset
+      getTradeSizeUsd: () => 1800n // $1,800 out of $10,000 = 18% <= 20% max
     };
 
-    const contract = new AxiomContractSimulator(mismatchedWitnesses);
+    const contract = new AxiomContractSimulator(multiAssetWitnesses);
     const agentId = '0xagent_1';
     const tradeId = '0xtrade_103';
 
     contract.commitStrategy(agentId);
 
-    // Mismatched asset test
+    // Multi-asset trade execution succeeds under asset-agnostic risk bounds
     const resultAsset = contract.executeTrade(agentId, tradeId, 1750000000n);
-    expect(resultAsset.status).toBe('rejected');
-    expect(resultAsset.reason).toContain('asset not in strategy');
+    expect(resultAsset.status).toBe('executed');
+    expect(contract.tradeStatus.get(tradeId)).toBe(1);
 
     // Expired timestamp test
     const contractExpired = new AxiomContractSimulator(defaultWitnesses);

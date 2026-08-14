@@ -87,5 +87,5 @@ console.log(`Timestamp:        ${newDeploymentEntry.deployedAt}`);
 console.log(`Circuits:         ${newDeploymentEntry.circuits.join(', ')}`);
 console.log(`----------------------------------------------------------------`);
 const explorerDomain = targetNetwork === 'preprod' ? 'preprod.midnightexplorer.com' : 'preview.midnightexplorer.com';
-console.log(`Explorer Link:    https://${explorerDomain}/contracts/${newDeploymentEntry.contractAddress}`);
+console.log(`Explorer Link:    https://${explorerDomain}/contract/${newDeploymentEntry.contractAddress}`);
 console.log(`================================================================\n`);

@@ -76,9 +76,9 @@ export function parseNaturalLanguageStrategy(prompt: string): StrategyParams {
   };
 }
 
-// Compute strategy hash matching persistentHash in axiom.compact
-export function computeStrategyHash(params: StrategyParams): string {
-  const rawStr = `${params.asset}:${params.maxPositionPct}:${params.stopLossPct}:${params.timelineExpiry.toString()}`;
+// Compute strategy hash matching persistentHash([maxPos, stopLoss, expiry]) in axiom.compact
+export function computeStrategyHash(params: StrategyParams | Omit<StrategyParams, 'asset'>): string {
+  const rawStr = `${params.maxPositionPct}:${params.stopLossPct}:${params.timelineExpiry.toString()}`;
   let hash = 0x811c9dc5;
   for (let i = 0; i < rawStr.length; i++) {
     hash ^= rawStr.charCodeAt(i);

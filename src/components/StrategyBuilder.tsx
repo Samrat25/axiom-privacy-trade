@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Sparkles,
   Shield,
@@ -10,12 +10,15 @@ import {
   Sliders,
   Clock,
   Percent,
-  Coins,
   Bot,
-  ExternalLink
+  ExternalLink,
+  AlertTriangle,
+  Flame,
+  CheckCircle2,
+  RefreshCw
 } from 'lucide-react';
 import { parseNaturalLanguageStrategy, StrategyParams } from '../utils/contract';
-import { parseStrategyNode } from '../utils/agent';
+import { parseStrategyNode, runStrategyRiskAssessment, StrategyRiskAssessment } from '../utils/agent';
 
 interface StrategyBuilderProps {
   onCommit: (params: StrategyParams) => Promise<string>;
@@ -26,10 +29,10 @@ interface StrategyBuilderProps {
 }
 
 const PRESET_PROMPTS = [
-  'Only buy ADA, max 20% position size, 8% stop-loss, run for 30 days.',
-  'Trade BTC momentum with max 15% position, 5% stop-loss for 14 days.',
-  'Accumulate ETH with 10% max allocation, 12% trailing stop, 60 days duration.',
-  'Swap tNIGHT with 25% max position size, 6% stop-loss for 7 days.'
+  'Max 20% position size, 8% stop-loss, run across all markets for 30 days.',
+  'Momentum rules: max 15% position, 5% tight stop-loss for 14 days.',
+  'Swing accumulation: 10% max allocation, 12% trailing stop, 60 days duration.',
+  'High-volatility bounds: 25% max position size, 6% stop-loss for 7 days.'
 ];
 
 export const StrategyBuilder: React.FC<StrategyBuilderProps> = ({
@@ -39,7 +42,7 @@ export const StrategyBuilder: React.FC<StrategyBuilderProps> = ({
   walletConnected,
   onConnectWallet
 }) => {
-  const defaultPrompt = PRESET_PROMPTS[0] || 'Only buy ADA, max 20% position size, 8% stop-loss, run for 30 days.';
+  const defaultPrompt = PRESET_PROMPTS[0];
   const [promptText, setPromptText] = useState<string>(defaultPrompt);
   const [parsedParams, setParsedParams] = useState<StrategyParams>(() =>
     parseNaturalLanguageStrategy(defaultPrompt)
@@ -49,6 +52,28 @@ export const StrategyBuilder: React.FC<StrategyBuilderProps> = ({
   const [committedHash, setCommittedHash] = useState<string | null>(null);
   const [copied, setCopied] = useState<boolean>(false);
   const [isConfirmed, setIsConfirmed] = useState<boolean>(false);
+
+  // Pre-commit AI Risk Read State
+  const [riskAssessment, setRiskAssessment] = useState<StrategyRiskAssessment | null>(null);
+  const [isLoadingRisk, setIsLoadingRisk] = useState<boolean>(false);
+
+  const evaluateRisk = async (params: StrategyParams) => {
+    setIsLoadingRisk(true);
+    try {
+      const assessment = await runStrategyRiskAssessment({
+        maxPositionPct: params.maxPositionPct,
+        stopLossPct: params.stopLossPct,
+        timelineDays: params.timelineDays
+      });
+      setRiskAssessment(assessment);
+    } finally {
+      setIsLoadingRisk(false);
+    }
+  };
+
+  useEffect(() => {
+    evaluateRisk(parsedParams);
+  }, [parsedParams.maxPositionPct, parsedParams.stopLossPct, parsedParams.timelineDays]);
 
   const handlePromptChange = (text: string) => {
     setPromptText(text);
@@ -106,19 +131,19 @@ export const StrategyBuilder: React.FC<StrategyBuilderProps> = ({
           <div className="space-y-2">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-gray-100 border border-gray-200 text-gray-800 text-xs font-semibold">
               <Shield className="w-3.5 h-3.5 text-orange-500" />
-              <span>Compact ZK Core • Gemini Structured Parsing</span>
+              <span>Asset-Agnostic ZK Risk Engine • Gemini Pre-Commit Read</span>
             </div>
             <h1 className="text-2xl font-extrabold text-gray-900 tracking-tight">
-              Natural-Language Strategy Builder
+              Natural-Language Strategy Risk Locker
             </h1>
             <p className="text-gray-600 text-xs leading-relaxed max-w-2xl">
-              Describe your algorithmic trading strategy in plain language. Axiom's Gemini LLM structured output engine parses text into bounded parameters, hashes them locally, and commits a zero-knowledge proof on Midnight.
+              Lock your risk boundaries (<strong className="text-gray-900">Max Position %, Stop-Loss %, Duration</strong>) once on Midnight. Once committed on-chain, you can execute zero-knowledge trades across <strong>ADA, BTC, ETH, SOL, and tNIGHT</strong> dynamically from your Shielded Vault.
             </p>
           </div>
           <div className="flex flex-col items-start sm:items-end text-left sm:text-right space-y-1 font-mono text-xs">
             <span className="text-[11px] font-bold text-orange-600">LLM: Gemini 2.5 Flash</span>
-            <span className="text-gray-500">Public: Commitment Hash Only</span>
-            <span className="text-emerald-700 font-bold">Private: Shielded Witnesses</span>
+            <span className="text-gray-500">Public: Risk Commitment Hash</span>
+            <span className="text-emerald-700 font-bold">Scope: Any Supported Asset</span>
           </div>
         </div>
       </div>
@@ -128,9 +153,9 @@ export const StrategyBuilder: React.FC<StrategyBuilderProps> = ({
         <div className="flex items-center justify-between text-xs text-gray-600 font-medium">
           <span className="flex items-center gap-1.5">
             <Sparkles className="w-3.5 h-3.5 text-orange-500" />
-            Quick Presets
+            Risk Presets
           </span>
-          <span>Click to populate strategy</span>
+          <span>Click to populate risk bounds</span>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
           {PRESET_PROMPTS.map((preset, idx) => (
@@ -150,7 +175,7 @@ export const StrategyBuilder: React.FC<StrategyBuilderProps> = ({
         <div className="flex items-center justify-between mb-3">
           <label className="text-xs font-bold text-gray-900 flex items-center gap-1.5">
             <Cpu className="w-3.5 h-3.5 text-orange-500" />
-            Strategy Intent (Natural Language)
+            Strategy Intent & Risk Rules (Natural Language)
           </label>
           <button
             onClick={handleGeminiParse}
@@ -165,8 +190,8 @@ export const StrategyBuilder: React.FC<StrategyBuilderProps> = ({
         <textarea
           value={promptText}
           onChange={(e) => handlePromptChange(e.target.value)}
-          rows={3}
-          placeholder="e.g. Only buy ADA, max 20% position size, 8% stop-loss, run for 30 days"
+          rows={2}
+          placeholder="e.g. Max 20% position size, 8% stop-loss, run for 30 days across all assets"
           className="w-full bg-gray-50 border border-gray-200 rounded-xl p-3.5 text-gray-900 placeholder-gray-400 text-sm focus:outline-none focus:bg-white resize-none font-sans"
         />
 
@@ -174,7 +199,7 @@ export const StrategyBuilder: React.FC<StrategyBuilderProps> = ({
           <div className="flex items-center gap-2">
             <Lock className="w-3.5 h-3.5 text-emerald-600" />
             <span className="text-emerald-700 text-xs font-medium">
-              Zero telemetry leaks — parsed and hashed on client
+              Asset-Agnostic — Hash protects parameters without restricting trade asset
             </span>
           </div>
           <span className="font-mono text-gray-400">
@@ -184,54 +209,29 @@ export const StrategyBuilder: React.FC<StrategyBuilderProps> = ({
       </div>
 
       {/* Confirm-Before-Commit Card */}
-      <div className="bg-white border border-gray-200/80 rounded-2xl p-6 shadow-sm space-y-4">
+      <div className="bg-white border border-gray-200/80 rounded-2xl p-6 shadow-sm space-y-5">
         <div className="flex items-center justify-between border-b border-gray-200 pb-3">
           <div className="flex items-center gap-2">
             <h3 className="text-sm font-bold text-gray-900 flex items-center gap-1.5">
               <Sliders className="w-4 h-4 text-orange-500" />
-              Review & Confirm Strategy Bounds
+              Configure Risk Bounds
             </h3>
           </div>
           <div className="flex items-center gap-1 text-[11px] text-gray-600 bg-gray-100 px-3 py-1 rounded-full font-medium">
             <HelpCircle className="w-3 h-3 text-orange-500" />
-            <span>Immutable Once Committed</span>
+            <span>Multi-Asset Compatible</span>
           </div>
         </div>
 
-        <p className="text-xs text-gray-600 leading-relaxed">
-          Verify the parsed parameters below. Once hashed and committed to the Compact circuit, these boundaries cannot be altered without creating a new agent commitment.
-        </p>
-
-        {/* Editable Chips Grid */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-          {/* Target Asset */}
-          <div className="bg-gray-50 border border-gray-200 rounded-xl p-3 flex flex-col justify-between space-y-1">
-            <div className="flex items-center justify-between text-[11px] text-gray-500 font-medium">
-              <span className="flex items-center gap-1">
-                <Coins className="w-3 h-3 text-orange-500" /> Asset
-              </span>
-              <span className="text-[10px] text-gray-400 font-mono">Witness 1</span>
-            </div>
-            <select
-              value={parsedParams.asset}
-              onChange={(e) => handleChipChange('asset', e.target.value)}
-              className="bg-white text-gray-900 font-bold text-xs px-2.5 py-1.5 rounded-lg border border-gray-200 focus:outline-none focus:border-orange-500 cursor-pointer"
-            >
-              <option value="ADA">ADA</option>
-              <option value="BTC">BTC</option>
-              <option value="ETH">ETH</option>
-              <option value="SOL">SOL</option>
-              <option value="tNIGHT">tNIGHT</option>
-            </select>
-          </div>
-
+        {/* Editable Chips Grid (3 Risk Rules) */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           {/* Max Position % */}
           <div className="bg-gray-50 border border-gray-200 rounded-xl p-3 flex flex-col justify-between space-y-1">
             <div className="flex items-center justify-between text-[11px] text-gray-500 font-medium">
               <span className="flex items-center gap-1">
-                <Percent className="w-3 h-3 text-indigo-500" /> Max Position
+                <Percent className="w-3 h-3 text-indigo-500" /> Max Position / Trade
               </span>
-              <span className="text-[10px] text-gray-400 font-mono">Witness 2</span>
+              <span className="text-[10px] text-gray-400 font-mono">Witness 1</span>
             </div>
             <div className="flex items-center gap-1">
               <input
@@ -240,7 +240,7 @@ export const StrategyBuilder: React.FC<StrategyBuilderProps> = ({
                 max="100"
                 value={parsedParams.maxPositionPct}
                 onChange={(e) => handleChipChange('maxPositionPct', parseInt(e.target.value) || 1)}
-                className="w-full bg-white text-gray-900 font-bold text-xs px-2.5 py-1.5 rounded-lg border border-gray-200 focus:outline-none focus:border-orange-500 font-mono"
+                className="w-full bg-white text-gray-900 font-bold text-sm px-2.5 py-1.5 rounded-lg border border-gray-200 focus:outline-none focus:border-orange-500 font-mono"
               />
               <span className="text-xs text-gray-500 font-bold">%</span>
             </div>
@@ -250,18 +250,18 @@ export const StrategyBuilder: React.FC<StrategyBuilderProps> = ({
           <div className="bg-gray-50 border border-gray-200 rounded-xl p-3 flex flex-col justify-between space-y-1">
             <div className="flex items-center justify-between text-[11px] text-gray-500 font-medium">
               <span className="flex items-center gap-1">
-                <Percent className="w-3 h-3 text-red-500" /> Stop Loss
+                <Percent className="w-3 h-3 text-red-500" /> Stop Loss Drawdown
               </span>
-              <span className="text-[10px] text-gray-400 font-mono">Witness 3</span>
+              <span className="text-[10px] text-gray-400 font-mono">Witness 2</span>
             </div>
             <div className="flex items-center gap-1">
               <input
                 type="number"
-                min="1"
+                min="0"
                 max="50"
                 value={parsedParams.stopLossPct}
-                onChange={(e) => handleChipChange('stopLossPct', parseInt(e.target.value) || 1)}
-                className="w-full bg-white text-gray-900 font-bold text-xs px-2.5 py-1.5 rounded-lg border border-gray-200 focus:outline-none focus:border-orange-500 font-mono"
+                onChange={(e) => handleChipChange('stopLossPct', parseInt(e.target.value) || 0)}
+                className="w-full bg-white text-gray-900 font-bold text-sm px-2.5 py-1.5 rounded-lg border border-gray-200 focus:outline-none focus:border-orange-500 font-mono"
               />
               <span className="text-xs text-gray-500 font-bold">%</span>
             </div>
@@ -271,9 +271,9 @@ export const StrategyBuilder: React.FC<StrategyBuilderProps> = ({
           <div className="bg-gray-50 border border-gray-200 rounded-xl p-3 flex flex-col justify-between space-y-1">
             <div className="flex items-center justify-between text-[11px] text-gray-500 font-medium">
               <span className="flex items-center gap-1">
-                <Clock className="w-3 h-3 text-emerald-600" /> Duration
+                <Clock className="w-3 h-3 text-emerald-600" /> Strategy Duration
               </span>
-              <span className="text-[10px] text-gray-400 font-mono">Witness 4</span>
+              <span className="text-[10px] text-gray-400 font-mono">Witness 3</span>
             </div>
             <div className="flex items-center gap-1">
               <input
@@ -282,15 +282,63 @@ export const StrategyBuilder: React.FC<StrategyBuilderProps> = ({
                 max="365"
                 value={parsedParams.timelineDays}
                 onChange={(e) => handleChipChange('timelineDays', parseInt(e.target.value) || 1)}
-                className="w-full bg-white text-gray-900 font-bold text-xs px-2.5 py-1.5 rounded-lg border border-gray-200 focus:outline-none focus:border-orange-500 font-mono"
+                className="w-full bg-white text-gray-900 font-bold text-sm px-2.5 py-1.5 rounded-lg border border-gray-200 focus:outline-none focus:border-orange-500 font-mono"
               />
               <span className="text-xs text-gray-500 font-bold">Days</span>
             </div>
           </div>
         </div>
 
+        {/* NEW PRE-COMMIT STEP: Plain-Language AI Risk Read Card */}
+        <div className="bg-gradient-to-br from-gray-50 to-orange-50/40 border border-orange-200/80 rounded-xl p-4.5 space-y-3">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-bold text-gray-900 flex items-center gap-2">
+              <Bot className="w-4 h-4 text-orange-500" />
+              Pre-Commit AI Risk Read (Gemini LLM)
+            </span>
+            {riskAssessment && (
+              <span
+                className={`text-[10px] px-2.5 py-0.5 rounded-full font-bold uppercase tracking-wider ${
+                  riskAssessment.riskLevel === 'CONSERVATIVE'
+                    ? 'bg-emerald-100 text-emerald-800'
+                    : riskAssessment.riskLevel === 'MODERATE'
+                    ? 'bg-blue-100 text-blue-800'
+                    : riskAssessment.riskLevel === 'AGGRESSIVE'
+                    ? 'bg-orange-100 text-orange-800'
+                    : 'bg-red-100 text-red-800'
+                }`}
+              >
+                {riskAssessment.riskLevel.replace('_', ' ')}
+              </span>
+            )}
+          </div>
+
+          {isLoadingRisk ? (
+            <div className="flex items-center gap-2 text-xs text-gray-500 py-1">
+              <RefreshCw className="w-3.5 h-3.5 animate-spin text-orange-500" />
+              <span>Analyzing proposed risk boundaries with Gemini...</span>
+            </div>
+          ) : riskAssessment ? (
+            <div className="space-y-2">
+              <p className="text-xs text-gray-800 font-medium leading-relaxed">
+                "{riskAssessment.assessmentSummary}"
+              </p>
+              {riskAssessment.guidanceNotes && riskAssessment.guidanceNotes.length > 0 && (
+                <ul className="text-[11px] text-gray-600 space-y-1 pl-1">
+                  {riskAssessment.guidanceNotes.map((note, idx) => (
+                    <li key={idx} className="flex items-start gap-1.5">
+                      <span className="text-orange-500 font-bold">•</span>
+                      <span>{note}</span>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          ) : null}
+        </div>
+
         {/* Confirmation Checkbox */}
-        <div className="flex items-center gap-2 pt-2">
+        <div className="flex items-center gap-2 pt-1">
           <input
             type="checkbox"
             id="confirm-bounds"
@@ -299,7 +347,7 @@ export const StrategyBuilder: React.FC<StrategyBuilderProps> = ({
             className="w-4 h-4 rounded bg-white border-gray-300 text-orange-600 focus:ring-orange-500 cursor-pointer"
           />
           <label htmlFor="confirm-bounds" className="text-xs text-gray-800 font-medium cursor-pointer select-none">
-            I confirm these strategy bounds are correct and ready for zero-knowledge hash commitment.
+            I have reviewed the AI risk assessment and confirm these boundaries are ready to lock on-chain.
           </label>
         </div>
 
@@ -330,7 +378,7 @@ export const StrategyBuilder: React.FC<StrategyBuilderProps> = ({
             >
               <Shield className="w-4 h-4" />
               <span>
-                {walletConnected ? 'Commit Strategy On-Chain (commitStrategy)' : 'Connect 1AM Wallet to Commit'}
+                {walletConnected ? 'Lock Strategy On-Chain (commitStrategy)' : 'Connect 1AM Wallet to Lock Strategy'}
               </span>
             </button>
           )}
@@ -353,7 +401,7 @@ export const StrategyBuilder: React.FC<StrategyBuilderProps> = ({
           </div>
 
           <p className="text-xs text-gray-600 leading-relaxed font-sans">
-            Your strategy witnesses (<strong className="text-emerald-700">{parsedParams.asset}</strong>, <strong className="text-gray-900">{parsedParams.maxPositionPct}% max pos</strong>, <strong className="text-red-700">{parsedParams.stopLossPct}% stop-loss</strong>) have been hashed locally into a single ZK commitment and recorded on Midnight testnet.
+            Your multi-asset risk rules (<strong className="text-gray-900">{parsedParams.maxPositionPct}% max position</strong>, <strong className="text-red-700">{parsedParams.stopLossPct}% stop-loss</strong>, <strong className="text-gray-900">{parsedParams.timelineDays} days</strong>) have been hashed locally into a single ZK commitment on Midnight. You can now execute proven trades across ADA, BTC, ETH, SOL, or tNIGHT from your Shielded Vault.
           </p>
 
           <div className="bg-gray-50 border border-gray-200 rounded-xl p-3.5 flex items-center justify-between gap-3 font-mono">

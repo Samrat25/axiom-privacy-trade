@@ -24,6 +24,19 @@
           "burnVaultBalance",
           "unshieldWithdraw"
         ]
+      },
+      {
+        "version": "1.2.0",
+        "contractAddress": "0x33eb41d22028264e9e8bbe7f95b3089cece6e3c2a53008535e72a9f3350d3e30",
+        "deployedAt": "2026-08-14T08:43:21.983Z",
+        "commitHash": "0x6f6b07f8e83d3de5273b19755ac3b7e3",
+        "circuits": [
+          "commitStrategy",
+          "executeTrade",
+          "mintVaultBalance",
+          "burnVaultBalance",
+          "unshieldWithdraw"
+        ]
       }
     ],
     "preprod": [
@@ -35,6 +48,19 @@
         "circuits": [
           "commitStrategy",
           "executeTrade",
+          "unshieldWithdraw"
+        ]
+      },
+      {
+        "version": "1.1.0",
+        "contractAddress": "0x5ef6f5142328af863af9851c83d0d60c852af470435b34b0906b21c636b2df2e",
+        "deployedAt": "2026-08-14T08:43:28.189Z",
+        "commitHash": "0x6f6b07f8e83d3de5273b19755ac3b7e3",
+        "circuits": [
+          "commitStrategy",
+          "executeTrade",
+          "mintVaultBalance",
+          "burnVaultBalance",
           "unshieldWithdraw"
         ]
       }

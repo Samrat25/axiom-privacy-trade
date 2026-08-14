@@ -260,7 +260,11 @@ export function useMidnight() {
   }, [addLog]);
 
   // ─── Analyze Strategy (Two-step flow step 1) ───────────────────────
-  const analyzeStrategy = useCallback(async (agentId: string) => {
+  const analyzeStrategy = useCallback(async (
+    agentId: string,
+    targetAsset: string = 'ADA',
+    customTradeSizeUsd?: number
+  ) => {
     setIsAnalyzing(true);
     setError(null);
     try {
@@ -268,9 +272,16 @@ export function useMidnight() {
       if (!strategy) {
         throw new Error('No active strategy commitment found to analyze.');
       }
-      addLog('info', 'AI Analysis Triggered', `Running Gemini analysis on committed strategy for agent ${agentId}...`);
 
-      const rec = await runManualAnalysis(strategy.params, 10000);
+      const currentVault = getLocalVaultBalance();
+      addLog('info', 'AI Analysis Triggered', `Running Gemini analysis on committed risk bounds for ${targetAsset} (Vault Balance: $${currentVault})...`);
+
+      const rec = await runManualAnalysis(
+        strategy.params,
+        currentVault > 0 ? currentVault : 1000,
+        targetAsset,
+        customTradeSizeUsd
+      );
       setRecommendationMap((prev) => ({ ...prev, [agentId]: rec }));
 
       addLog('success', 'Analysis Complete', `Recommendation: ${rec.recommendation}`);
@@ -296,7 +307,7 @@ export function useMidnight() {
 
     try {
       addLog('info', 'Circuit Initiated',
-        `Commit Strategy: ${params.asset} (${params.maxPositionPct}% max pos, ${params.stopLossPct}% stop-loss)`
+        `Commit Risk Rules: Max ${params.maxPositionPct}% position, ${params.stopLossPct}% stop-loss (${params.timelineDays} days)`
       );
 
       setProofStep('1. Computing persistentHash witness commitment...');
@@ -310,7 +321,6 @@ export function useMidnight() {
       const txHash = await executeSignedTransaction('commitStrategy', {
         agentId,
         strategyHash: hash,
-        asset: params.asset,
         maxPositionPct: params.maxPositionPct,
         stopLossPct: params.stopLossPct,
         timelineExpiry: params.timelineExpiry.toString(),
@@ -366,22 +376,30 @@ export function useMidnight() {
     try {
       // 0. Strict Shielded Vault Balance Requirement Check
       const currentVault = getLocalVaultBalance();
-      if (currentVault < tradeSizeUsd) {
+      if (currentVault <= 0 || currentVault < tradeSizeUsd) {
         const vaultErrMsg = `Insufficient Shielded Vault Balance: You have $${currentVault.toLocaleString()} vUSD available, but this trade requires $${tradeSizeUsd.toLocaleString()} vUSD. Please mint or deposit to your Shielded Vault in the 'Shielded Vault & Withdraw' tab before trading.`;
         setError(vaultErrMsg);
         addLog('error', 'Trade Blocked — Insufficient Vault', vaultErrMsg);
         throw new Error(vaultErrMsg);
       }
 
+      const strategy = activeStrategies.find((s) => s.agentId === agentId) || activeStrategies[0];
+      const maxAllowedSize = strategy ? Math.floor((currentVault * strategy.params.maxPositionPct) / 100) : currentVault;
+
+      if (strategy && tradeSizeUsd > maxAllowedSize && !forceRiskFail) {
+        const maxPosErrMsg = `Trade Size Exceeds Committed Risk Bounds: $${tradeSizeUsd} exceeds your ${strategy.params.maxPositionPct}% max position limit ($${maxAllowedSize} of $${currentVault} vault balance).`;
+        setError(maxPosErrMsg);
+        addLog('error', 'Trade Blocked — Exceeds Max Position', maxPosErrMsg);
+        throw new Error(maxPosErrMsg);
+      }
+
       addLog('info', 'EZKL Risk Model Evaluation', `Running EZKL ZK-ML Risk Check for agent ${agentId} ($${tradeSizeUsd} ${targetAsset || 'ADA'})...`);
 
       setProofStep('1. Running EZKL ZK-ML Risk Eligibility Model...');
 
-      const strategy = activeStrategies.find((s) => s.agentId === agentId) || activeStrategies[0];
-      const asset = targetAsset || strategy?.params.asset || 'ADA';
-
-      const volatilityPct = forceRiskFail ? 85 : asset === 'BTC' ? 20 : asset === 'ETH' ? 30 : 22;
-      const portfolioVal = 10000;
+      const asset = targetAsset || 'ADA';
+      const volatilityPct = forceRiskFail ? 85 : asset === 'BTC' ? 20 : asset === 'ETH' ? 30 : asset === 'SOL' ? 38 : 22;
+      const portfolioVal = currentVault;
       const positionSizePct = forceRiskFail ? 75 : Math.min(100, Math.round((tradeSizeUsd * 100) / portfolioVal));
       const stopLossDistancePct = forceRiskFail ? 15 : strategy?.params.stopLossPct ? 100 - strategy.params.stopLossPct : 92;
 
@@ -400,7 +418,7 @@ export function useMidnight() {
 
       addLog('success', 'ZK Risk Check Passed', `EZKL Proof Verified: ${riskRes.proofHash.substring(0, 18)}… | Score: ${riskRes.score}`);
 
-      const basePrice = asset === 'BTC' ? 61250 : asset === 'ETH' ? 3300 : asset === 'SOL' ? 145 : asset === 'AAPL' ? 228.5 : 0.421;
+      const basePrice = asset === 'BTC' ? 61250 : asset === 'ETH' ? 3300 : asset === 'SOL' ? 145 : asset === 'tNIGHT' ? 0.85 : 0.421;
 
       // ============================================================================
       // ASSUMPTION NOTICE: ADA, SOL, BTC, ETH, and Stock tickers (AAPL) are paper

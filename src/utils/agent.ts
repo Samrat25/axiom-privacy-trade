@@ -220,6 +220,82 @@ export async function executeTradeNode(state: AgentState): Promise<Partial<Agent
   };
 }
 
+// Zod schema for pre-commitment strategy risk read
+export const StrategyRiskAssessmentSchema = z.object({
+  riskLevel: z.enum(['CONSERVATIVE', 'MODERATE', 'AGGRESSIVE', 'HIGH_RISK', 'RECKLESS']),
+  assessmentSummary: z.string().describe('Plain-language 1-2 sentence risk assessment of the proposed bounds before committing on-chain'),
+  guidanceNotes: z.array(z.string()).describe('Key risk observations, e.g. stop-loss safety, position sizing')
+});
+
+export type StrategyRiskAssessment = z.infer<typeof StrategyRiskAssessmentSchema>;
+
+/**
+ * Runs a plain-language LLM risk evaluation over the proposed strategy bounds
+ * BEFORE the trader locks them into the on-chain circuit.
+ */
+export async function runStrategyRiskAssessment(params: {
+  maxPositionPct: number;
+  stopLossPct: number;
+  timelineDays: number;
+}): Promise<StrategyRiskAssessment> {
+  const getFallbackAssessment = (): StrategyRiskAssessment => {
+    let riskLevel: StrategyRiskAssessment['riskLevel'] = 'MODERATE';
+    const notes: string[] = [];
+
+    if (params.maxPositionPct >= 50) {
+      riskLevel = 'HIGH_RISK';
+      notes.push(`${params.maxPositionPct}% max position commits over half your shielded vault to a single trade.`);
+    } else if (params.maxPositionPct > 25) {
+      riskLevel = 'AGGRESSIVE';
+      notes.push(`${params.maxPositionPct}% max position is aggressive; consider 10-20% for conservative risk balancing.`);
+    } else {
+      riskLevel = 'CONSERVATIVE';
+      notes.push(`${params.maxPositionPct}% max position adheres to institutional capital preservation limits.`);
+    }
+
+    if (params.stopLossPct === 0) {
+      riskLevel = 'RECKLESS';
+      notes.push('No stop-loss specified (0% drawdown limit). Any sudden market wick could lead to total position drawdown.');
+    } else if (params.stopLossPct > 20) {
+      notes.push(`${params.stopLossPct}% stop-loss is wide and allows significant drawdown before risk circuit trip.`);
+    } else {
+      notes.push(`${params.stopLossPct}% stop-loss provides tight downside protection against adverse market shifts.`);
+    }
+
+    notes.push(`Strategy will lock risk rules for ${params.timelineDays} days across any chosen Midnight asset.`);
+
+    const summary = `${params.maxPositionPct}% max position with ${params.stopLossPct}% stop-loss is ${riskLevel.toLowerCase().replace('_', ' ')}. ${notes[0]}`;
+
+    return {
+      riskLevel,
+      assessmentSummary: summary,
+      guidanceNotes: notes
+    };
+  };
+
+  try {
+    const llm = createGeminiLLM();
+    const structuredLlm = llm.withStructuredOutput(StrategyRiskAssessmentSchema);
+
+    const result = await structuredLlm.invoke([
+      {
+        role: 'system',
+        content:
+          'You are Axiom ZK Risk Assessor. Evaluate proposed trading strategy rules (max position %, stop loss %, duration) before on-chain commitment. Return a concise, plain-language risk read.'
+      },
+      {
+        role: 'user',
+        content: `Proposed Strategy Risk Rules: Max Position Size: ${params.maxPositionPct}%, Stop Loss Limit: ${params.stopLossPct}%, Duration: ${params.timelineDays} days.`
+      }
+    ]);
+
+    return result;
+  } catch (err) {
+    console.warn('[Axiom Agent] Gemini LLM risk assessment fallback used:', err);
+    return getFallbackAssessment();
+  }
+}
+
 // Zod schema for manual analysis recommendation
 export const TradeRecommendationSchema = z.object({
   recommendation: z.string().describe('Plain language analysis and recommendation for the user'),
@@ -235,11 +311,16 @@ export type TradeRecommendation = z.infer<typeof TradeRecommendationSchema>;
  */
 export async function runManualAnalysis(
   params: StrategyParams,
-  portfolioValueUsd: number = 10000
+  portfolioValueUsd: number = 10000,
+  targetAsset: string = 'ADA',
+  customTradeSizeUsd?: number
 ): Promise<TradeRecommendation> {
-  const asset = params.asset || 'ADA';
-  const basePrice = asset === 'BTC' ? 61250 : asset === 'ETH' ? 3300 : asset === 'SOL' ? 145 : 0.421;
-  const suggestedSize = Math.floor((portfolioValueUsd * params.maxPositionPct) / 100);
+  const asset = targetAsset || params.asset || 'ADA';
+  const basePrice = asset === 'BTC' ? 61250 : asset === 'ETH' ? 3300 : asset === 'SOL' ? 145 : asset === 'tNIGHT' ? 0.85 : 0.421;
+  const maxAllowedSize = Math.floor((portfolioValueUsd * params.maxPositionPct) / 100);
+  const suggestedSize = customTradeSizeUsd && customTradeSizeUsd > 0 && customTradeSizeUsd <= maxAllowedSize
+    ? customTradeSizeUsd
+    : maxAllowedSize;
 
   try {
     const llm = createGeminiLLM();
@@ -248,11 +329,11 @@ export async function runManualAnalysis(
     const result = await structuredLlm.invoke([
       {
         role: 'system',
-        content: 'You are Axiom ZK Trading Agent. Provide a plain-language trade recommendation based on the committed strategy bounds and current market price.'
+        content: 'You are Axiom ZK Trading Agent. Provide a plain-language trade recommendation based on the committed strategy bounds, selected trade asset, and current market price.'
       },
       {
         role: 'user',
-        content: `Strategy: Target ${params.asset}, Max Position ${params.maxPositionPct}%, Stop Loss ${params.stopLossPct}%, Expiry in ${params.timelineDays} days. Current Price: $${basePrice}. Portfolio: $${portfolioValueUsd}.`
+        content: `Strategy Bounds: Max Position ${params.maxPositionPct}%, Stop Loss ${params.stopLossPct}%, Expiry in ${params.timelineDays} days. Target Trade Asset: ${asset}, Current Price: $${basePrice}. Shielded Vault Portfolio: $${portfolioValueUsd}. Desired Trade Size: $${suggestedSize}.`
       }
     ]);
 
@@ -260,7 +341,7 @@ export async function runManualAnalysis(
   } catch (err) {
     console.warn('[Axiom Agent] Gemini LLM recommendation fallback:', err);
     return {
-      recommendation: `Conditions match your committed strategy. Current ${params.asset} price is $${basePrice}. Suggested position size: $${suggestedSize} (${params.maxPositionPct}% of portfolio).`,
+      recommendation: `Conditions match your committed strategy rules for ${asset}. Current ${asset} price is $${basePrice}. Proposed trade size: $${suggestedSize} (within your ${params.maxPositionPct}% max position limit of $${maxAllowedSize}).`,
       suggestedAction: 'BUY',
       suggestedTradeSizeUsd: suggestedSize
     };

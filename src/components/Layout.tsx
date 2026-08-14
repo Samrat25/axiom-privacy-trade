@@ -25,6 +25,7 @@ interface LayoutProps {
   balance: string;
   shieldedBalance?: string;
   unshieldedBalance?: string;
+  dustBalance?: string;
   isConnecting: boolean;
   error: string | null;
   proofServerUp?: boolean | null;
@@ -49,6 +50,7 @@ export const Layout: React.FC<LayoutProps> = ({
   balance,
   shieldedBalance,
   unshieldedBalance,
+  dustBalance,
   isConnecting,
   error,
   proofServerUp,

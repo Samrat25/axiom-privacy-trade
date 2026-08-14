@@ -30,7 +30,6 @@ export ledger tradeStatus: Map<Bytes<32>, Uint<8>>;         // tradeId -> 0=pend
 export ledger tradeCount: Counter;
 
 // ---------- PRIVATE WITNESSES ----------
-witness getStrategyAsset(): Bytes<32>;
 witness getMaxPositionPct(): Uint<8>;
 witness getStopLossPct(): Uint<8>;
 witness getStrategyExpiry(): Uint<64>;
@@ -45,12 +44,11 @@ witness getTNightPriceUsd(): Uint<64>;
 
 // ---------- CIRCUITS ----------
 
-// Run once per strategy: commit the parsed strategy hash without revealing its parameters
+// Run once per strategy: commit the parsed risk bounds (max position %, stop-loss %, expiry) without revealing them
 export circuit commitStrategy(agentId: Bytes<32>): [] {
   const callerId = disclose(persistentHash<Vector<2, Bytes<32>>>([localSecretKey(), agentId]));
   const strategyHash = disclose(
-    persistentHash<Vector<4, Bytes<32>>>([
-      getStrategyAsset(),
+    persistentHash<Vector<3, Bytes<32>>>([
       getMaxPositionPct() as Field as Bytes<32>,
       getStopLossPct() as Field as Bytes<32>,
       getStrategyExpiry() as Field as Bytes<32>
@@ -59,11 +57,10 @@ export circuit commitStrategy(agentId: Bytes<32>): [] {
   agentCommitment.insert(disclose(agentId), strategyHash);
 }
 
-// Run per trade: proves the trade satisfies the ALREADY-committed strategy bounds
+// Run per trade: proves trade adheres to committed risk bounds and vault portfolio size for ANY selected asset
 export circuit executeTrade(agentId: Bytes<32>, tradeId: Bytes<32>, currentTime: Uint<64>): [] {
   const recomputedHash = disclose(
-    persistentHash<Vector<4, Bytes<32>>>([
-      getStrategyAsset(),
+    persistentHash<Vector<3, Bytes<32>>>([
       getMaxPositionPct() as Field as Bytes<32>,
       getStopLossPct() as Field as Bytes<32>,
       getStrategyExpiry() as Field as Bytes<32>
@@ -71,8 +68,8 @@ export circuit executeTrade(agentId: Bytes<32>, tradeId: Bytes<32>, currentTime:
   );
   assert(agentCommitment.lookup(disclose(agentId)) == recomputedHash, "trade does not match committed strategy");
   assert(currentTime <= getStrategyExpiry(), "strategy timeline expired");
-  assert(getTradeAsset() == getStrategyAsset(), "asset not in strategy");
 
+  // Dynamic position-size check measured against live Shielded Vault balance (getPortfolioValue)
   assert((getTradeSizeUsd() * (100 as Uint<64>)) <= (getPortfolioValue() * (getMaxPositionPct() as Uint<64>)), "exceeds max position size");
   assert(getRiskCheckPassed(), "risk model check failed");
 

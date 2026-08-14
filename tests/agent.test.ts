@@ -1,5 +1,11 @@
 import { describe, it, expect } from 'vitest';
-import { decideTradeNode, AgentState, PriceTick } from '../src/utils/agent';
+import {
+  decideTradeNode,
+  AgentState,
+  PriceTick,
+  runStrategyRiskAssessment,
+  runManualAnalysis
+} from '../src/utils/agent';
 import { StrategyParams } from '../src/utils/contract';
 
 describe('Axiom LangGraph Trading Agent Decision Engine Suite', () => {
@@ -68,5 +74,32 @@ describe('Axiom LangGraph Trading Agent Decision Engine Suite', () => {
 
     const result = await decideTradeNode(state as AgentState);
     expect(result.decisionAction).toBe('monitor');
+  });
+
+  it('4. runStrategyRiskAssessment: produces plain-language risk level & assessment summary', async () => {
+    const conservative = await runStrategyRiskAssessment({
+      maxPositionPct: 15,
+      stopLossPct: 6,
+      timelineDays: 30
+    });
+    expect(conservative).toBeDefined();
+    expect(conservative.riskLevel).toBeDefined();
+    expect(conservative.assessmentSummary.length).toBeGreaterThan(10);
+    expect(conservative.guidanceNotes.length).toBeGreaterThan(0);
+
+    const highRisk = await runStrategyRiskAssessment({
+      maxPositionPct: 60,
+      stopLossPct: 0,
+      timelineDays: 90
+    });
+    expect(highRisk.riskLevel).toMatch(/HIGH_RISK|RECKLESS|AGGRESSIVE/);
+  });
+
+  it('5. runManualAnalysis: evaluates custom assets (ETH, BTC) and enforces max position bounds', async () => {
+    const recEth = await runManualAnalysis(sampleParams, 10000, 'ETH', 1500);
+    expect(recEth).toBeDefined();
+    expect(recEth.suggestedAction).toBeDefined();
+    expect(recEth.suggestedTradeSizeUsd).toBeLessThanOrEqual(2000); // 20% of $10,000 = $2,000
+    expect(recEth.recommendation).toContain('ETH');
   });
 });
