@@ -39,117 +39,66 @@ export const WalletConnect: React.FC<WalletConnectProps> = ({
 }) => {
   const displayAddress =
     typeof address === 'string' && address.length > 0
-      ? `${address.substring(0, 14)}…${address.substring(address.length - 6)}`
+      ? `${address.substring(0, 8)}…${address.substring(address.length - 4)}`
       : '';
 
   if (connected) {
     return (
-      <div className="flex items-center gap-3 font-mono">
-        {/* Prover status indicator */}
-        <div
-          title={
-            proofServerUp
-              ? 'Local Docker Prover Running (port 6300)'
-              : 'Using 1AM Wallet Extension Prover & ProofStation'
-          }
-          className="flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-purple-950/60 border border-purple-800/40 text-[11px] font-mono text-purple-300"
-        >
-          <Server className="w-3.5 h-3.5 text-emerald-400" />
-          <span className="hidden sm:inline">1AM Prover Active</span>
-        </div>
-
+      <div className="flex items-center gap-2 font-sans">
         <button
           onClick={onOpenModal}
-          className="flex items-center gap-2.5 px-3 py-1.5 rounded-xl bg-[#0F141C] hover:bg-[#182030] border border-gray-800 text-left transition-all cursor-pointer shadow-md"
+          className="flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-gray-100 hover:bg-gray-200/80 border border-gray-300/80 text-left transition-all cursor-pointer shadow-xs"
         >
-          <div className="flex flex-col items-end text-xs">
-            <div className="flex items-center gap-1.5 text-emerald-400">
-              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-              <span>{walletName}</span>
-              <span className="text-gray-500">•</span>
-              <span className="text-gray-200 font-bold">{String(balance)}</span>
-            </div>
-            {displayAddress && (
-              <span className="text-purple-300 text-[11px] truncate max-w-[150px]" title={address || ''}>
-                {displayAddress}
-              </span>
-            )}
+          <span className="w-2 h-2 rounded-full bg-emerald-500 shrink-0 animate-pulse"></span>
+          <div className="flex items-center gap-1.5 text-xs font-medium text-gray-900">
+            <span className="font-semibold">{walletName}</span>
+            <span className="text-gray-400">•</span>
+            <span className="font-bold text-gray-800">{String(balance)}</span>
           </div>
+          {displayAddress && (
+            <span className="text-[11px] font-mono text-gray-600 bg-white px-2 py-0.5 rounded-full border border-gray-200 shadow-2xs">
+              {displayAddress}
+            </span>
+          )}
         </button>
 
         <button
           onClick={onDisconnect}
           title="Disconnect Wallet"
-          className="flex items-center gap-2 px-3 py-2 rounded-xl bg-gray-900 hover:bg-gray-800 border border-gray-700 text-gray-300 hover:text-white text-xs font-medium transition-all cursor-pointer"
+          className="w-8 h-8 rounded-full bg-gray-900 hover:bg-black text-white flex items-center justify-center transition-all cursor-pointer shadow-sm"
         >
-          <ShieldCheck className="w-3.5 h-3.5 text-purple-400" />
-          <span className="font-mono text-emerald-400 capitalize hidden sm:inline">{networkId}</span>
-          <LogOut className="w-3.5 h-3.5 text-gray-400 hover:text-red-400 ml-1" />
+          <LogOut className="w-3.5 h-3.5" />
         </button>
       </div>
     );
   }
 
   return (
-    <div className="flex flex-col items-end gap-1 font-mono">
-      <div className="flex items-center gap-2">
-        {/* Prover status indicator */}
-        <div
-          title={
-            proofServerUp
-              ? 'Local Docker Prover Running (port 6300)'
-              : '1AM Wallet Extension Prover Active'
-          }
-          className="p-2 rounded-xl border border-purple-800/40 bg-purple-950/50"
-        >
-          <Server className="w-4 h-4 text-emerald-400" />
-        </div>
-
-        {onScan && (
-          <button
-            onClick={onScan}
-            title="Scan for wallet extensions"
-            className="p-2 rounded-xl bg-gray-900 hover:bg-gray-800 border border-gray-800 text-gray-400 hover:text-purple-300 transition-all cursor-pointer"
-          >
-            <Search className="w-4 h-4" />
-          </button>
+    <div className="flex items-center gap-2 font-sans">
+      <button
+        onClick={onOpenModal}
+        disabled={isConnecting}
+        className="bg-gray-900 hover:bg-black text-white text-xs font-medium rounded-full px-4 py-2 flex items-center gap-2 transition-all cursor-pointer shadow-sm disabled:opacity-50"
+      >
+        {isConnecting ? (
+          <>
+            <RefreshCw className="w-3.5 h-3.5 animate-spin text-orange-400" />
+            <span>Connecting…</span>
+          </>
+        ) : (
+          <>
+            <Wallet className="w-3.5 h-3.5 text-orange-400" />
+            <span>Connect 1AM Wallet</span>
+          </>
         )}
+      </button>
 
-        <button
-          onClick={onOpenModal}
-          disabled={isConnecting}
-          className="flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-medium text-xs shadow-lg shadow-purple-950 border border-purple-400/40 transition-all cursor-pointer disabled:opacity-50"
-        >
-          {isConnecting ? (
-            <>
-              <RefreshCw className="w-3.5 h-3.5 animate-spin text-purple-200" />
-              <span>Opening 1AM Wallet…</span>
-            </>
-          ) : (
-            <>
-              <Wallet className="w-4 h-4 text-purple-200" />
-              <span>Connect 1AM Wallet</span>
-              {detectedWallets.length > 0 && (
-                <span className="text-[10px] bg-emerald-950 text-emerald-400 px-1.5 py-0.5 rounded-full border border-emerald-800/50">
-                  {detectedWallets.length} found
-                </span>
-              )}
-            </>
-          )}
-        </button>
-      </div>
-
-      {/* Error display */}
       {error && (
-        <div className="flex flex-col items-end gap-0.5 mt-1 max-w-sm text-right">
-          <div className="flex items-center gap-1.5 text-[11px] text-red-300 bg-red-950/90 px-3 py-1.5 rounded-lg border border-red-800/80">
-            <AlertTriangle className="w-3.5 h-3.5 text-red-400 shrink-0" />
-            <span>{error}</span>
-          </div>
+        <div className="hidden lg:flex items-center gap-1 text-[11px] text-red-600 bg-red-50 border border-red-200 px-2.5 py-1 rounded-full">
+          <AlertTriangle className="w-3 h-3 text-red-500 shrink-0" />
+          <span className="truncate max-w-[120px]">{error}</span>
         </div>
       )}
-
-
     </div>
   );
 };

@@ -15,14 +15,14 @@ interface ProtocolLogProps {
 
 export const ProtocolLog: React.FC<ProtocolLogProps> = ({ logs }) => {
   return (
-    <div className="bg-[#0F141C] border border-gray-800 rounded-2xl p-4 space-y-3 font-mono">
+    <div className="bg-white border border-gray-200/80 rounded-2xl p-5 space-y-3 font-sans shadow-sm">
       {/* Log Header */}
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2 text-xs font-bold text-gray-200">
-          <Activity className="w-4 h-4 text-emerald-400" />
+        <div className="flex items-center gap-2 text-xs font-bold text-gray-900">
+          <Activity className="w-4 h-4 text-orange-500" />
           <span>LIVE PROTOCOL LOG</span>
         </div>
-        <span className="text-[10px] px-2 py-0.5 rounded bg-emerald-950 text-emerald-400 border border-emerald-800/50 font-bold uppercase tracking-wider">
+        <span className="text-[10px] px-2.5 py-0.5 rounded-full bg-gray-100 text-gray-800 font-bold uppercase tracking-wider">
           REAL-TIME
         </span>
       </div>
@@ -30,7 +30,7 @@ export const ProtocolLog: React.FC<ProtocolLogProps> = ({ logs }) => {
       {/* Log Stream List */}
       <div className="space-y-2 max-h-[380px] overflow-y-auto pr-1">
         {logs.length === 0 ? (
-          <div className="p-4 text-center text-xs text-gray-500 bg-[#080B10] rounded-xl border border-gray-900">
+          <div className="p-4 text-center text-xs text-gray-500 bg-gray-50 rounded-xl border border-gray-200 font-sans">
             No protocol events logged yet. Connect wallet or generate strategy.
           </div>
         ) : (
@@ -39,10 +39,10 @@ export const ProtocolLog: React.FC<ProtocolLogProps> = ({ logs }) => {
               key={log.id}
               className={`p-3 rounded-xl border text-xs space-y-1 transition-all ${
                 log.type === 'error'
-                  ? 'bg-red-950/40 border-red-800/80 text-red-200'
+                  ? 'bg-red-50 border-red-200 text-red-900'
                   : log.type === 'success'
-                  ? 'bg-emerald-950/30 border-emerald-800/60 text-emerald-200'
-                  : 'bg-gray-900/60 border-gray-800 text-gray-300'
+                  ? 'bg-emerald-50 border-emerald-200 text-emerald-900'
+                  : 'bg-gray-50 border-gray-200 text-gray-800'
               }`}
             >
               <div className="flex items-center justify-between">
@@ -52,15 +52,15 @@ export const ProtocolLog: React.FC<ProtocolLogProps> = ({ logs }) => {
                       log.type === 'error'
                         ? 'bg-red-500'
                         : log.type === 'success'
-                        ? 'bg-emerald-400'
-                        : 'bg-purple-400'
+                        ? 'bg-emerald-500'
+                        : 'bg-orange-500'
                     }`}
                   ></span>
                   <span>{log.title}</span>
                 </div>
-                <span className="text-[10px] text-gray-500">{log.timestamp}</span>
+                <span className="text-[10px] text-gray-500 font-mono">{log.timestamp}</span>
               </div>
-              <p className="text-[11px] font-mono leading-relaxed text-gray-400 pl-4">{log.detail}</p>
+              <p className="text-[11px] font-mono leading-relaxed text-gray-600 pl-4">{log.detail}</p>
             </div>
           ))
         )}

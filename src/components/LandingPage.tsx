@@ -85,12 +85,16 @@ export const LandingPage: React.FC<LandingPageProps> = ({
             {/* Left Nav */}
             <div className="flex items-center gap-6 pl-1">
               <a href="#hero" className="flex items-center gap-2.5 group">
-                <div className="w-9 h-9 sm:w-10 sm:h-10 bg-gray-900 rounded-full flex items-center justify-center shadow-inner transition-transform duration-300 group-hover:scale-105">
-                  <span className="text-white text-[10px] sm:text-[11px] font-bold tracking-tight">AX</span>
+                <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full overflow-hidden shadow-xs border border-gray-200 bg-gray-900 flex items-center justify-center shrink-0">
+                  <img
+                    src="/axiom-logo.png"
+                    alt="Axiom Trade"
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                  />
                 </div>
                 <div className="flex flex-col">
                   <span className="text-xs font-extrabold text-gray-900 tracking-tight leading-none">AXIOM</span>
-                  <span className="text-[9px] text-gray-600 font-semibold tracking-wider uppercase">STUDIO</span>
+                  <span className="text-[9px] text-gray-600 font-semibold tracking-wider uppercase">TRADE</span>
                 </div>
               </a>
 
@@ -457,21 +461,22 @@ export const LandingPage: React.FC<LandingPageProps> = ({
       </section>
 
       {/* Footer minimal branding bar */}
-      <footer className="bg-white border-t border-gray-200 py-8 px-5 sm:px-8 lg:px-12 text-xs text-gray-500 font-mono">
+      <footer className="bg-white border-t border-gray-200 py-8 px-5 sm:px-8 lg:px-12 text-xs text-gray-500 font-sans">
         <div className="max-w-[1440px] mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-2">
-            <div className="w-5 h-5 bg-gray-900 rounded-full flex items-center justify-center text-[8px] font-bold text-white">AX</div>
-            <span className="font-semibold text-gray-900">AXIOM TRADE</span>
-            <span>— Private moves. Public proof.</span>
+          <div className="flex items-center gap-2.5">
+            <img src="/axiom-logo.png" alt="Axiom Trade" className="w-6 h-6 rounded-full object-cover shadow-2xs" />
+            <span className="font-bold text-gray-900">AXIOM TRADE</span>
+            <span className="text-gray-400">•</span>
+            <span className="text-gray-600 font-medium">Private moves. Public proof.</span>
           </div>
 
           <div className="flex items-center gap-6">
             <span>Midnight Testnet Enabled</span>
             <button
               onClick={walletConnected ? onEnterDashboard : onConnectWallet}
-              className="text-purple-600 hover:text-purple-700 font-bold underline cursor-pointer"
+              className="text-orange-600 hover:text-orange-700 font-bold underline cursor-pointer"
             >
-              {walletConnected ? 'Go to Dashboard →' : 'Connect 1AM Wallet →'}
+              {walletConnected ? 'Launch Dashboard →' : 'Connect 1AM Wallet →'}
             </button>
           </div>
         </div>

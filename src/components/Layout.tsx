@@ -1,6 +1,5 @@
 import React from 'react';
 import {
-  Shield,
   LayoutDashboard,
   LineChart,
   Cpu,
@@ -8,7 +7,8 @@ import {
   History,
   ArrowUpRight,
   Sparkles,
-  Blocks
+  Blocks,
+  Clock
 } from 'lucide-react';
 import { WalletConnect } from './WalletConnect';
 import type { DetectedWallet } from '../lib/lace-wallet';
@@ -67,59 +67,96 @@ export const Layout: React.FC<LayoutProps> = ({
     { id: 'market-insights', label: 'Market Insights', icon: LineChart },
     { id: 'portfolio', label: 'Portfolio', icon: PieChart },
     { id: 'trade-history', label: 'Trade History', icon: History },
-    { id: 'withdraw', label: 'Withdraw & Settings', icon: ArrowUpRight }
+    { id: 'withdraw', label: 'Vault & Withdraw', icon: ArrowUpRight }
   ];
 
   return (
-    <div className="min-h-screen bg-[#0B0E14] text-gray-100 flex flex-col font-sans">
-      {/* Top Navbar */}
-      <header className="h-16 border-b border-gray-800/80 bg-gray-950/80 backdrop-blur-md sticky top-0 z-50 flex items-center justify-between px-4 sm:px-6">
-        <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-purple-600 to-indigo-500 flex items-center justify-center shadow-lg shadow-purple-900/30 border border-purple-400/30">
-            <Shield className="w-5 h-5 text-white" />
+    <div className="min-h-screen bg-[#EFEFEF] text-gray-900 flex flex-col font-sans selection:bg-orange-500 selection:text-white">
+      {/* Top Navbar — Pill Shape Matching Landing Page */}
+      <header className="w-full max-w-[1440px] mx-auto p-2 sm:p-3 sticky top-0 z-50">
+        <nav className="bg-white rounded-full p-[5px] pl-3 pr-2 flex items-center justify-between shadow-sm border border-gray-200/80">
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => setActiveTab('landing')}
+              className="flex items-center gap-3 group cursor-pointer text-left"
+            >
+              <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full overflow-hidden shadow-sm border border-gray-200/60 shrink-0 bg-gray-900">
+                <img
+                  src="/axiom-logo.png"
+                  alt="Axiom Logo"
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                />
+              </div>
+              <div className="flex flex-col">
+                <div className="flex items-center gap-2">
+                  <span className="text-xs sm:text-sm font-extrabold text-gray-900 tracking-tight leading-none">
+                    AXIOM
+                  </span>
+                  <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-gray-900 text-white uppercase tracking-wider">
+                    {networkId}
+                  </span>
+                </div>
+                <span className="text-[10px] text-gray-500 font-medium hidden sm:block">
+                  Private moves. Public proof.
+                </span>
+              </div>
+            </button>
           </div>
-          <div>
-            <div className="flex items-center gap-2">
-              <span className="font-bold text-base tracking-tight text-white font-mono">AXIOM</span>
-              <span className="text-[10px] font-mono font-semibold px-2 py-0.5 rounded bg-purple-950 text-purple-300 border border-purple-800/40">
-                MIDNIGHT ZK
-              </span>
-            </div>
-            <span className="text-[11px] text-gray-400 hidden sm:block">
-              Privacy-First Natural-Language Trading Agent
-            </span>
-          </div>
-        </div>
 
-        {/* Header Right: Wallet Connect */}
-        <WalletConnect
-          connected={walletConnected}
-          address={walletAddress}
-          shieldedAddress={shieldedAddress}
-          walletName={walletName}
-          networkId={networkId}
-          balance={balance}
-          shieldedBalance={shieldedBalance}
-          unshieldedBalance={unshieldedBalance}
-          isConnecting={isConnecting}
-          error={error}
-          proofServerUp={proofServerUp}
-          dustReady={dustReady}
-          detectedWallets={detectedWallets}
-          onOpenModal={onOpenModal}
-          onScan={onScan}
-          onConnect={onConnect}
-          onDisconnect={onDisconnect}
-        />
+          {/* Center Tabs on desktop */}
+          <div className="hidden lg:flex items-center gap-1 bg-gray-100/80 p-1 rounded-full border border-gray-200/60">
+            {navItems.map((item) => {
+              const isActive = activeTab === item.id;
+              const Icon = item.icon;
+              return (
+                <button
+                  key={item.id}
+                  onClick={() => setActiveTab(item.id)}
+                  className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all flex items-center gap-1.5 cursor-pointer ${
+                    isActive
+                      ? 'bg-gray-900 text-white shadow-sm'
+                      : 'text-gray-600 hover:text-gray-900 hover:bg-white/60'
+                  }`}
+                >
+                  <Icon className={`w-3.5 h-3.5 ${isActive ? 'text-orange-400' : 'text-gray-500'}`} />
+                  <span>{item.label}</span>
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Header Right: Wallet Connect */}
+          <div className="flex items-center gap-3">
+            <WalletConnect
+              connected={walletConnected}
+              address={walletAddress}
+              shieldedAddress={shieldedAddress}
+              walletName={walletName}
+              networkId={networkId}
+              balance={balance}
+              shieldedBalance={shieldedBalance}
+              unshieldedBalance={unshieldedBalance}
+              isConnecting={isConnecting}
+              error={error}
+              proofServerUp={proofServerUp}
+              dustReady={dustReady}
+              detectedWallets={detectedWallets}
+              onOpenModal={onOpenModal}
+              onScan={onScan}
+              onConnect={onConnect}
+              onDisconnect={onDisconnect}
+            />
+          </div>
+        </nav>
       </header>
 
       {/* Main Container with Sidebar + Content */}
-      <div className="flex-1 flex overflow-hidden">
-        {/* Sidebar */}
-        <aside className="w-64 border-r border-gray-800/80 bg-gray-950/50 hidden md:flex flex-col justify-between p-4 shrink-0">
-          <div className="space-y-1">
-            <div className="px-3 py-2 text-[10px] font-mono uppercase tracking-wider text-gray-500 font-semibold">
-              Agent Navigation
+      <div className="w-full max-w-[1440px] mx-auto flex-1 flex overflow-hidden px-2 sm:px-4 pb-4 gap-4">
+        {/* Sidebar (Desktop) */}
+        <aside className="w-64 bg-white border border-gray-200/80 rounded-2xl hidden md:flex flex-col justify-between p-4 shrink-0 shadow-sm">
+          <div className="space-y-1.5">
+            <div className="px-3 py-1 text-[11px] font-semibold uppercase tracking-wider text-gray-500">
+              Protocol Modules
             </div>
             {navItems.map((item) => {
               const Icon = item.icon;
@@ -130,16 +167,16 @@ export const Layout: React.FC<LayoutProps> = ({
                   onClick={() => setActiveTab(item.id)}
                   className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-medium transition-all cursor-pointer ${
                     isActive
-                      ? 'bg-purple-950/60 border border-purple-700/50 text-white shadow-md shadow-purple-950/50'
-                      : 'text-gray-400 hover:text-gray-200 hover:bg-gray-900/60 border border-transparent'
+                      ? 'bg-gray-900 text-white shadow-md'
+                      : 'text-gray-700 hover:text-gray-900 hover:bg-gray-100/80 border border-transparent'
                   }`}
                 >
                   <div className="flex items-center gap-2.5">
-                    <Icon className={`w-4 h-4 ${isActive ? 'text-purple-400' : 'text-gray-500'}`} />
-                    <span>{item.label}</span>
+                    <Icon className={`w-4 h-4 ${isActive ? 'text-[#F26522]' : 'text-gray-500'}`} />
+                    <span className="font-medium">{item.label}</span>
                   </div>
                   {item.highlight && (
-                    <span className="w-1.5 h-1.5 rounded-full bg-purple-400 animate-pulse"></span>
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#F26522]"></span>
                   )}
                 </button>
               );
@@ -147,58 +184,67 @@ export const Layout: React.FC<LayoutProps> = ({
           </div>
 
           {/* Sidebar Footer Info */}
-          <div className="bg-gray-900/70 border border-gray-800/80 rounded-xl p-3 space-y-2 font-mono">
-            <div className="flex items-center justify-between text-[11px]">
-              <span className="text-gray-400 flex items-center gap-1">
-                <Sparkles className="w-3 h-3 text-purple-400" /> Circuit Model
+          <div className="bg-gray-50 border border-gray-200/80 rounded-xl p-3.5 space-y-2 text-xs">
+            <div className="flex items-center justify-between font-medium">
+              <span className="text-gray-600 flex items-center gap-1.5">
+                <Sparkles className="w-3.5 h-3.5 text-[#F26522]" /> ZK Engine
               </span>
-              <span className="text-purple-300 text-[10px]">compact v0.24</span>
+              <span className="text-gray-900 font-bold text-[10px] bg-white px-2 py-0.5 rounded border border-gray-200">
+                Compact v0.24
+              </span>
             </div>
-            <div className="text-[10px] text-gray-500 space-y-0.5">
-              <div className="capitalize flex items-center justify-between">
-                <span>Network:</span>
-                <span className="text-gray-300">Midnight {networkId}</span>
+            <div className="text-[11px] text-gray-500 space-y-1 pt-1 border-t border-gray-200/60">
+              <div className="flex items-center justify-between">
+                <span>Active Network:</span>
+                <span className="font-semibold text-gray-800 uppercase">{networkId}</span>
               </div>
               {latestBlockHeight && (
-                <div className="flex items-center justify-between text-emerald-400 font-bold">
-                  <span className="flex items-center gap-1 text-gray-400 font-normal">
-                    <Blocks className="w-3.5 h-3.5 text-emerald-400" /> Block:
+                <div className="flex items-center justify-between text-emerald-600 font-semibold">
+                  <span className="flex items-center gap-1 text-gray-500 font-normal">
+                    <Blocks className="w-3.5 h-3.5" /> Block:
                   </span>
                   <span>#{latestBlockHeight.toLocaleString()}</span>
                 </div>
               )}
-              <div>State: Shielded Witnesses</div>
             </div>
           </div>
         </aside>
 
         {/* Main Content Viewport */}
-        <main className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-6">
+        <main className="flex-1 overflow-y-auto space-y-6">
           {children}
         </main>
       </div>
 
-      {/* Footer Ticker */}
-      <footer className="h-9 border-t border-gray-800/80 bg-gray-950/90 px-4 flex items-center justify-between text-[11px] font-mono text-gray-400">
-        <div className="flex items-center gap-4 overflow-x-auto no-scrollbar">
-          <span className="text-gray-500 font-semibold uppercase">{networkId} FEED:</span>
-          {latestBlockHeight && (
-            <span className="text-emerald-400 font-bold flex items-center gap-1">
-              BLOCK #{latestBlockHeight.toLocaleString()}
-            </span>
-          )}
-          <span className="text-gray-700">|</span>
-          <span>ADA/USD: <span className="text-emerald-400 font-bold">$0.421</span> (+2.4%)</span>
-          <span className="text-gray-700">|</span>
-          <span>BTC/USD: <span className="text-emerald-400 font-bold">$61,250</span> (+1.1%)</span>
-          <span className="text-gray-700">|</span>
-          <span>tNIGHT: <span className="text-purple-400 font-bold">$1.00</span></span>
-        </div>
-        <div className="hidden sm:flex items-center gap-2 text-gray-500">
-          <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
-          <span>Midnight Explorer API Synced</span>
+      {/* Footer Ticker Matching Landing Page */}
+      <footer className="bg-white border-t border-gray-200 py-2.5 px-4 sm:px-6 text-xs text-gray-600 font-mono">
+        <div className="max-w-[1440px] mx-auto flex flex-col sm:flex-row items-center justify-between gap-3">
+          <div className="flex items-center gap-3 overflow-x-auto no-scrollbar">
+            <div className="flex items-center gap-1.5">
+              <img src="/axiom-logo.png" alt="Axiom" className="w-4 h-4 rounded-full object-cover" />
+              <span className="font-bold text-gray-900">AXIOM TRADE</span>
+            </div>
+            <span className="text-gray-300">•</span>
+            {latestBlockHeight && (
+              <span className="text-emerald-700 font-semibold flex items-center gap-1">
+                BLOCK #{latestBlockHeight.toLocaleString()}
+              </span>
+            )}
+            <span className="text-gray-300">•</span>
+            <span>ADA/USD: <span className="text-gray-900 font-bold">$0.421</span></span>
+            <span className="text-gray-300">•</span>
+            <span>BTC/USD: <span className="text-gray-900 font-bold">$61,250</span></span>
+            <span className="text-gray-300">•</span>
+            <span>tNIGHT: <span className="text-gray-900 font-bold">$1.00</span></span>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
+            <span className="text-gray-700 font-medium">Midnight Preview Explorer API Active</span>
+          </div>
         </div>
       </footer>
     </div>
   );
 };
+

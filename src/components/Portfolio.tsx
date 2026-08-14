@@ -48,110 +48,110 @@ export const Portfolio: React.FC<PortfolioProps> = ({
   const roiPct = Number(((totalRealizedPnl / 10000) * 100).toFixed(2));
 
   return (
-    <div className="max-w-6xl mx-auto space-y-6 font-mono text-gray-100">
+    <div className="max-w-6xl mx-auto space-y-6 font-sans text-gray-900">
       {/* Top Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-[#0F141C] border border-gray-800/90 rounded-2xl p-6 shadow-xl">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white border border-gray-200/80 rounded-2xl p-6 shadow-sm">
         <div className="space-y-1">
           <div className="flex items-center gap-2">
-            <PieChart className="w-5 h-5 text-purple-400" />
-            <h1 className="text-xl font-extrabold text-white">Shielded Portfolio & P&L Analytics</h1>
-            <span className="text-[10px] bg-emerald-950 text-emerald-400 border border-emerald-800/50 px-2.5 py-0.5 rounded-full font-bold">
+            <PieChart className="w-5 h-5 text-orange-500" />
+            <h1 className="text-xl font-extrabold text-gray-900">Shielded Portfolio & P&L Analytics</h1>
+            <span className="text-[10px] bg-emerald-100 text-emerald-800 px-2.5 py-0.5 rounded-full font-bold">
               CLIENT-SIDE DECRYPTED
             </span>
           </div>
-          <p className="text-xs text-gray-400">
-            Portfolio values and position sizes are computed <strong className="text-purple-300">entirely client-side</strong> from decrypted shielded state. They are never published on-chain.
+          <p className="text-xs text-gray-600">
+            Portfolio values and position sizes are computed <strong className="text-gray-900">entirely client-side</strong> from decrypted shielded state. They are never published on-chain.
           </p>
         </div>
 
         <button
           onClick={() => onNavigateTab('withdraw')}
-          className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-purple-950 hover:bg-purple-900 border border-purple-700/60 text-purple-300 font-bold text-xs transition-all cursor-pointer shrink-0"
+          className="flex items-center gap-2 px-4 py-2.5 rounded-full bg-gray-900 hover:bg-black text-white font-semibold text-xs transition-all cursor-pointer shrink-0 shadow-sm"
         >
-          <ArrowUpRight className="w-4 h-4 text-purple-400" />
-          <span>Unshield & Withdraw</span>
+          <ArrowUpRight className="w-4 h-4 text-orange-400" />
+          <span>Shielded Vault & Withdraw</span>
         </button>
       </div>
 
       {/* Top P&L Metric Cards Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {/* Estimated Total Value */}
-        <div className="bg-[#0F141C] border border-gray-800/90 rounded-2xl p-4 space-y-1 shadow-lg">
-          <span className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">TOTAL PORTFOLIO VALUE</span>
-          <div className="text-2xl font-extrabold text-white pt-1">
+        <div className="bg-white border border-gray-200/80 rounded-2xl p-5 space-y-1 shadow-sm">
+          <span className="text-[11px] text-gray-500 font-semibold uppercase tracking-wider">TOTAL PORTFOLIO VALUE</span>
+          <div className="text-2xl font-extrabold text-gray-900 pt-1">
             ${estimatedPortfolioValue.toLocaleString(undefined, { minimumFractionDigits: 2 })}
           </div>
-          <div className="flex items-center gap-1 text-[11px] text-emerald-400 font-bold pt-1">
+          <div className="flex items-center gap-1 text-xs text-emerald-700 font-bold pt-1">
             <TrendingUp className="w-3.5 h-3.5" />
             <span>+${totalRealizedPnl >= 0 ? totalRealizedPnl.toFixed(2) : '0.00'} All-Time</span>
           </div>
         </div>
 
         {/* Realized Profit & Loss */}
-        <div className="bg-[#0F141C] border border-gray-800/90 rounded-2xl p-4 space-y-1 shadow-lg">
-          <span className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">REALIZED PROFIT / LOSS</span>
-          <div className={`text-2xl font-extrabold pt-1 ${totalRealizedPnl >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
+        <div className="bg-white border border-gray-200/80 rounded-2xl p-5 space-y-1 shadow-sm">
+          <span className="text-[11px] text-gray-500 font-semibold uppercase tracking-wider">REALIZED PROFIT / LOSS</span>
+          <div className={`text-2xl font-extrabold pt-1 ${totalRealizedPnl >= 0 ? 'text-emerald-700' : 'text-red-600'}`}>
             {totalRealizedPnl >= 0 ? '+' : ''}${totalRealizedPnl.toFixed(2)}
           </div>
-          <div className="flex items-center gap-1 text-[11px] text-purple-300 font-bold pt-1">
+          <div className="flex items-center gap-1 text-xs text-gray-600 font-bold pt-1">
             <span>ROI: {roiPct >= 0 ? '+' : ''}{roiPct}%</span>
           </div>
         </div>
 
         {/* Win Rate */}
-        <div className="bg-[#0F141C] border border-gray-800/90 rounded-2xl p-4 space-y-1 shadow-lg">
-          <span className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">AGENT WIN RATE</span>
-          <div className="text-2xl font-extrabold text-amber-300 pt-1">
+        <div className="bg-white border border-gray-200/80 rounded-2xl p-5 space-y-1 shadow-sm">
+          <span className="text-[11px] text-gray-500 font-semibold uppercase tracking-wider">AGENT WIN RATE</span>
+          <div className="text-2xl font-extrabold text-orange-600 pt-1">
             {winRatePct}%
           </div>
-          <span className="text-[10px] text-gray-400 block pt-1">
+          <span className="text-[11px] text-gray-500 block pt-1">
             {winCount} / {executedTrades.length} Successful Proven Trades
           </span>
         </div>
 
         {/* Active Circuit Risk Exposure */}
-        <div className="bg-[#0F141C] border border-gray-800/90 rounded-2xl p-4 space-y-1 shadow-lg">
-          <span className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">ACTIVE RISK ALLOCATION</span>
-          <div className="text-2xl font-extrabold text-purple-300 pt-1">
+        <div className="bg-white border border-gray-200/80 rounded-2xl p-5 space-y-1 shadow-sm">
+          <span className="text-[11px] text-gray-500 font-semibold uppercase tracking-wider">ACTIVE RISK ALLOCATION</span>
+          <div className="text-2xl font-extrabold text-gray-900 pt-1">
             ${totalTradedVolume.toLocaleString()}
           </div>
-          <span className="text-[10px] text-emerald-400 block pt-1">
+          <span className="text-[11px] text-emerald-700 font-medium block pt-1">
             ↑ {activeStrategies.length} Active Circuit Constraints
           </span>
         </div>
       </div>
 
       {/* Shielded State Security Banner */}
-      <div className="p-4 bg-[#080B10] border border-purple-900/50 rounded-2xl flex items-center justify-between gap-4 text-xs">
+      <div className="p-4 bg-white border border-gray-200/80 rounded-2xl flex items-center justify-between gap-4 text-xs shadow-xs">
         <div className="flex items-center gap-3">
-          <EyeOff className="w-5 h-5 text-purple-400 shrink-0" />
+          <EyeOff className="w-5 h-5 text-orange-500 shrink-0" />
           <div className="space-y-0.5">
-            <span className="font-bold text-white">Midnight Zero-Knowledge Balance State ({networkId})</span>
-            <p className="text-gray-400 text-[11px]">
-              Shielded Note: <strong className="text-emerald-400">{shieldedBalance}</strong> | Unshielded Public: <strong className="text-purple-300">{unshieldedBalance}</strong> | DUST Fuel: <strong className="text-emerald-400">{dustBalance}</strong>
+            <span className="font-bold text-gray-900">Midnight Zero-Knowledge Balance State ({networkId})</span>
+            <p className="text-gray-600 text-[11px]">
+              Shielded Note: <strong className="text-emerald-700">{shieldedBalance}</strong> | Unshielded Public: <strong className="text-gray-900">{unshieldedBalance}</strong> | DUST Fuel: <strong className="text-emerald-700">{dustBalance}</strong>
             </p>
           </div>
         </div>
 
-        <div className="hidden sm:flex items-center gap-1 text-[11px] text-emerald-400 font-bold bg-emerald-950/80 px-3 py-1 rounded-lg border border-emerald-800/60">
-          <ShieldCheck className="w-3.5 h-3.5" />
+        <div className="hidden sm:flex items-center gap-1 text-[11px] text-emerald-800 font-bold bg-emerald-100 px-3 py-1 rounded-full">
+          <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
           <span>Proven Client-Side</span>
         </div>
       </div>
 
       {/* Detailed Holdings & Position Breakdown Table */}
-      <div className="bg-[#0F141C] border border-gray-800 rounded-2xl p-6 space-y-4 shadow-xl">
+      <div className="bg-white border border-gray-200/80 rounded-2xl p-6 space-y-4 shadow-sm">
         <div className="flex items-center justify-between">
-          <h2 className="text-sm font-bold text-white flex items-center gap-2">
-            <Activity className="w-4 h-4 text-purple-400" />
+          <h2 className="text-sm font-bold text-gray-900 flex items-center gap-2">
+            <Activity className="w-4 h-4 text-orange-500" />
             Shielded & Unshielded Asset Holdings
           </h2>
           <span className="text-xs text-gray-500">Auto-synced with Midnight Explorer API</span>
         </div>
 
-        <div className="bg-[#080B10] border border-gray-800/90 rounded-xl overflow-hidden text-xs">
+        <div className="bg-white border border-gray-200 rounded-xl overflow-hidden text-xs">
           <table className="w-full text-left">
-            <thead className="bg-[#0F141C] text-gray-400 border-b border-gray-800">
+            <thead className="bg-gray-50 text-gray-500 border-b border-gray-200 uppercase font-semibold text-[10px]">
               <tr>
                 <th className="p-3.5">Asset</th>
                 <th className="p-3.5">Ledger Layer</th>
@@ -160,48 +160,48 @@ export const Portfolio: React.FC<PortfolioProps> = ({
                 <th className="p-3.5">Privacy Witness State</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-800/80 text-gray-200">
+            <tbody className="divide-y divide-gray-100 text-gray-800 font-medium">
               <tr>
-                <td className="p-3.5 font-bold text-purple-300">Shielded Vault (vUSD)</td>
-                <td className="p-3.5 text-purple-400 font-semibold">Shielded Vault Note</td>
-                <td className="p-3.5 font-bold text-purple-300">$10,000 vUSD</td>
-                <td className="p-3.5 font-bold text-white">$10,000.00</td>
-                <td className="p-3.5 text-purple-400">Shielded USDC-Equivalent Note</td>
+                <td className="p-3.5 font-bold text-orange-600">Shielded Vault (vUSD)</td>
+                <td className="p-3.5 text-gray-600">Shielded Vault Note</td>
+                <td className="p-3.5 font-bold text-gray-900">$10,000 vUSD</td>
+                <td className="p-3.5 font-bold text-gray-900">$10,000.00</td>
+                <td className="p-3.5 text-emerald-700">Shielded USDC-Equivalent Note</td>
               </tr>
               <tr>
-                <td className="p-3.5 font-bold text-emerald-300">tNIGHT (Shielded)</td>
-                <td className="p-3.5 text-emerald-400 font-semibold">Shielded Note</td>
-                <td className="p-3.5 font-bold text-emerald-400">{shieldedBalance}</td>
-                <td className="p-3.5 font-bold text-white">${(5000.00).toLocaleString(undefined, { minimumFractionDigits: 2 })}</td>
-                <td className="p-3.5 text-emerald-400">Encrypted Witness Note</td>
+                <td className="p-3.5 font-bold text-emerald-700">tNIGHT (Shielded)</td>
+                <td className="p-3.5 text-gray-600">Shielded Note</td>
+                <td className="p-3.5 font-bold text-emerald-700">{shieldedBalance}</td>
+                <td className="p-3.5 font-bold text-gray-900">${(5000.00).toLocaleString(undefined, { minimumFractionDigits: 2 })}</td>
+                <td className="p-3.5 text-emerald-700">Encrypted Witness Note</td>
               </tr>
               <tr>
-                <td className="p-3.5 font-bold text-indigo-300">tNIGHT (Unshielded)</td>
-                <td className="p-3.5 text-purple-300 font-semibold">Public Address</td>
-                <td className="p-3.5 font-bold text-purple-300">{unshieldedBalance}</td>
-                <td className="p-3.5 font-bold text-white">${(5000.00).toLocaleString(undefined, { minimumFractionDigits: 2 })}</td>
-                <td className="p-3.5 text-purple-300">Public Ledger Address</td>
+                <td className="p-3.5 font-bold text-gray-900">tNIGHT (Unshielded)</td>
+                <td className="p-3.5 text-gray-600">Public Address</td>
+                <td className="p-3.5 font-bold text-gray-800">{unshieldedBalance}</td>
+                <td className="p-3.5 font-bold text-gray-900">${(5000.00).toLocaleString(undefined, { minimumFractionDigits: 2 })}</td>
+                <td className="p-3.5 text-gray-600">Public Ledger Address</td>
               </tr>
               <tr>
-                <td className="p-3.5 font-bold text-amber-300">tDUST Reserve</td>
-                <td className="p-3.5 text-amber-400 font-semibold">ProofStation Reserve</td>
-                <td className="p-3.5 font-bold text-emerald-400">{dustBalance}</td>
+                <td className="p-3.5 font-bold text-emerald-700">tDUST Reserve</td>
+                <td className="p-3.5 text-gray-600">ProofStation Reserve</td>
+                <td className="p-3.5 font-bold text-emerald-700">{dustBalance}</td>
                 <td className="p-3.5 text-gray-400">—</td>
-                <td className="p-3.5 text-amber-300">Transaction Gas Reserve</td>
+                <td className="p-3.5 text-gray-600">Transaction Gas Reserve</td>
               </tr>
               <tr>
-                <td className="p-3.5 font-bold text-cyan-300">ADA (Paper Position)</td>
-                <td className="p-3.5 text-cyan-400 font-semibold">Strategy Witness</td>
-                <td className="p-3.5 font-bold text-cyan-300">5,820 ADA</td>
-                <td className="p-3.5 font-bold text-white">${(5820 * 0.421).toLocaleString(undefined, { minimumFractionDigits: 2 })}</td>
-                <td className="p-3.5 text-cyan-400">Paper position against Vault</td>
+                <td className="p-3.5 font-bold text-blue-600">ADA (Paper Position)</td>
+                <td className="p-3.5 text-gray-600">Strategy Witness</td>
+                <td className="p-3.5 font-bold text-blue-600">5,820 ADA</td>
+                <td className="p-3.5 font-bold text-gray-900">${(5820 * 0.421).toLocaleString(undefined, { minimumFractionDigits: 2 })}</td>
+                <td className="p-3.5 text-gray-600">Paper position against Vault</td>
               </tr>
               <tr>
-                <td className="p-3.5 font-bold text-blue-300">AAPL (Stock Paper Position)</td>
-                <td className="p-3.5 text-blue-400 font-semibold">Stock Paper Feed</td>
-                <td className="p-3.5 font-bold text-blue-300">10 AAPL</td>
-                <td className="p-3.5 font-bold text-white">${(10 * 228.5).toLocaleString(undefined, { minimumFractionDigits: 2 })}</td>
-                <td className="p-3.5 text-blue-400">Paper position against Vault</td>
+                <td className="p-3.5 font-bold text-indigo-600">AAPL (Stock Paper Position)</td>
+                <td className="p-3.5 text-gray-600">Stock Paper Feed</td>
+                <td className="p-3.5 font-bold text-indigo-600">10 AAPL</td>
+                <td className="p-3.5 font-bold text-gray-900">${(10 * 228.5).toLocaleString(undefined, { minimumFractionDigits: 2 })}</td>
+                <td className="p-3.5 text-gray-600">Paper position against Vault</td>
               </tr>
             </tbody>
           </table>

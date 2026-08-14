@@ -135,33 +135,33 @@ export const MarketInsights: React.FC<MarketInsightsProps> = ({
   const selectedData = marketData.find((m) => m.symbol === selectedAsset) || marketData[0];
 
   return (
-    <div className="max-w-6xl mx-auto space-y-6 font-mono text-gray-100">
+    <div className="max-w-6xl mx-auto space-y-6 font-sans text-gray-900">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-[#0F141C] border border-gray-800/90 rounded-2xl p-6 shadow-xl">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white border border-gray-200/80 rounded-2xl p-6 shadow-sm">
         <div className="space-y-1">
           <div className="flex items-center gap-2">
-            <Activity className="w-5 h-5 text-purple-400" />
-            <h1 className="text-xl font-extrabold text-white">Market Insights & AI Signals</h1>
-            <span className="text-[10px] bg-purple-950 text-purple-300 border border-purple-800/50 px-2.5 py-0.5 rounded-full font-bold">
+            <Activity className="w-5 h-5 text-orange-500" />
+            <h1 className="text-xl font-extrabold text-gray-900">Market Insights & AI Signals</h1>
+            <span className="text-[10px] bg-gray-100 text-gray-800 border border-gray-200 px-2.5 py-0.5 rounded-full font-bold">
               LIVE FEED
             </span>
           </div>
-          <p className="text-xs text-gray-400">
+          <p className="text-xs text-gray-600">
             Off-chain price analytics & Gemini AI technical analysis. Zero private witness data is exposed during price checks.
           </p>
         </div>
 
         <div className="flex items-center gap-2">
-          <span className="text-xs text-gray-400">Target Asset:</span>
-          <div className="flex bg-[#080B10] border border-gray-800 rounded-xl p-1">
+          <span className="text-xs text-gray-500 font-medium">Target Asset:</span>
+          <div className="flex bg-gray-100 rounded-xl p-1 border border-gray-200/60">
             {marketData.map((item) => (
               <button
                 key={item.symbol}
                 onClick={() => setSelectedAsset(item.symbol)}
                 className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
                   selectedAsset === item.symbol
-                    ? 'bg-purple-950 text-purple-300 border border-purple-800/50 shadow-md'
-                    : 'text-gray-400 hover:text-white'
+                    ? 'bg-white text-gray-900 shadow-sm'
+                    : 'text-gray-600 hover:text-gray-900'
                 }`}
               >
                 {item.symbol}
@@ -183,15 +183,15 @@ export const MarketInsights: React.FC<MarketInsightsProps> = ({
               onClick={() => setSelectedAsset(item.symbol)}
               className={`text-left p-4 rounded-2xl border transition-all cursor-pointer space-y-2 ${
                 isSelected
-                  ? 'bg-[#141A26] border-purple-500/80 shadow-lg shadow-purple-950/40 ring-1 ring-purple-500/50'
-                  : 'bg-[#0F141C] border-gray-800/90 hover:border-gray-700'
+                  ? 'bg-white border-orange-500 shadow-md ring-1 ring-orange-500/30'
+                  : 'bg-white border-gray-200/80 hover:border-gray-300 shadow-xs'
               }`}
             >
               <div className="flex items-center justify-between">
-                <span className="font-bold text-sm text-white">{item.symbol}</span>
+                <span className="font-extrabold text-sm text-gray-900">{item.symbol}</span>
                 <span
                   className={`text-xs font-bold flex items-center gap-0.5 ${
-                    isPositive ? 'text-emerald-400' : 'text-red-400'
+                    isPositive ? 'text-emerald-600' : 'text-red-600'
                   }`}
                 >
                   {isPositive ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />}
@@ -200,19 +200,19 @@ export const MarketInsights: React.FC<MarketInsightsProps> = ({
                 </span>
               </div>
 
-              <div className="text-xl font-extrabold text-white">
+              <div className="text-xl font-extrabold text-gray-900">
                 ${item.price.toLocaleString(undefined, { minimumFractionDigits: item.price < 1 ? 3 : 2 })}
               </div>
 
-              <div className="flex items-center justify-between text-[10px] text-gray-500 pt-1 border-t border-gray-800/60">
+              <div className="flex items-center justify-between text-[11px] text-gray-500 pt-1 border-t border-gray-100">
                 <span>Vol: {item.volume24h}</span>
                 <span
                   className={`px-1.5 py-0.5 rounded text-[9px] font-bold uppercase ${
                     item.sentiment === 'Bullish'
-                      ? 'bg-emerald-950 text-emerald-400'
+                      ? 'bg-emerald-100 text-emerald-800'
                       : item.sentiment === 'Bearish'
-                      ? 'bg-red-950 text-red-400'
-                      : 'bg-gray-900 text-gray-400'
+                      ? 'bg-red-100 text-red-800'
+                      : 'bg-gray-100 text-gray-700'
                   }`}
                 >
                   {item.sentiment}
@@ -227,49 +227,49 @@ export const MarketInsights: React.FC<MarketInsightsProps> = ({
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Left 2 Cols: Asset Metrics & AI Signal Panel */}
         <div className="lg:col-span-2 space-y-6">
-          <div className="bg-[#0F141C] border border-gray-800/90 rounded-2xl p-6 space-y-5 shadow-xl">
-            <div className="flex items-center justify-between pb-4 border-b border-gray-800">
+          <div className="bg-white border border-gray-200/80 rounded-2xl p-6 space-y-5 shadow-sm">
+            <div className="flex items-center justify-between pb-4 border-b border-gray-200">
               <div>
-                <h2 className="text-lg font-bold text-white">{selectedData.name} ({selectedData.symbol})</h2>
-                <p className="text-xs text-gray-400">Live 24h High: ${selectedData.high24h} | Low: ${selectedData.low24h}</p>
+                <h2 className="text-lg font-bold text-gray-900">{selectedData.name} ({selectedData.symbol})</h2>
+                <p className="text-xs text-gray-500">Live 24h High: ${selectedData.high24h} | Low: ${selectedData.low24h}</p>
               </div>
 
               <div className="text-right">
-                <div className="text-2xl font-extrabold text-white">
+                <div className="text-2xl font-extrabold text-gray-900">
                   ${selectedData.price.toLocaleString(undefined, { minimumFractionDigits: selectedData.price < 1 ? 3 : 2 })}
                 </div>
-                <div className={`text-xs font-bold ${selectedData.change24h >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
+                <div className={`text-xs font-bold ${selectedData.change24h >= 0 ? 'text-emerald-600' : 'text-red-600'}`}>
                   {selectedData.change24h >= 0 ? '+' : ''}{selectedData.change24h}% (24h)
                 </div>
               </div>
             </div>
 
             {/* AI Technical Analysis Summary */}
-            <div className="space-y-3">
+            <div className="space-y-2.5">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-bold text-purple-300 uppercase tracking-wider flex items-center gap-1.5">
-                  <Sparkles className="w-4 h-4 text-purple-400" />
+                <span className="text-xs font-bold text-gray-900 uppercase tracking-wider flex items-center gap-1.5">
+                  <Sparkles className="w-4 h-4 text-orange-500" />
                   Axiom AI Market Intelligence
                 </span>
-                <span className="text-xs text-emerald-400 font-bold bg-emerald-950 px-2.5 py-0.5 rounded-full border border-emerald-800/50">
+                <span className="text-xs text-emerald-800 font-bold bg-emerald-100 px-2.5 py-0.5 rounded-full">
                   Confidence: {selectedData.confidence}%
                 </span>
               </div>
 
-              <p className="text-xs text-gray-300 leading-relaxed bg-[#080B10] p-4 rounded-xl border border-gray-800/90">
+              <p className="text-xs text-gray-700 leading-relaxed bg-gray-50 p-4 rounded-xl border border-gray-200">
                 {selectedData.reasoning}
               </p>
             </div>
 
             {/* Execute Proven ZK Trade Button directly from Market Insights */}
-            <div className="pt-2 flex flex-col sm:flex-row items-center justify-between gap-4 bg-purple-950/30 p-4 rounded-xl border border-purple-800/40">
+            <div className="pt-2 flex flex-col sm:flex-row items-center justify-between gap-4 bg-gray-50 p-4 rounded-xl border border-gray-200">
               <div className="space-y-0.5">
-                <span className="text-xs font-bold text-white flex items-center gap-1.5">
-                  <Shield className="w-4 h-4 text-emerald-400" />
+                <span className="text-xs font-bold text-gray-900 flex items-center gap-1.5">
+                  <Shield className="w-4 h-4 text-emerald-600" />
                   Execute ZK Trade on Signal
                 </span>
-                <p className="text-[11px] text-gray-400">
-                  Triggers 1AM Wallet transaction signing. Proven via Compact <code className="text-purple-300">executeTrade</code> circuit.
+                <p className="text-[11px] text-gray-500">
+                  Triggers 1AM Wallet transaction signing. Proven via Compact <code className="text-gray-900 font-bold">executeTrade</code> circuit.
                 </p>
               </div>
 
@@ -282,9 +282,9 @@ export const MarketInsights: React.FC<MarketInsightsProps> = ({
                   }
                 }}
                 disabled={isProofGenerating}
-                className="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-bold text-xs shadow-lg shadow-purple-950 transition-all cursor-pointer shrink-0 disabled:opacity-50 flex items-center justify-center gap-2"
+                className="w-full sm:w-auto px-5 py-2.5 rounded-full bg-[#F26522] hover:bg-[#e05a1a] text-white font-bold text-xs shadow-sm transition-all cursor-pointer shrink-0 disabled:opacity-50 flex items-center justify-center gap-2"
               >
-                <Zap className="w-4 h-4 text-amber-400" />
+                <Zap className="w-4 h-4 text-white" />
                 <span>{isProofGenerating ? 'Proving ZK Circuit...' : `Execute $1,200 ${selectedData.symbol} Trade`}</span>
               </button>
             </div>
@@ -292,13 +292,13 @@ export const MarketInsights: React.FC<MarketInsightsProps> = ({
         </div>
 
         {/* Right Col: Gemini Custom AI Intelligence Query */}
-        <div className="bg-[#0F141C] border border-gray-800/90 rounded-2xl p-6 space-y-4 shadow-xl flex flex-col justify-between">
+        <div className="bg-white border border-gray-200/80 rounded-2xl p-6 space-y-4 shadow-sm flex flex-col justify-between">
           <div className="space-y-3">
             <div className="flex items-center gap-2">
-              <Cpu className="w-4 h-4 text-amber-400" />
-              <h3 className="text-sm font-bold text-white">Ask Gemini AI Market Analyst</h3>
+              <Cpu className="w-4 h-4 text-orange-500" />
+              <h3 className="text-sm font-bold text-gray-900">Ask Gemini AI Market Analyst</h3>
             </div>
-            <p className="text-xs text-gray-400 leading-relaxed">
+            <p className="text-xs text-gray-600 leading-relaxed">
               Generate real-time AI market reports for {selectedAsset} using Gemini 2.5 Flash.
             </p>
 
@@ -307,22 +307,22 @@ export const MarketInsights: React.FC<MarketInsightsProps> = ({
               onChange={(e) => setCustomPrompt(e.target.value)}
               placeholder={`e.g. Is ${selectedAsset} suitable for an 8% stop-loss, 30-day timeline trade right now?`}
               rows={3}
-              className="w-full bg-[#080B10] border border-gray-800 rounded-xl p-3 text-xs text-white placeholder-gray-600 focus:outline-none focus:border-purple-500 font-mono resize-none"
+              className="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 text-xs text-gray-900 placeholder-gray-400 focus:outline-none focus:border-orange-500 font-sans resize-none"
             />
 
             <button
               onClick={() => handleRunAiAnalysis(selectedAsset)}
               disabled={isAnalyzing}
-              className="w-full py-2.5 rounded-xl bg-gray-900 hover:bg-gray-800 border border-gray-700 text-purple-300 font-bold text-xs flex items-center justify-center gap-2 transition-all cursor-pointer disabled:opacity-50"
+              className="w-full py-2.5 rounded-full bg-gray-900 hover:bg-black text-white font-semibold text-xs flex items-center justify-center gap-2 transition-all cursor-pointer shadow-sm disabled:opacity-50"
             >
               {isAnalyzing ? (
                 <>
-                  <RefreshCw className="w-3.5 h-3.5 animate-spin text-amber-400" />
+                  <RefreshCw className="w-3.5 h-3.5 animate-spin text-orange-400" />
                   <span>Analyzing Market...</span>
                 </>
               ) : (
                 <>
-                  <Sparkles className="w-3.5 h-3.5 text-amber-400" />
+                  <Sparkles className="w-3.5 h-3.5 text-orange-400" />
                   <span>Run Gemini Technical Analysis</span>
                 </>
               )}
@@ -330,8 +330,8 @@ export const MarketInsights: React.FC<MarketInsightsProps> = ({
           </div>
 
           {analysisResult && (
-            <div className="p-3.5 bg-[#080B10] border border-purple-900/50 rounded-xl space-y-1 text-xs text-gray-300 font-mono max-h-60 overflow-y-auto">
-              <div className="text-[10px] text-amber-400 font-bold uppercase tracking-wider">GEMINI RESPONSE</div>
+            <div className="p-3.5 bg-gray-50 border border-gray-200 rounded-xl space-y-1 text-xs text-gray-800 max-h-60 overflow-y-auto">
+              <div className="text-[10px] text-orange-600 font-bold uppercase tracking-wider">GEMINI RESPONSE</div>
               <div className="whitespace-pre-wrap leading-relaxed">{analysisResult}</div>
             </div>
           )}

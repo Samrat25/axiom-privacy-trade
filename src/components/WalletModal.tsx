@@ -50,113 +50,120 @@ export const WalletModal: React.FC<WalletModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
-      <div className="w-full max-w-lg bg-[#0F141C] border border-gray-800 rounded-2xl p-6 shadow-2xl space-y-6 relative text-gray-100 font-sans">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs animate-fadeIn">
+      <div className="w-full max-w-lg bg-white border border-gray-200/90 rounded-3xl p-6 sm:p-7 shadow-2xl space-y-6 relative text-gray-900 font-sans">
         {/* Close Button */}
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 p-1 rounded-lg text-gray-400 hover:text-white hover:bg-gray-800/60 transition-all cursor-pointer"
+          className="absolute top-5 right-5 w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-600 flex items-center justify-center transition-all cursor-pointer"
         >
-          <X className="w-5 h-5" />
+          <X className="w-4 h-4" />
         </button>
 
         {/* Modal Header */}
-        <div className="space-y-1">
-          <div className="flex items-center gap-2">
-            <div className="w-6 h-6 rounded-lg bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-amber-400 font-mono font-bold text-xs">
-              1AM
+        <div className="flex items-center gap-3">
+          <img
+            src="/axiom-logo.png"
+            alt="Axiom Logo"
+            className="w-10 h-10 rounded-full object-cover shadow-sm bg-gray-900 shrink-0"
+          />
+          <div>
+            <div className="flex items-center gap-2">
+              <h2 className="text-base font-extrabold tracking-tight text-gray-900">1AM Midnight Wallet</h2>
+              <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-gray-900 text-white uppercase tracking-wider">
+                {networkId}
+              </span>
             </div>
-            <h2 className="text-lg font-bold tracking-tight text-white font-mono">1AM Wallet</h2>
+            <p className="text-xs text-gray-500 font-medium">
+              Private moves. Public proof.
+            </p>
           </div>
-          <p className="text-[11px] font-mono tracking-wider uppercase text-gray-400">
-            MIDNIGHT NETWORK • REAL EXTENSION SIGNING
-          </p>
         </div>
 
         {/* CONNECTED STATE */}
         {connected ? (
-          <div className="space-y-5">
+          <div className="space-y-4">
             {/* Status Header */}
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between bg-gray-50 p-3 rounded-2xl border border-gray-200/80">
               <div className="flex items-center gap-2">
                 <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                <span className="text-xs font-mono font-bold text-emerald-400 tracking-wider">ACTIVE</span>
+                <span className="text-xs font-bold text-gray-900">Session Connected</span>
               </div>
-              <span className="text-[10px] font-mono px-2.5 py-0.5 rounded-full bg-emerald-950 text-emerald-400 border border-emerald-800/50 flex items-center gap-1 font-semibold">
-                <ShieldCheck className="w-3 h-3 text-emerald-400" />
-                REAL SIGNING
+              <span className="text-[11px] px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-bold flex items-center gap-1">
+                <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
+                Real DApp Extension
               </span>
             </div>
 
             {/* UNSHIELDED ADDRESS CARD */}
-            <div className="space-y-1.5">
-              <label className="text-[10px] font-mono uppercase tracking-wider text-gray-400">
-                UNSHIELDED ADDRESS
+            <div className="space-y-1">
+              <label className="text-[11px] font-semibold text-gray-500 uppercase tracking-wider">
+                Unshielded Address
               </label>
-              <div className="flex items-center justify-between bg-[#080B10] border border-gray-800/90 rounded-xl p-3 font-mono text-xs text-gray-200">
-                <span className="truncate max-w-[360px] text-purple-300">
+              <div className="flex items-center justify-between bg-gray-50 border border-gray-200 rounded-xl p-3 font-mono text-xs text-gray-900">
+                <span className="truncate max-w-[340px] text-gray-700 font-medium">
                   {unshieldedAddress || '—'}
                 </span>
                 <button
                   onClick={() => copyToClipboard(unshieldedAddress || '', false)}
-                  className="p-1 text-gray-400 hover:text-white transition-colors cursor-pointer shrink-0"
+                  className="p-1 text-gray-400 hover:text-gray-900 transition-colors cursor-pointer shrink-0"
                 >
-                  {copiedAddr ? <Check className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4" />}
+                  {copiedAddr ? <Check className="w-4 h-4 text-emerald-600" /> : <Copy className="w-4 h-4" />}
                 </button>
               </div>
             </div>
 
             {/* SHIELDED KEY COMMITMENT CARD */}
-            <div className="space-y-1.5">
-              <label className="text-[10px] font-mono uppercase tracking-wider text-gray-400 flex items-center gap-1">
-                <span>SHIELDED KEY COMMITMENT</span>
+            <div className="space-y-1">
+              <label className="text-[11px] font-semibold text-gray-500 uppercase tracking-wider">
+                Shielded Key Commitment
               </label>
-              <div className="flex items-center justify-between bg-[#080B10] border border-gray-800/90 rounded-xl p-3 font-mono text-xs text-gray-200">
-                <span className="truncate max-w-[360px] text-emerald-400">
+              <div className="flex items-center justify-between bg-gray-50 border border-gray-200 rounded-xl p-3 font-mono text-xs text-gray-900">
+                <span className="truncate max-w-[340px] text-emerald-700 font-medium">
                   {shieldedAddress || '—'}
                 </span>
                 <button
                   onClick={() => copyToClipboard(shieldedAddress || '', true)}
-                  className="p-1 text-gray-400 hover:text-white transition-colors cursor-pointer shrink-0"
+                  className="p-1 text-gray-400 hover:text-gray-900 transition-colors cursor-pointer shrink-0"
                 >
-                  {copiedShielded ? <Check className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4" />}
+                  {copiedShielded ? <Check className="w-4 h-4 text-emerald-600" /> : <Copy className="w-4 h-4" />}
                 </button>
               </div>
             </div>
 
             {/* BALANCE CARDS GRID */}
             <div className="grid grid-cols-2 gap-3">
-              <div className="bg-[#080B10] border border-gray-800/90 rounded-xl p-3.5 space-y-1 font-mono">
-                <div className="text-[10px] text-gray-400 uppercase tracking-wider">TNIGHT</div>
-                <div className="text-sm font-bold text-white">
-                  {shieldedBalance} <span className="text-[11px] font-normal text-emerald-400">shielded</span>
+              <div className="bg-gray-50 border border-gray-200 rounded-2xl p-3.5 space-y-1">
+                <div className="text-[11px] font-semibold text-gray-500 uppercase tracking-wider">tNIGHT Balance</div>
+                <div className="text-sm font-extrabold text-gray-900">
+                  {shieldedBalance}
                 </div>
-                <div className="text-xs text-purple-300">
-                  {unshieldedBalance} <span className="text-[10px] font-normal text-gray-400">unshielded</span>
+                <div className="text-[11px] text-gray-500 font-mono">
+                  {unshieldedBalance} public
                 </div>
               </div>
 
-              <div className="bg-[#080B10] border border-gray-800/90 rounded-xl p-3.5 space-y-1 font-mono">
-                <div className="text-[10px] text-gray-400 uppercase tracking-wider">TDUST FUEL</div>
-                <div className="text-sm font-bold text-emerald-400">{dustBalance}</div>
-                <div className="text-[10px] text-gray-500">ProofStation Reserve</div>
+              <div className="bg-gray-50 border border-gray-200 rounded-2xl p-3.5 space-y-1">
+                <div className="text-[11px] font-semibold text-gray-500 uppercase tracking-wider">tDUST Reserve</div>
+                <div className="text-sm font-extrabold text-emerald-700">{dustBalance}</div>
+                <div className="text-[11px] text-gray-500">ProofStation Ready</div>
               </div>
             </div>
 
             {/* NETWORK SELECTOR */}
-            <div className="space-y-2 pt-1">
-              <label className="text-[10px] font-mono uppercase tracking-wider text-gray-400 flex items-center gap-1">
-                <span>SELECT NETWORK</span>
+            <div className="space-y-1.5 pt-1">
+              <label className="text-[11px] font-semibold text-gray-500 uppercase tracking-wider">
+                Target Network
               </label>
-              <div className="grid grid-cols-3 gap-2 p-1 bg-[#080B10] border border-gray-800 rounded-xl">
+              <div className="grid grid-cols-3 gap-2 p-1 bg-gray-100 rounded-xl">
                 {(['preview', 'preprod', 'undeployed'] as MidnightNetwork[]).map((net) => (
                   <button
                     key={net}
                     onClick={() => onSelectNetwork(net)}
-                    className={`py-2 rounded-lg text-xs font-mono capitalize transition-all cursor-pointer ${
+                    className={`py-1.5 rounded-lg text-xs font-semibold capitalize transition-all cursor-pointer ${
                       networkId === net
-                        ? 'bg-[#182030] text-amber-300 border border-amber-500/40 font-bold shadow-md'
-                        : 'text-gray-400 hover:text-gray-200'
+                        ? 'bg-white text-gray-900 shadow-sm border border-gray-200'
+                        : 'text-gray-600 hover:text-gray-900'
                     }`}
                   >
                     {net}
@@ -171,9 +178,9 @@ export const WalletModal: React.FC<WalletModalProps> = ({
                 href="https://faucet.preview.midnight.network"
                 target="_blank"
                 rel="noreferrer"
-                className="w-full py-2.5 rounded-xl bg-gray-900 hover:bg-gray-800 border border-gray-700 text-gray-200 hover:text-white font-mono text-xs font-semibold flex items-center justify-center gap-2 transition-all cursor-pointer"
+                className="w-full py-2.5 rounded-full bg-gray-100 hover:bg-gray-200 border border-gray-200 text-gray-800 text-xs font-semibold flex items-center justify-center gap-2 transition-all cursor-pointer"
               >
-                <span>Get Testnet Tokens (Faucet)</span>
+                <span>Get Testnet Tokens (Midnight Faucet)</span>
                 <ExternalLink className="w-3.5 h-3.5" />
               </a>
 
@@ -182,52 +189,52 @@ export const WalletModal: React.FC<WalletModalProps> = ({
                   onDisconnect();
                   onClose();
                 }}
-                className="w-full py-3 rounded-xl bg-red-950/60 hover:bg-red-900/80 border border-red-800/80 text-red-300 hover:text-red-100 font-mono text-xs font-bold transition-all cursor-pointer"
+                className="w-full py-2.5 rounded-full bg-red-50 hover:bg-red-100 border border-red-200 text-red-700 text-xs font-bold transition-all cursor-pointer"
               >
-                Disconnect Wallet
+                Disconnect Session
               </button>
             </div>
           </div>
         ) : (
           /* DISCONNECTED / CONNECTING STATE */
           <div className="space-y-5">
-            <div className="bg-[#080B10] border border-gray-800 rounded-xl p-5 text-center space-y-4">
+            <div className="bg-gray-50 border border-gray-200/80 rounded-2xl p-5 text-center space-y-4">
               {isConnecting ? (
                 <div className="space-y-3 py-4">
-                  <RefreshCw className="w-8 h-8 text-amber-400 animate-spin mx-auto" />
+                  <RefreshCw className="w-8 h-8 text-[#F26522] animate-spin mx-auto" />
                   <div className="space-y-1">
-                    <p className="text-xs font-mono font-bold text-white">1AM / Lace Wallet (Midnight)</p>
-                    <p className="text-[11px] font-mono text-amber-300">Opening extension popup...</p>
+                    <p className="text-sm font-bold text-gray-900">Connecting to 1AM Extension</p>
+                    <p className="text-xs text-gray-500">Please approve in your wallet popup window...</p>
                   </div>
                 </div>
               ) : (
                 <div className="space-y-3">
-                  <div className="w-12 h-12 rounded-2xl bg-purple-950/80 border border-purple-700/60 flex items-center justify-center mx-auto text-purple-300">
-                    <ShieldCheck className="w-6 h-6" />
+                  <div className="w-12 h-12 rounded-full bg-gray-900 text-white flex items-center justify-center mx-auto shadow-md">
+                    <ShieldCheck className="w-6 h-6 text-orange-400" />
                   </div>
                   <div className="space-y-1">
-                    <h3 className="text-sm font-bold text-white font-mono">Connect 1AM Extension</h3>
-                    <p className="text-xs text-gray-400 leading-relaxed">
-                      Clicking connect will trigger your 1AM / Lace Wallet browser extension popup to authorize your session on Midnight Preview Testnet.
+                    <h3 className="text-sm font-bold text-gray-900">Connect 1AM Midnight Wallet</h3>
+                    <p className="text-xs text-gray-600 leading-relaxed max-w-sm mx-auto">
+                      Connect your 1AM browser extension to prove shielded trades and manage your private vault on Midnight Preview.
                     </p>
                   </div>
                 </div>
               )}
 
               {/* NETWORK SELECTOR */}
-              <div className="space-y-2 text-left pt-2">
-                <label className="text-[10px] font-mono uppercase tracking-wider text-gray-400">
-                  SELECT NETWORK
+              <div className="space-y-1.5 text-left pt-2">
+                <label className="text-[11px] font-semibold text-gray-500 uppercase tracking-wider">
+                  Target Network
                 </label>
-                <div className="grid grid-cols-3 gap-2 p-1 bg-[#0F141C] border border-gray-800 rounded-xl">
+                <div className="grid grid-cols-3 gap-2 p-1 bg-gray-100 rounded-xl">
                   {(['preview', 'preprod', 'undeployed'] as MidnightNetwork[]).map((net) => (
                     <button
                       key={net}
                       onClick={() => onSelectNetwork(net)}
-                      className={`py-2 rounded-lg text-xs font-mono capitalize transition-all cursor-pointer ${
+                      className={`py-1.5 rounded-lg text-xs font-semibold capitalize transition-all cursor-pointer ${
                         networkId === net
-                          ? 'bg-[#182030] text-amber-300 border border-amber-500/40 font-bold'
-                          : 'text-gray-400 hover:text-gray-200'
+                          ? 'bg-white text-gray-900 shadow-sm border border-gray-200'
+                          : 'text-gray-600 hover:text-gray-900'
                       }`}
                     >
                       {net}
@@ -239,16 +246,12 @@ export const WalletModal: React.FC<WalletModalProps> = ({
               {!isConnecting && (
                 <button
                   onClick={onConnect}
-                  className="w-full py-3 rounded-xl bg-gradient-to-r from-amber-600 to-purple-600 hover:from-amber-500 hover:to-purple-500 text-white font-mono font-bold text-xs shadow-lg shadow-purple-950 transition-all cursor-pointer"
+                  className="w-full py-3 rounded-full bg-[#F26522] hover:bg-[#e05a1a] text-white font-bold text-xs shadow-md transition-all cursor-pointer"
                 >
-                  Connect 1AM Wallet Extension
+                  Connect 1AM Extension
                 </button>
               )}
             </div>
-
-            <p className="text-[10px] font-mono text-gray-500 text-center">
-              Clicking connect opens your browser extension popup.
-            </p>
           </div>
         )}
       </div>
