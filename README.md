@@ -121,37 +121,14 @@ Traditional algorithmic trading bots require exposing limit prices, stop-losses,
 
 ## 🏗️ Architecture
 
-```
-┌─────────────────────────────────────────────────────────────────────────────────┐
-│                                 CLIENT BROWSER                                  │
-├───────────────────────┬─────────────────────────┬───────────────────────────────┤
-│   Natural Language    │    Gemini 2.5 Flash     │   EZKL Risk Verifier          │
-│   Strategy Prompt     │    AI Parsing Engine    │   Halo2 ZK-ML Safeguards      │
-└───────────┬───────────┴────────────┬────────────┴───────────────┬───────────────┘
-            │                        │                            │
-            ▼                        ▼                            ▼
-┌─────────────────────────────────────────────────────────────────────────────────┐
-│                    1AM / Lace Midnight Wallet Extension                         │
-│   • Private key storage              • Client-side ZK proof generation          │
-│   • Shielded & Unshielded balances   • ProofStation zero-DUST fee sponsorship   │
-└────────────────────────────────────┬────────────────────────────────────────────┘
-                                     │
-                                     ▼
-┌─────────────────────────────────────────────────────────────────────────────────┐
-│                     Midnight Blockchain (Preprod & Preview)                     │
-│  ┌───────────────────────────────────────────────────────────────────────────┐  │
-│  │                            axiom.compact Contract                         │  │
-│  │                                                                           │  │
-│  │   Public Ledger State:             Private Witnesses (Client-Side):       │  │
-│  │   • agentCommitment (Map)          • localSecretKey()                     │  │
-│  │   • tradeStatus (Map)              • getMaxPositionPct()                  │  │
-│  │   • tradeCount (Map)               • getStopLossPct()                     │  │
-│  │   • spentNullifiers                • getStrategyExpiry()                  │  │
-│  │                                    • getPortfolioValue()                  │  │
-│  │                                    • getTradeSizeUsd()                    │  │
-│  └───────────────────────────────────────────────────────────────────────────┘  │
-└─────────────────────────────────────────────────────────────────────────────────┘
-```
+<p align="center">
+  <img src="./screenshots/architecture.png" alt="Axiom Architecture Diagram" width="100%" />
+</p>
+
+### End-to-End Zero-Knowledge Workflow:
+1. **Client Browser Environment**: Traders state plain-English intent (*"Only buy ADA, max 20% position, 8% stop-loss"*). **Gemini 2.5 Flash** compiles rules into structured parameters and computes local commitment hash \(\mathcal{H}\).
+2. **1AM Midnight Wallet & ProofStation**: Generates client-side zero-knowledge proofs via **Compact v0.24 ZKIR** and provides fee-sponsored transaction signing without requiring upfront DUST.
+3. **Midnight Blockchain (Preprod & Preview)**: Verifies the ZK proof and updates public state maps (`agentCommitment`, `tradeStatus`, `tradeCount`) while keeping strategy rules, portfolio balances, and trade sizes 100% confidential.
 
 ---
 
