@@ -54,15 +54,6 @@ export function WalletProvider({ children }: { children: ReactNode }) {
   const [balance, setBalance] = useState(0);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    if (window.localStorage.getItem(STORAGE_KEY) === "1") {
-      setStatus("connected");
-      setAddress(MOCK_ADDRESS);
-      setBalance(8421.55);
-    }
-  }, []);
-
   const connect = useCallback(async () => {
     setStatus("connecting");
     setError(null);
@@ -71,7 +62,6 @@ export function WalletProvider({ children }: { children: ReactNode }) {
       setAddress(session.address);
       setBalance(session.balance);
       setStatus("connected");
-      window.localStorage.setItem(STORAGE_KEY, "1");
     } catch (e) {
       setError(e instanceof Error ? e.message : "Unable to connect wallet.");
       setStatus("error");
@@ -83,7 +73,6 @@ export function WalletProvider({ children }: { children: ReactNode }) {
     setAddress(null);
     setBalance(0);
     setError(null);
-    window.localStorage.removeItem(STORAGE_KEY);
   }, []);
 
   const value = useMemo(

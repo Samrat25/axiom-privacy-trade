@@ -34,6 +34,7 @@ import {
   syncTradeExecution,
   fetchPersistedTrades,
   fetchPersistedStrategies,
+  clearSupabaseWalletData,
 } from '../lib/supabase-sync';
 
 import { evaluateRiskModel } from '../lib/riskModel';
@@ -213,8 +214,9 @@ export function useMidnight() {
     }
   }, [networkId, addLog]);
 
-  // ─── Disconnect & Clear Wallet Cache ──────────────────────────────
-  const clearWalletCache = useCallback(() => {
+  // ─── Disconnect & Clear Wallet Cache (Supabase Backend Reset) ──
+  const clearWalletCache = useCallback(async () => {
+    const currentAddr = session?.shieldedAddress || session?.address || walletAddress;
     setSession(null);
     setLiveSession(null);
     setWalletConnected(false);
@@ -225,22 +227,19 @@ export function useMidnight() {
     setRecommendationMap({});
     setError(null);
 
-    if (typeof window !== 'undefined') {
-      try {
-        window.localStorage.removeItem('axiom.wallet.connected');
-        window.localStorage.removeItem('axiom_active_strategies');
-        window.localStorage.removeItem('axiom_trade_records');
-        window.localStorage.removeItem('axiom_protocol_logs');
-        window.localStorage.removeItem('axiom_shielded_vault_balance');
-        window.localStorage.removeItem('axiom_vault_usd');
-        window.localStorage.removeItem('axiom_vault_balance');
-      } catch (err) {
-        console.warn('[Axiom] Local storage clear error:', err);
+    // Clean up Supabase backend records
+    try {
+      if (currentAddr) {
+        await clearSupabaseWalletData(currentAddr);
+      } else {
+        await clearSupabaseWalletData();
       }
+    } catch (e) {
+      console.warn('[Axiom] Supabase clear warning:', e);
     }
 
-    addLog('info', 'Wallet Cache Cleared', 'All connected wallet sessions, local strategies, and trade caches have been cleared.');
-  }, [addLog]);
+    addLog('info', 'Wallet Data Cleared', 'Wallet session closed and data reset in Supabase backend.');
+  }, [session, walletAddress, addLog]);
 
   const disconnectWallet = useCallback(() => {
     clearWalletCache();

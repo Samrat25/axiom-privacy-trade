@@ -10,30 +10,24 @@
 
 import { executeSignedTransaction } from './midnight-api';
 
-const VAULT_STORAGE_KEY = 'axiom_shielded_vault_balance';
+let _shieldedVaultBalance = 1000;
 
 export function getLocalVaultBalance(): number {
-  if (typeof window === 'undefined') return 1000;
-  const stored = localStorage.getItem(VAULT_STORAGE_KEY);
-  if (!stored) {
-    localStorage.setItem(VAULT_STORAGE_KEY, '1000');
-    return 1000;
-  }
-  return parseFloat(stored) || 0;
+  return _shieldedVaultBalance;
+}
+
+export function setLocalVaultBalance(balance: number): void {
+  _shieldedVaultBalance = Math.max(0, balance);
 }
 
 export function addToLocalVaultBalance(amount: number): number {
-  const current = getLocalVaultBalance();
-  const next = current + amount;
-  localStorage.setItem(VAULT_STORAGE_KEY, next.toString());
-  return next;
+  _shieldedVaultBalance += Math.max(0, amount);
+  return _shieldedVaultBalance;
 }
 
 export function subtractFromLocalVaultBalance(amount: number): number {
-  const current = getLocalVaultBalance();
-  const next = Math.max(0, current - amount);
-  localStorage.setItem(VAULT_STORAGE_KEY, next.toString());
-  return next;
+  _shieldedVaultBalance = Math.max(0, _shieldedVaultBalance - amount);
+  return _shieldedVaultBalance;
 }
 
 /**
