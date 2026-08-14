@@ -206,15 +206,52 @@ function parseBalanceValue(val: unknown): number {
     if ("tNight" in obj) return parseBalanceValue(obj.tNight);
     if ("amount" in obj) return parseBalanceValue(obj.amount);
     if ("value" in obj) return parseBalanceValue(obj.value);
-    const firstVal = Object.values(obj)[0];
-    if (firstVal !== undefined && firstVal !== val) return parseBalanceValue(firstVal);
+    const entries = Object.values(obj);
+    if (entries.length > 0 && entries[0] !== val) return parseBalanceValue(entries[0]);
   }
   const num = typeof val === "bigint" ? Number(val) : Number(val);
   if (isNaN(num) || num <= 0) return 0;
+  if (num >= 1_000_000) {
+    return num / 1_000_000;
+  }
   if (num >= 1_000) {
     return num / 1_000_000;
   }
   return num;
+}
+
+/** Switch network on 1AM wallet and trigger extension popup */
+export async function switch1AMNetwork(
+  networkId: MidnightNetwork,
+): Promise<LiveWalletSession> {
+  const wallet = await detect1AMWallet();
+  if (!wallet) {
+    throw new Error("1AM wallet extension not detected.");
+  }
+
+  console.info(`[Axiom Wallet] Requesting 1AM network switch to '${networkId}'...`);
+  const connectedAPI = await wallet.connect(networkId);
+
+  // Trigger 1AM wallet extension popup for network activation
+  if (typeof connectedAPI.signData === "function") {
+    try {
+      console.info(`[Axiom Wallet] Triggering 1AM authorization popup for '${networkId}'...`);
+      await connectedAPI.signData(
+        JSON.stringify({
+          action: "switchNetwork",
+          targetNetwork: networkId,
+          timestamp: Date.now(),
+          message: `Authorize Axiom on Midnight ${networkId.toUpperCase()}`,
+        }),
+        { encoding: "text" }
+      );
+      console.info(`[Axiom Wallet] ✅ 1AM extension popup approved for '${networkId}'!`);
+    } catch (err: unknown) {
+      console.warn("[Axiom Wallet] 1AM popup sign notice:", err);
+    }
+  }
+
+  return parseConnectedSession(connectedAPI, networkId, wallet.name || "1AM", wallet.apiVersion);
 }
 
 // ─── Session Parsing ──────────────────────────────────────────────────────────

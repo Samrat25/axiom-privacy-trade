@@ -15,6 +15,7 @@ import { fetchLatestMidnightBlock, MidnightLatestBlock } from '../utils/midnight
 
 import {
   connect1AMWallet,
+  switch1AMNetwork,
   isWalletInstalled,
   getDetectedWallets,
   type LiveWalletSession,
@@ -280,25 +281,24 @@ export function useMidnight() {
     setError(null);
 
     try {
-      addLog('info', 'Switching Network', `Initiating 1AM connection on Midnight ${net}...`);
+      addLog('info', 'Switching Network', `Requesting 1AM connection & popup on Midnight ${net.toUpperCase()}...`);
       setLiveSession(null);
 
-      const live = await connect1AMWallet(net);
-      live.networkId = net;
-      live.network = `Midnight ${net.charAt(0).toUpperCase() + net.slice(1)} (1AM)`;
-
+      const live = await switch1AMNetwork(net);
       setSession(live);
       setLiveSession(live);
       setWalletConnected(true);
       setDustReady(isDustReady());
 
-      // Fetch saved vault balance for this specific wallet from Supabase
+      // Fetch saved vault balance for this specific wallet & network from Supabase
       const currentAddr = live.shieldedAddress || live.address;
       const savedVault = await fetchWalletVaultBalance(currentAddr);
       setLocalVaultBalance(savedVault);
       setVaultBalance(savedVault);
 
-      addLog('success', 'Network Active', `Active on Midnight ${net.charAt(0).toUpperCase() + net.slice(1)} — ${live.address.substring(0, 18)}…`);
+      addLog('success', 'Network Switched',
+        `Switched to Midnight ${net.toUpperCase()} — Balance: ${live.balances.tNightUnshielded.toLocaleString()} tNIGHT, ${live.balances.tDust.toLocaleString()} DUST`
+      );
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Network switch failed';
       console.error('[Axiom] Network switch error:', err);
