@@ -105,26 +105,12 @@ export const Layout: React.FC<LayoutProps> = ({
             </button>
           </div>
 
-          {/* Center Tabs on desktop */}
-          <div className="hidden lg:flex items-center gap-1 bg-gray-100/80 p-1 rounded-full border border-gray-200/60">
-            {navItems.map((item) => {
-              const isActive = activeTab === item.id;
-              const Icon = item.icon;
-              return (
-                <button
-                  key={item.id}
-                  onClick={() => setActiveTab(item.id)}
-                  className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all flex items-center gap-1.5 cursor-pointer ${
-                    isActive
-                      ? 'bg-gray-900 text-white shadow-sm'
-                      : 'text-gray-600 hover:text-gray-900 hover:bg-white/60'
-                  }`}
-                >
-                  <Icon className={`w-3.5 h-3.5 ${isActive ? 'text-orange-400' : 'text-gray-500'}`} />
-                  <span>{item.label}</span>
-                </button>
-              );
-            })}
+          {/* Header Center: Clean Breadcrumb / Active Module Indicator */}
+          <div className="hidden md:flex items-center gap-2 text-xs font-semibold text-gray-500">
+            <span className="text-gray-400">/</span>
+            <span className="text-gray-900 font-bold capitalize">
+              {navItems.find((n) => n.id === activeTab)?.label || activeTab}
+            </span>
           </div>
 
           {/* Header Right: Wallet Connect */}
@@ -151,6 +137,30 @@ export const Layout: React.FC<LayoutProps> = ({
           </div>
         </nav>
       </header>
+
+      {/* Mobile Horizontal Navigation Strip (only visible on mobile where sidebar is hidden) */}
+      <div className="md:hidden w-full max-w-[1440px] mx-auto px-2 sm:px-4 pb-2">
+        <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-1">
+          {navItems.map((item) => {
+            const Icon = item.icon;
+            const isActive = activeTab === item.id;
+            return (
+              <button
+                key={item.id}
+                onClick={() => setActiveTab(item.id)}
+                className={`px-3 py-1.5 rounded-full text-xs font-semibold shrink-0 transition-all flex items-center gap-1.5 cursor-pointer ${
+                  isActive
+                    ? 'bg-gray-900 text-white shadow-sm'
+                    : 'bg-white text-gray-700 border border-gray-200/80 hover:bg-gray-50'
+                }`}
+              >
+                <Icon className={`w-3.5 h-3.5 ${isActive ? 'text-orange-400' : 'text-gray-500'}`} />
+                <span>{item.label}</span>
+              </button>
+            );
+          })}
+        </div>
+      </div>
 
       {/* Main Container with Sidebar + Content */}
       <div className="w-full max-w-[1440px] mx-auto flex-1 flex overflow-hidden px-2 sm:px-4 pb-4 gap-4">
