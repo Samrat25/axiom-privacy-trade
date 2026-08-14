@@ -35,11 +35,16 @@ import {
   fetchPersistedTrades,
   fetchPersistedStrategies,
   clearSupabaseWalletData,
+  fetchWalletVaultBalance,
+  syncWalletVaultBalance,
 } from '../lib/supabase-sync';
 
 import { evaluateRiskModel } from '../lib/riskModel';
 import {
   getLocalVaultBalance,
+  setLocalVaultBalance,
+  addToLocalVaultBalance,
+  subtractFromLocalVaultBalance,
   mintVaultBalance,
   burnVaultBalance,
 } from '../lib/vault';
@@ -55,6 +60,22 @@ export interface ActiveStrategy {
   status: 'active' | 'expired' | 'revoked';
 }
 
+function formatDustDisplay(rawDust: number): string {
+  if (!rawDust || isNaN(rawDust)) return '0.00 DUST';
+  if (rawDust >= 1_000_000_000_000) {
+    const tVal = rawDust / 1_000_000_000_000;
+    return `${tVal.toLocaleString(undefined, { maximumFractionDigits: 2 })} tDUST`;
+  }
+  if (rawDust >= 1_000_000) {
+    const mVal = rawDust / 1_000_000;
+    return `${mVal.toLocaleString(undefined, { maximumFractionDigits: 2 })} tDUST`;
+  }
+  if (rawDust >= 1_000) {
+    return `${(rawDust / 1_000).toLocaleString(undefined, { maximumFractionDigits: 2 })} kDUST`;
+  }
+  return `${rawDust.toLocaleString()} DUST`;
+}
+
 export function useMidnight() {
   // ─── Core wallet state ─────────────────────────────────────────────
   const [session, setSession] = useState<LiveWalletSession | null>(null);
@@ -63,8 +84,8 @@ export function useMidnight() {
   const [error, setError] = useState<string | null>(null);
   const [networkId, setNetworkId] = useState<MidnightNetwork>('preview');
 
-  // ─── Shielded Vault state ──────────────────────────────────────────
-  const [vaultBalance, setVaultBalance] = useState<number>(() => getLocalVaultBalance());
+  // ─── Shielded Vault state (0 by default for new wallets) ─────────────
+  const [vaultBalance, setVaultBalance] = useState<number>(0);
 
   // ─── Detected wallets ──────────────────────────────────────────────
   const [detectedWallets, setDetectedWallets] = useState<DetectedWallet[]>([]);
@@ -120,7 +141,7 @@ export function useMidnight() {
   const walletName = session?.walletName ?? '1AM Wallet';
   const shieldedBalance = session ? `${session.balances.tNightShielded.toFixed(2)} tNIGHT` : '0.00 tNIGHT';
   const unshieldedBalance = session ? `${session.balances.tNightUnshielded.toLocaleString()} tNIGHT` : '0.00 tNIGHT';
-  const dustBalance = session ? `${session.balances.tDust.toLocaleString()} DUST` : '0.00 DUST';
+  const dustBalance = session ? formatDustDisplay(session.balances.tDust) : '0.00 DUST';
   const balance = unshieldedBalance;
 
   // ─── Poll for wallet extension ─────────────────────────────────────
@@ -200,8 +221,14 @@ export function useMidnight() {
       setWalletConnected(true);
       setDustReady(isDustReady());
 
+      // Fetch saved vault balance for this specific wallet from Supabase (defaults to 0 for fresh wallet)
+      const currentAddr = live.shieldedAddress || live.address;
+      const savedVault = await fetchWalletVaultBalance(currentAddr);
+      setLocalVaultBalance(savedVault);
+      setVaultBalance(savedVault);
+
       addLog('success', 'Wallet Connected',
-        `Connected to ${live.network} — ${live.address.substring(0, 18)}…`
+        `Connected to ${live.network} — ${live.address.substring(0, 18)}… (Vault Balance: $${savedVault} vUSD)`
       );
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Wallet connection failed';
@@ -223,6 +250,7 @@ export function useMidnight() {
     setDustReady(false);
     setActiveStrategies([]);
     setTrades([]);
+    setLocalVaultBalance(0);
     setVaultBalance(0);
     setRecommendationMap({});
     setError(null);
@@ -258,29 +286,33 @@ export function useMidnight() {
     setError(null);
     try {
       addLog('info', 'Minting Vault Balance', `Requesting 1AM signature to mint $${amountVusd} vUSD...`);
-      const txHash = await mintVaultBalance(amountVusd);
-      setVaultBalance(getLocalVaultBalance());
+      const currentAddr = session?.shieldedAddress || session?.address || walletAddress || '';
+      const txHash = await mintVaultBalance(amountVusd, currentAddr);
+      const updated = getLocalVaultBalance();
+      setVaultBalance(updated);
       addLog('success', 'Vault Minted', `Minted $${amountVusd} vUSD to shielded vault. TX: ${txHash.substring(0, 18)}…`);
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Vault mint failed';
       setError(msg);
       addLog('error', 'Vault Mint Failed', msg);
     }
-  }, [addLog]);
+  }, [session, walletAddress, addLog]);
 
   const burnVault = useCallback(async (amountVusd: number) => {
     setError(null);
     try {
       addLog('info', 'Burning Vault Balance', `Requesting 1AM signature to burn $${amountVusd} vUSD...`);
-      const txHash = await burnVaultBalance(amountVusd);
-      setVaultBalance(getLocalVaultBalance());
+      const currentAddr = session?.shieldedAddress || session?.address || walletAddress || '';
+      const txHash = await burnVaultBalance(amountVusd, currentAddr);
+      const updated = getLocalVaultBalance();
+      setVaultBalance(updated);
       addLog('success', 'Vault Burned', `Burned $${amountVusd} vUSD from shielded vault. TX: ${txHash.substring(0, 18)}…`);
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Vault burn failed';
       setError(msg);
       addLog('error', 'Vault Burn Failed', msg);
     }
-  }, [addLog]);
+  }, [session, walletAddress, addLog]);
 
   // ─── Analyze Strategy (Two-step flow step 1) ───────────────────────
   const analyzeStrategy = useCallback(async (
@@ -456,8 +488,10 @@ export function useMidnight() {
         currentTime: Math.floor(Date.now() / 1000),
       });
 
-      // Draw down vault balance upon trade execution
-      setVaultBalance((prev) => Math.max(0, prev - tradeSizeUsd));
+      // Draw down vault balance upon trade execution and sync to Supabase
+      const currentAddr = session?.shieldedAddress || session?.address || walletAddress || '';
+      const updatedVault = subtractFromLocalVaultBalance(tradeSizeUsd, currentAddr);
+      setVaultBalance(updatedVault);
 
       const isExecuted = tradeSizeUsd <= 5000;
       const simulatedPnlPct = isExecuted ? Number((Math.random() * 8 + 1.5).toFixed(2)) : 0;
@@ -515,7 +549,7 @@ export function useMidnight() {
     } finally {
       setIsProofGenerating(false);
     }
-  }, [activeStrategies, networkId, addLog]);
+  }, [activeStrategies, networkId, session, walletAddress, addLog]);
 
   return {
     // Wallet state

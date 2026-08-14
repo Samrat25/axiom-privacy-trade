@@ -172,40 +172,39 @@ export function App() {
 
               {/* Top Balance Cards: Public Wallet vs Shielded Vault */}
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                <div className="bg-white border border-gray-200/80 rounded-2xl p-5 space-y-1 shadow-sm">
+                <div className="bg-white border border-gray-200/80 rounded-2xl p-5 space-y-1 shadow-sm overflow-hidden">
                   <span className="text-[11px] text-gray-500 font-semibold uppercase tracking-wider">WALLET TNIGHT (UNSHIELDED)</span>
-                  <div className="flex items-baseline gap-2 pt-1">
-                    <span className="text-2xl font-extrabold text-gray-900">{unshieldedBalance}</span>
-                    <span className="text-xs text-gray-500 font-bold">tNIGHT</span>
+                  <div className="flex items-baseline gap-2 pt-1 min-w-0">
+                    <span className="text-xl sm:text-2xl font-extrabold text-gray-900 truncate">{unshieldedBalance}</span>
                   </div>
                   <span className="text-[11px] text-gray-500 font-medium block pt-1">↑ Public 1AM Wallet</span>
                 </div>
 
-                <div className="bg-white border border-orange-200/80 rounded-2xl p-5 space-y-1 shadow-sm">
+                <div className="bg-white border border-orange-200/80 rounded-2xl p-5 space-y-1 shadow-sm overflow-hidden">
                   <span className="text-[11px] text-orange-600 font-semibold uppercase tracking-wider flex items-center gap-1">
                     <Lock className="w-3.5 h-3.5 text-orange-500" /> SHIELDED VAULT (vUSD)
                   </span>
-                  <div className="flex items-baseline gap-2 pt-1">
-                    <span className="text-2xl font-extrabold text-gray-900">${vaultBalance.toLocaleString()}</span>
-                    <span className="text-xs text-orange-600 font-bold">vUSD</span>
+                  <div className="flex items-baseline gap-2 pt-1 min-w-0">
+                    <span className="text-xl sm:text-2xl font-extrabold text-gray-900 truncate">${vaultBalance.toLocaleString()}</span>
+                    <span className="text-xs text-orange-600 font-bold shrink-0">vUSD</span>
                   </div>
                   <span className="text-[11px] text-emerald-700 font-medium block pt-1">
                     {vaultBalance > 0 ? '↑ Active Trading Capital' : '↑ Mint via Vault Tab'}
                   </span>
                 </div>
 
-                <div className="bg-white border border-gray-200/80 rounded-2xl p-5 space-y-1 shadow-sm">
+                <div className="bg-white border border-gray-200/80 rounded-2xl p-5 space-y-1 shadow-sm overflow-hidden">
                   <span className="text-[11px] text-gray-500 font-semibold uppercase tracking-wider">SHIELDED TNIGHT NOTE</span>
-                  <div className="flex items-baseline gap-2 pt-1">
-                    <span className="text-2xl font-extrabold text-gray-900">{shieldedBalance}</span>
+                  <div className="flex items-baseline gap-2 pt-1 min-w-0">
+                    <span className="text-xl sm:text-2xl font-extrabold text-gray-900 truncate">{shieldedBalance}</span>
                   </div>
                   <span className="text-[11px] text-emerald-700 font-medium block pt-1">↑ Private ZK Note</span>
                 </div>
 
-                <div className="bg-white border border-gray-200/80 rounded-2xl p-5 space-y-1 shadow-sm">
+                <div className="bg-white border border-gray-200/80 rounded-2xl p-5 space-y-1 shadow-sm overflow-hidden">
                   <span className="text-[11px] text-gray-500 font-semibold uppercase tracking-wider">TDUST FUEL RESERVE</span>
-                  <div className="flex items-baseline gap-2 pt-1">
-                    <span className="text-2xl font-extrabold text-emerald-700">{dustBalance}</span>
+                  <div className="flex items-baseline gap-2 pt-1 min-w-0">
+                    <span className="text-xl sm:text-2xl font-extrabold text-emerald-700 truncate">{dustBalance}</span>
                   </div>
                   <span className="text-[11px] text-emerald-700 font-medium block pt-1">↑ ProofStation Ready</span>
                 </div>
@@ -330,14 +329,13 @@ export function App() {
 
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                 {/* 1. Public Unshielded tNIGHT */}
-                <div className="bg-white border border-gray-200/80 rounded-2xl p-5 space-y-2 shadow-sm">
+                <div className="bg-white border border-gray-200/80 rounded-2xl p-5 space-y-2 shadow-sm overflow-hidden">
                   <div className="flex items-center justify-between">
                     <span className="text-[10px] text-gray-500 font-bold uppercase tracking-wider">WALLET TNIGHT</span>
                     <span className="text-[9px] px-2 py-0.5 rounded-full bg-gray-100 text-gray-800 font-bold">UNSHIELDED</span>
                   </div>
-                  <div className="flex items-baseline gap-1.5">
-                    <span className="text-2xl font-extrabold text-gray-900">{unshieldedBalance}</span>
-                    <span className="text-xs text-gray-500 font-bold">tNIGHT</span>
+                  <div className="flex items-baseline gap-1.5 min-w-0">
+                    <span className="text-xl sm:text-2xl font-extrabold text-gray-900 truncate">{unshieldedBalance}</span>
                   </div>
                   <div className="text-[11px] text-gray-500 flex items-center justify-between pt-1 border-t border-gray-100">
                     <span>Public 1AM Key</span>
@@ -351,13 +349,13 @@ export function App() {
                 </div>
 
                 {/* 2. Shielded Private Note */}
-                <div className="bg-white border border-gray-200/80 rounded-2xl p-5 space-y-2 shadow-sm">
+                <div className="bg-white border border-gray-200/80 rounded-2xl p-5 space-y-2 shadow-sm overflow-hidden">
                   <div className="flex items-center justify-between">
                     <span className="text-[10px] text-gray-500 font-bold uppercase tracking-wider">SHIELDED TNIGHT</span>
                     <span className="text-[9px] px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-bold">ZK PRIVATE</span>
                   </div>
-                  <div className="flex items-baseline gap-1.5">
-                    <span className="text-2xl font-extrabold text-emerald-700">{shieldedBalance}</span>
+                  <div className="flex items-baseline gap-1.5 min-w-0">
+                    <span className="text-xl sm:text-2xl font-extrabold text-emerald-700 truncate">{shieldedBalance}</span>
                   </div>
                   <div className="text-[11px] text-emerald-700 flex items-center justify-between pt-1 border-t border-gray-100 font-medium">
                     <span>Private State Note</span>
@@ -366,16 +364,16 @@ export function App() {
                 </div>
 
                 {/* 3. Shielded Trading Vault (vUSD) */}
-                <div className="bg-white border border-orange-200 rounded-2xl p-5 space-y-2 shadow-sm ring-1 ring-orange-500/20">
+                <div className="bg-white border border-orange-200 rounded-2xl p-5 space-y-2 shadow-sm ring-1 ring-orange-500/20 overflow-hidden">
                   <div className="flex items-center justify-between">
                     <span className="text-[10px] text-orange-600 font-bold uppercase tracking-wider flex items-center gap-1">
                       <Lock className="w-3 h-3 text-orange-500" /> TRADING VAULT
                     </span>
                     <span className="text-[9px] px-2 py-0.5 rounded-full bg-orange-100 text-orange-800 font-bold">vUSD</span>
                   </div>
-                  <div className="flex items-baseline gap-1.5">
-                    <span className="text-2xl font-extrabold text-gray-900">${vaultBalance.toLocaleString()}</span>
-                    <span className="text-xs text-orange-600 font-bold">vUSD</span>
+                  <div className="flex items-baseline gap-1.5 min-w-0">
+                    <span className="text-xl sm:text-2xl font-extrabold text-gray-900 truncate">${vaultBalance.toLocaleString()}</span>
+                    <span className="text-xs text-orange-600 font-bold shrink-0">vUSD</span>
                   </div>
                   <div className="text-[11px] text-emerald-700 flex items-center justify-between pt-1 border-t border-orange-100 font-medium">
                     <span>Active Capital</span>
@@ -384,13 +382,13 @@ export function App() {
                 </div>
 
                 {/* 4. tDUST Reserve */}
-                <div className="bg-white border border-gray-200/80 rounded-2xl p-5 space-y-2 shadow-sm">
+                <div className="bg-white border border-gray-200/80 rounded-2xl p-5 space-y-2 shadow-sm overflow-hidden">
                   <div className="flex items-center justify-between">
                     <span className="text-[10px] text-gray-500 font-bold uppercase tracking-wider">TDUST RESERVE</span>
                     <span className="text-[9px] px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-bold">GAS FUEL</span>
                   </div>
-                  <div className="flex items-baseline gap-1.5">
-                    <span className="text-2xl font-extrabold text-emerald-700">{dustBalance}</span>
+                  <div className="flex items-baseline gap-1.5 min-w-0">
+                    <span className="text-xl sm:text-2xl font-extrabold text-emerald-700 truncate">{dustBalance}</span>
                   </div>
                   <div className="text-[11px] text-gray-500 flex items-center justify-between pt-1 border-t border-gray-100">
                     <span>ProofStation</span>

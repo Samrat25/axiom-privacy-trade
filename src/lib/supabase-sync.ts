@@ -266,6 +266,75 @@ export async function clearSupabaseWalletData(walletAddress?: string): Promise<v
   }
 }
 
+// ─── Wallet Vault Balance Persistence (Supabase Backend) ─────────────────────
+
+const _memVaultMap: Record<string, number> = {};
+
+export async function syncWalletVaultBalance(walletAddress: string, balance: number): Promise<void> {
+  const normAddr = walletAddress.trim().toLowerCase();
+  _memVaultMap[normAddr] = Math.max(0, balance);
+
+  const client = getSupabaseClient();
+  if (!client || !walletAddress) return;
+
+  try {
+    // Delete previous vault_note for this wallet to keep a single current record
+    await client
+      .from('strategy_commitments')
+      .delete()
+      .eq('wallet_address', walletAddress)
+      .eq('status', 'vault_note');
+
+    // Insert updated vault balance record
+    const { error } = await client.from('strategy_commitments').insert([
+      {
+        agent_id: '0xvault_balance',
+        commitment_hash: String(Math.max(0, balance)),
+        wallet_address: walletAddress,
+        tx_hash: '0xvault_sync',
+        status: 'vault_note',
+      },
+    ]);
+
+    if (error) {
+      console.warn('[Axiom Supabase] syncWalletVaultBalance error:', error.message);
+    } else {
+      console.info(`[Axiom Supabase] ✅ Vault balance ($${balance} vUSD) synced for wallet:`, walletAddress);
+    }
+  } catch (err) {
+    console.warn('[Axiom Supabase] syncWalletVaultBalance exception:', err);
+  }
+}
+
+export async function fetchWalletVaultBalance(walletAddress: string): Promise<number> {
+  if (!walletAddress) return 0;
+  const normAddr = walletAddress.trim().toLowerCase();
+
+  const client = getSupabaseClient();
+  if (client) {
+    try {
+      const { data, error } = await client
+        .from('strategy_commitments')
+        .select('*')
+        .eq('wallet_address', walletAddress)
+        .eq('status', 'vault_note')
+        .order('created_at', { ascending: false })
+        .limit(1);
+
+      if (!error && Array.isArray(data) && data.length > 0) {
+        const val = parseFloat(data[0].commitment_hash);
+        const parsed = isNaN(val) ? 0 : Math.max(0, val);
+        _memVaultMap[normAddr] = parsed;
+        return parsed;
+      }
+    } catch (err) {
+      console.warn('[Axiom Supabase] fetchWalletVaultBalance failed, using memory:', err);
+    }
+  }
+
+  return _memVaultMap[normAddr] ?? 0;
+}
+
 // ─── Protocol Log Persistence ─────────────────────────────────────────────────
 
 export async function syncProtocolLog(log: PublicProtocolLogRecord): Promise<void> {
@@ -284,4 +353,5 @@ export async function syncProtocolLog(log: PublicProtocolLogRecord): Promise<voi
 export function fetchPersistedLogs(): ProtocolLogEntry[] {
   return _memLogs;
 }
+
 
