@@ -7,6 +7,9 @@ import { ProtocolLog } from './components/ProtocolLog';
 import { MarketInsights } from './components/MarketInsights';
 import { Portfolio } from './components/Portfolio';
 import { TradeHistory } from './components/TradeHistory';
+import { MarketChart } from './components/MarketChart';
+import { OverviewStrategies } from './components/OverviewStrategies';
+import { formatISTDate, formatISTTime } from './utils/time';
 import { useMidnight } from './hooks/useMidnight';
 import {
   Shield,
@@ -20,7 +23,8 @@ import {
   AlertTriangle,
   Lock,
   PlusCircle,
-  MinusCircle
+  MinusCircle,
+  Clock
 } from 'lucide-react';
 
 export function App() {
@@ -67,9 +71,6 @@ export function App() {
   const [withdrawAmount, setWithdrawAmount] = useState<string>('500');
   const [mintAmount, setMintAmount] = useState<string>('250');
   const [withdrawSuccess, setWithdrawSuccess] = useState<boolean>(false);
-  const [confirmedTradeMap, setConfirmedTradeMap] = useState<Record<string, boolean>>({});
-  const [selectedAssetMap, setSelectedAssetMap] = useState<Record<string, string>>({});
-  const [customAmountMap, setCustomAmountMap] = useState<Record<string, string>>({});
 
   // Auto-navigate to dashboard when wallet connects
   useEffect(() => {
@@ -127,335 +128,114 @@ export function App() {
         >
           {/* 1. OVERVIEW / HOME */}
           {activeTab === 'overview' && (
-          <div className="space-y-6 max-w-6xl mx-auto font-sans">
-            {/* Top Greeting Header */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white border border-gray-200/80 rounded-2xl p-6 shadow-sm">
-              <div className="flex items-center gap-4">
-                <img
-                  src="/axiom-logo.png"
-                  alt="Axiom"
-                  className="w-12 h-12 rounded-full object-cover shadow-sm bg-gray-900 shrink-0"
-                />
-                <div>
-                  <div className="text-[11px] text-gray-500 uppercase tracking-wider flex items-center gap-2 font-medium">
-                    <span>{new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })}</span>
-                    {latestBlock && (
-                      <span className="text-emerald-700 font-semibold flex items-center gap-1">
-                        • <Blocks className="w-3.5 h-3.5" /> Block #{latestBlock.height.toLocaleString()}
-                      </span>
-                    )}
-                  </div>
-                  <h1 className="text-xl sm:text-2xl font-extrabold text-gray-900 tracking-tight">
-                    Welcome back, <span className="text-orange-600">{displayGreetingAddr}</span>
-                  </h1>
-                </div>
-              </div>
-
-              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-gray-100 border border-gray-200 text-gray-800 text-xs font-semibold shrink-0">
-                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                <span className="uppercase">{networkId} TESTNET</span>
-              </div>
-            </div>
-
-            {/* Error Banner for ZK Risk Model or Wallet Errors */}
-            {error && (
-              <div className="bg-red-50 border border-red-200 p-4 rounded-2xl text-red-900 text-xs flex items-start gap-3 shadow-xs">
-                <AlertTriangle className="w-5 h-5 text-red-600 shrink-0 mt-0.5" />
-                <div className="space-y-1">
-                  <span className="font-bold text-red-800 block">Notice / Risk Restriction</span>
-                  <p className="leading-relaxed">{error}</p>
-                </div>
-              </div>
-            )}
-
-            {/* Top Balance Cards: Public Wallet vs Shielded Vault */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-              <div className="bg-white border border-gray-200/80 rounded-2xl p-5 space-y-1 shadow-sm">
-                <span className="text-[11px] text-gray-500 font-semibold uppercase tracking-wider">WALLET TNIGHT (UNSHIELDED)</span>
-                <div className="flex items-baseline gap-2 pt-1">
-                  <span className="text-2xl font-extrabold text-gray-900">{unshieldedBalance}</span>
-                  <span className="text-xs text-gray-500 font-bold">tNIGHT</span>
-                </div>
-                <span className="text-[11px] text-gray-500 font-medium block pt-1">↑ Public 1AM Wallet</span>
-              </div>
-
-              <div className="bg-white border border-orange-200/80 rounded-2xl p-5 space-y-1 shadow-sm">
-                <span className="text-[11px] text-orange-600 font-semibold uppercase tracking-wider flex items-center gap-1">
-                  <Lock className="w-3.5 h-3.5 text-orange-500" /> SHIELDED VAULT (vUSD)
-                </span>
-                <div className="flex items-baseline gap-2 pt-1">
-                  <span className="text-2xl font-extrabold text-gray-900">${vaultBalance.toLocaleString()}</span>
-                  <span className="text-xs text-orange-600 font-bold">vUSD</span>
-                </div>
-                <span className="text-[11px] text-emerald-700 font-medium block pt-1">
-                  {vaultBalance > 0 ? '↑ Active Trading Capital' : '↑ Mint via Vault Tab'}
-                </span>
-              </div>
-
-              <div className="bg-white border border-gray-200/80 rounded-2xl p-5 space-y-1 shadow-sm">
-                <span className="text-[11px] text-gray-500 font-semibold uppercase tracking-wider">SHIELDED TNIGHT NOTE</span>
-                <div className="flex items-baseline gap-2 pt-1">
-                  <span className="text-2xl font-extrabold text-gray-900">{shieldedBalance}</span>
-                </div>
-                <span className="text-[11px] text-emerald-700 font-medium block pt-1">↑ Private ZK Note</span>
-              </div>
-
-              <div className="bg-white border border-gray-200/80 rounded-2xl p-5 space-y-1 shadow-sm">
-                <span className="text-[11px] text-gray-500 font-semibold uppercase tracking-wider">TDUST FUEL RESERVE</span>
-                <div className="flex items-baseline gap-2 pt-1">
-                  <span className="text-2xl font-extrabold text-emerald-700">{dustBalance}</span>
-                </div>
-                <span className="text-[11px] text-emerald-700 font-medium block pt-1">↑ ProofStation Ready</span>
-              </div>
-            </div>
-
-            {/* Active Commitments + LIVE PROTOCOL LOG Grid */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-              {/* Active Strategy Commitments */}
-              <div className="lg:col-span-2 space-y-4">
-                <div className="flex items-center justify-between">
-                  <h3 className="text-sm font-bold text-gray-900 flex items-center gap-2">
-                    <Cpu className="w-4 h-4 text-orange-500" />
-                    Active Strategy Commitments (Multi-Asset Risk Rules)
-                  </h3>
-                  <span className="text-xs text-gray-500">Human Confirmation Required</span>
-                </div>
-
-                {activeStrategies.length === 0 ? (
-                  <div className="bg-white border border-gray-200/80 rounded-2xl p-8 text-center space-y-4 shadow-sm">
-                    <div className="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center mx-auto text-gray-600">
-                      <Cpu className="w-6 h-6" />
+            <div className="space-y-6 max-w-6xl mx-auto font-sans">
+              {/* Top Greeting Header (Indian Standard Time - IST) */}
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white border border-gray-200/80 rounded-2xl p-6 shadow-sm">
+                <div className="flex items-center gap-4">
+                  <img
+                    src="/axiom-logo.png"
+                    alt="Axiom"
+                    className="w-12 h-12 rounded-full object-cover shadow-sm bg-gray-900 shrink-0"
+                  />
+                  <div>
+                    <div className="text-[11px] text-gray-500 uppercase tracking-wider flex items-center gap-2 font-medium">
+                      <Clock className="w-3.5 h-3.5 text-orange-500" />
+                      <span>{formatISTDate()} • {formatISTTime()}</span>
+                      {latestBlock && (
+                        <span className="text-emerald-700 font-semibold flex items-center gap-1">
+                          • <Blocks className="w-3.5 h-3.5" /> Block #{latestBlock.height.toLocaleString()}
+                        </span>
+                      )}
                     </div>
-                    <p className="text-xs text-gray-600 max-w-md mx-auto">No active strategy commitment created yet. Lock your first asset-agnostic risk bounds with AI natural-language parsing.</p>
-                    <button
-                      onClick={() => setActiveTab('strategy-builder')}
-                      className="px-5 py-2.5 rounded-full bg-gray-900 hover:bg-black text-white text-xs font-semibold transition-all cursor-pointer shadow-sm"
-                    >
-                      + Lock Shielded Strategy
-                    </button>
+                    <h1 className="text-xl sm:text-2xl font-extrabold text-gray-900 tracking-tight">
+                      Welcome back, <span className="text-orange-600">{displayGreetingAddr}</span>
+                    </h1>
                   </div>
-                ) : (
-                  activeStrategies.map((strat) => {
-                    const rec = recommendationMap[strat.agentId];
-                    const isConfirmed = confirmedTradeMap[strat.agentId] || false;
-                    const chosenAsset = selectedAssetMap[strat.agentId] || 'ADA';
-                    const maxAllowedSize = Math.floor((vaultBalance * strat.params.maxPositionPct) / 100);
-                    const defaultTradeSize = maxAllowedSize > 0 ? maxAllowedSize : 250;
-                    const chosenAmount = parseFloat(customAmountMap[strat.agentId] || defaultTradeSize.toString()) || defaultTradeSize;
-                    const isOverVault = chosenAmount > vaultBalance;
-                    const isOverMaxPos = chosenAmount > maxAllowedSize && vaultBalance > 0;
+                </div>
 
-                    return (
-                      <div key={strat.id} className="bg-white border border-gray-200/80 rounded-2xl p-5 space-y-4 shadow-sm">
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-2">
-                            <span className="px-3 py-1 rounded-full text-xs font-bold bg-gray-100 text-gray-900 border border-gray-200">
-                              Multi-Asset Engine
-                            </span>
-                            <span className="text-xs font-semibold text-gray-900">
-                              Agent: <code className="text-gray-600 font-mono">{strat.agentId}</code>
-                            </span>
-                          </div>
-                          <span className="text-[11px] px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-bold uppercase tracking-wider">
-                            {strat.status}
-                          </span>
-                        </div>
-
-                        <div className="bg-gray-50 p-3.5 rounded-xl border border-gray-200 text-xs space-y-1 text-gray-800">
-                          <div className="flex items-center justify-between text-[11px] text-gray-500 uppercase tracking-wider font-semibold">
-                            <span>Public Risk Commitment Hash</span>
-                            <a
-                              href="https://preview.midnightexplorer.com/contracts/0x33eb41d22028264e9e8bbe7f95b3089cece6e3c2a53008535e72a9f3350d3e30"
-                              target="_blank"
-                              rel="noreferrer"
-                              className="text-orange-600 hover:underline flex items-center gap-1 font-bold"
-                            >
-                              <span>Axiom Contract Explorer</span>
-                              <ExternalLink className="w-2.5 h-2.5" />
-                            </a>
-                          </div>
-                          <div className="text-gray-900 font-mono font-medium truncate">{strat.commitmentHash}</div>
-                        </div>
-
-                        <div className="grid grid-cols-3 gap-2 text-xs text-gray-600 pt-1 font-medium">
-                          <div>Max Position: <span className="text-gray-900 font-bold">{strat.params.maxPositionPct}%</span></div>
-                          <div>Stop Loss: <span className="text-gray-900 font-bold">{strat.params.stopLossPct}%</span></div>
-                          <div>Duration: <span className="text-gray-900 font-bold">{strat.params.timelineDays} Days</span></div>
-                        </div>
-
-                        {/* Trade Asset Selection & Custom Investment Amount Controls */}
-                        <div className="p-3.5 bg-gray-50 rounded-xl border border-gray-200 space-y-3">
-                          <span className="text-xs font-bold text-gray-900 block">
-                            Configure Trade Target & Investment Size:
-                          </span>
-                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                            <div>
-                              <label className="text-[11px] font-semibold text-gray-600 block mb-1">Target Asset</label>
-                              <select
-                                value={chosenAsset}
-                                onChange={(e) =>
-                                  setSelectedAssetMap((prev) => ({ ...prev, [strat.agentId]: e.target.value }))
-                                }
-                                className="w-full bg-white border border-gray-200 rounded-lg p-2 text-xs font-bold text-gray-900 focus:outline-none focus:border-orange-500 cursor-pointer"
-                              >
-                                <option value="ADA">ADA (Cardano)</option>
-                                <option value="BTC">BTC (Bitcoin)</option>
-                                <option value="ETH">ETH (Ethereum)</option>
-                                <option value="SOL">SOL (Solana)</option>
-                                <option value="tNIGHT">tNIGHT (Midnight)</option>
-                              </select>
-                            </div>
-
-                            <div>
-                              <div className="flex items-center justify-between mb-1">
-                                <label className="text-[11px] font-semibold text-gray-600">Trade Amount (USD)</label>
-                                <span className="text-[10px] text-gray-500 font-mono">Max: ${maxAllowedSize}</span>
-                              </div>
-                              <input
-                                type="number"
-                                min="1"
-                                value={customAmountMap[strat.agentId] ?? defaultTradeSize.toString()}
-                                onChange={(e) =>
-                                  setCustomAmountMap((prev) => ({ ...prev, [strat.agentId]: e.target.value }))
-                                }
-                                className="w-full bg-white border border-gray-200 rounded-lg p-2 text-xs font-mono font-bold text-gray-900 focus:outline-none focus:border-orange-500"
-                              />
-                            </div>
-                          </div>
-                        </div>
-
-                        {/* STEP 1: Analyze Button */}
-                        {!rec && (
-                          <div className="pt-2">
-                            <button
-                              onClick={() => analyzeStrategy(strat.agentId, chosenAsset, chosenAmount)}
-                              disabled={isAnalyzing}
-                              className="w-full py-2.5 rounded-full bg-gray-900 hover:bg-black text-white text-xs font-semibold transition-all flex items-center justify-center gap-2 cursor-pointer shadow-sm"
-                            >
-                              <Zap className="w-4 h-4 text-orange-400" />
-                              <span>{isAnalyzing ? 'Running Gemini AI Analysis...' : `Analyze ${chosenAsset} Trade ($${chosenAmount})`}</span>
-                            </button>
-                          </div>
-                        )}
-
-                        {/* STEP 2: Recommendation & Human Agreement Box */}
-                        {rec && (
-                          <div className="bg-gray-50 border border-orange-200 rounded-xl p-4 space-y-3">
-                            <div className="flex items-center justify-between border-b border-gray-200 pb-2">
-                              <span className="text-xs font-bold text-gray-900 flex items-center gap-1.5">
-                                <Cpu className="w-3.5 h-3.5 text-orange-500" /> AI Trade Recommendation
-                              </span>
-                              <span className="text-[11px] px-2.5 py-0.5 rounded-full font-bold bg-white text-gray-900 border border-gray-200">
-                                Action: {rec.suggestedAction} on {chosenAsset}
-                              </span>
-                            </div>
-
-                            <p className="text-xs text-gray-700 leading-relaxed font-sans">{rec.recommendation}</p>
-
-                            {/* Shielded Vault Balance & Position Limit Verification Check */}
-                            <div className="p-3 bg-white rounded-xl border border-gray-200 space-y-1 text-xs">
-                              <div className="flex items-center justify-between">
-                                <span className="text-gray-600 font-medium">Shielded Vault Available:</span>
-                                <span className={`font-extrabold ${vaultBalance >= chosenAmount ? 'text-emerald-700' : 'text-amber-600'}`}>
-                                  ${vaultBalance.toLocaleString()} vUSD
-                                </span>
-                              </div>
-                              <div className="flex items-center justify-between">
-                                <span className="text-gray-600 font-medium">Max Allowed by Strategy ({strat.params.maxPositionPct}%):</span>
-                                <span className="font-extrabold text-gray-900">${maxAllowedSize.toLocaleString()} vUSD</span>
-                              </div>
-                              <div className="flex items-center justify-between">
-                                <span className="text-gray-600 font-medium">Trade Investment Size:</span>
-                                <span className="font-extrabold text-orange-600">${chosenAmount.toLocaleString()} vUSD</span>
-                              </div>
-                            </div>
-
-                            {isOverVault && (
-                              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 p-3 bg-amber-50 border border-amber-200 rounded-xl text-xs text-amber-900">
-                                <span className="font-medium">
-                                  ⚠️ Insufficient Shielded Vault Balance (${vaultBalance.toLocaleString()} available). You must have at least ${chosenAmount.toLocaleString()} vUSD in your vault to trade.
-                                </span>
-                                <button
-                                  onClick={() => setActiveTab('withdraw')}
-                                  className="text-xs font-bold text-amber-900 hover:underline cursor-pointer shrink-0"
-                                >
-                                  Mint in Vault →
-                                </button>
-                              </div>
-                            )}
-
-                            {isOverMaxPos && !isOverVault && (
-                              <div className="p-3 bg-amber-50 border border-amber-200 rounded-xl text-xs text-amber-900">
-                                <span className="font-medium">
-                                  ⚠️ Trade size (${chosenAmount}) exceeds committed {strat.params.maxPositionPct}% max position limit (${maxAllowedSize}). Reduce trade amount to comply with your ZK circuit rules.
-                                </span>
-                              </div>
-                            )}
-
-                            <div className="flex items-center gap-2 pt-1 border-t border-gray-200">
-                              <input
-                                type="checkbox"
-                                id={`agree_${strat.agentId}`}
-                                checked={isConfirmed}
-                                onChange={(e) =>
-                                  setConfirmedTradeMap((prev) => ({ ...prev, [strat.agentId]: e.target.checked }))
-                                }
-                                className="w-4 h-4 rounded bg-white border-gray-300 text-orange-600 focus:ring-orange-500 cursor-pointer"
-                              />
-                              <label htmlFor={`agree_${strat.agentId}`} className="text-xs text-gray-800 cursor-pointer select-none font-medium">
-                                <strong>Human Confirmation:</strong> Yes, I agree to execute this trade recommendation with ZK proof.
-                              </label>
-                            </div>
-
-                            <div className="flex flex-col sm:flex-row gap-2 pt-1">
-                              <button
-                                onClick={() =>
-                                  executeProvenTrade(strat.agentId, chosenAmount, chosenAsset, 'BUY')
-                                }
-                                disabled={!isConfirmed || isProofGenerating || isOverVault || isOverMaxPos}
-                                className={`flex-1 py-2.5 rounded-full font-bold text-xs flex items-center justify-center gap-2 transition-all shadow-sm ${
-                                  isConfirmed && !isProofGenerating && !isOverVault && !isOverMaxPos
-                                    ? 'bg-[#F26522] hover:bg-[#e05a1a] text-white cursor-pointer'
-                                    : 'bg-gray-200 text-gray-400 cursor-not-allowed'
-                                }`}
-                              >
-                                <CheckCircle2 className="w-4 h-4" />
-                                <span>
-                                  {isProofGenerating
-                                    ? 'Proving EZKL ZK Trade...'
-                                    : isOverVault
-                                    ? `Insufficient Vault Balance ($${vaultBalance}/$${chosenAmount})`
-                                    : isOverMaxPos
-                                    ? `Exceeds Max Position ($${chosenAmount}/$${maxAllowedSize})`
-                                    : `Confirm & Execute ${chosenAsset} Trade ($${chosenAmount})`}
-                                </span>
-                              </button>
-
-                              {/* Button to test Reckless Trade ZK Risk Model failure */}
-                              <button
-                                onClick={() =>
-                                  executeProvenTrade(strat.agentId, 8500, chosenAsset, 'BUY', true)
-                                }
-                                disabled={isProofGenerating}
-                                className="px-3.5 py-2.5 rounded-full bg-red-50 hover:bg-red-100 text-red-700 border border-red-200 text-[11px] font-bold transition-all cursor-pointer shrink-0"
-                                title="Tests EZKL Risk Model failure blocking"
-                              >
-                                Test Reckless Trade (Risk Fail)
-                              </button>
-                            </div>
-                          </div>
-                        )}
-                      </div>
-                    );
-                  })
-                )}
+                <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-gray-100 border border-gray-200 text-gray-800 text-xs font-semibold shrink-0">
+                  <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                  <span className="uppercase">{networkId} TESTNET (IST)</span>
+                </div>
               </div>
 
-              {/* LIVE PROTOCOL LOG Panel */}
-              <ProtocolLog logs={protocolLogs} />
+              {/* Error Banner for ZK Risk Model or Wallet Errors */}
+              {error && (
+                <div className="bg-red-50 border border-red-200 p-4 rounded-2xl text-red-900 text-xs flex items-start gap-3 shadow-xs">
+                  <AlertTriangle className="w-5 h-5 text-red-600 shrink-0 mt-0.5" />
+                  <div className="space-y-1">
+                    <span className="font-bold text-red-800 block">Notice / Risk Restriction</span>
+                    <p className="leading-relaxed">{error}</p>
+                  </div>
+                </div>
+              )}
+
+              {/* Top Balance Cards: Public Wallet vs Shielded Vault */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div className="bg-white border border-gray-200/80 rounded-2xl p-5 space-y-1 shadow-sm">
+                  <span className="text-[11px] text-gray-500 font-semibold uppercase tracking-wider">WALLET TNIGHT (UNSHIELDED)</span>
+                  <div className="flex items-baseline gap-2 pt-1">
+                    <span className="text-2xl font-extrabold text-gray-900">{unshieldedBalance}</span>
+                    <span className="text-xs text-gray-500 font-bold">tNIGHT</span>
+                  </div>
+                  <span className="text-[11px] text-gray-500 font-medium block pt-1">↑ Public 1AM Wallet</span>
+                </div>
+
+                <div className="bg-white border border-orange-200/80 rounded-2xl p-5 space-y-1 shadow-sm">
+                  <span className="text-[11px] text-orange-600 font-semibold uppercase tracking-wider flex items-center gap-1">
+                    <Lock className="w-3.5 h-3.5 text-orange-500" /> SHIELDED VAULT (vUSD)
+                  </span>
+                  <div className="flex items-baseline gap-2 pt-1">
+                    <span className="text-2xl font-extrabold text-gray-900">${vaultBalance.toLocaleString()}</span>
+                    <span className="text-xs text-orange-600 font-bold">vUSD</span>
+                  </div>
+                  <span className="text-[11px] text-emerald-700 font-medium block pt-1">
+                    {vaultBalance > 0 ? '↑ Active Trading Capital' : '↑ Mint via Vault Tab'}
+                  </span>
+                </div>
+
+                <div className="bg-white border border-gray-200/80 rounded-2xl p-5 space-y-1 shadow-sm">
+                  <span className="text-[11px] text-gray-500 font-semibold uppercase tracking-wider">SHIELDED TNIGHT NOTE</span>
+                  <div className="flex items-baseline gap-2 pt-1">
+                    <span className="text-2xl font-extrabold text-gray-900">{shieldedBalance}</span>
+                  </div>
+                  <span className="text-[11px] text-emerald-700 font-medium block pt-1">↑ Private ZK Note</span>
+                </div>
+
+                <div className="bg-white border border-gray-200/80 rounded-2xl p-5 space-y-1 shadow-sm">
+                  <span className="text-[11px] text-gray-500 font-semibold uppercase tracking-wider">TDUST FUEL RESERVE</span>
+                  <div className="flex items-baseline gap-2 pt-1">
+                    <span className="text-2xl font-extrabold text-emerald-700">{dustBalance}</span>
+                  </div>
+                  <span className="text-[11px] text-emerald-700 font-medium block pt-1">↑ ProofStation Ready</span>
+                </div>
+              </div>
+
+              {/* Main Overview Grid: Market Chart & Strategies Matrix + Live Protocol Log */}
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                {/* Left 2 Columns: Live Market Interactive Chart + Active Strategies & Position Matrix */}
+                <div className="lg:col-span-2 space-y-6">
+                  {/* Interactive Live Market Price & Analytics Graph */}
+                  <MarketChart
+                    onNavigateTab={setActiveTab}
+                    vaultBalance={vaultBalance}
+                  />
+
+                  {/* Active Strategy Commitments & Position Bounds Matrix */}
+                  <OverviewStrategies
+                    activeStrategies={activeStrategies}
+                    vaultBalance={vaultBalance}
+                    onNavigateTab={setActiveTab}
+                  />
+                </div>
+
+                {/* Right 1 Column: Live Real-Time Protocol Event Log in IST */}
+                <div className="lg:col-span-1">
+                  <ProtocolLog logs={protocolLogs} />
+                </div>
+              </div>
             </div>
-          </div>
-        )}
+          )}
 
         {/* 2. STRATEGY BUILDER */}
         {activeTab === 'strategy-builder' && (

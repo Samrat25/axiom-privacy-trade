@@ -22,6 +22,7 @@ import {
   fetchRecentMidnightTransactions,
   type MidnightApiTransaction
 } from '../utils/midnightApi';
+import { formatISTDateTime } from '../utils/time';
 
 interface TradeHistoryProps {
   trades: TradeRecord[];
@@ -231,8 +232,10 @@ export const TradeHistory: React.FC<TradeHistoryProps> = ({
                           <span>{trade.id}</span>
                         </td>
 
-                        {/* Timestamp */}
-                        <td className="p-4 text-gray-500">{trade.timestamp}</td>
+                        {/* Timestamp (IST) */}
+                        <td className="p-4 text-gray-500 font-mono text-[11px] whitespace-nowrap">
+                          {formatISTDateTime(trade.timestamp)}
+                        </td>
 
                         {/* Asset & Type */}
                         <td className="p-4">

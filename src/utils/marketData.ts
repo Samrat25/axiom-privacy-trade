@@ -164,3 +164,48 @@ export async function fetchLiveMarketData(): Promise<LiveMarketAsset[]> {
     return DEFAULT_ASSETS;
   }
 }
+export interface PricePoint {
+  time: string;
+  price: number;
+  timestamp: number;
+}
+
+export function getAssetPriceHistory(symbol: string, timeframe: '1D' | '1W' | '1M' | '1Y' = '1D'): PricePoint[] {
+  const asset = DEFAULT_ASSETS.find((a) => a.symbol === symbol) || DEFAULT_ASSETS[0];
+  const basePrice = asset.price;
+  const count = timeframe === '1D' ? 24 : timeframe === '1W' ? 28 : timeframe === '1M' ? 30 : 52;
+  const now = Date.now();
+  const stepMs =
+    timeframe === '1D'
+      ? 3600 * 1000
+      : timeframe === '1W'
+      ? 6 * 3600 * 1000
+      : timeframe === '1M'
+      ? 24 * 3600 * 1000
+      : 7 * 24 * 3600 * 1000;
+
+  const points: PricePoint[] = [];
+  let currentVal = basePrice * (timeframe === '1D' ? 0.98 : timeframe === '1W' ? 0.94 : 0.88);
+  const volatility = symbol === 'BTC' ? 0.008 : symbol === 'ETH' ? 0.012 : symbol === 'SOL' ? 0.022 : 0.015;
+
+  for (let i = count; i >= 0; i--) {
+    const t = now - i * stepMs;
+    const randomDelta = (Math.sin(i * 0.7) * 0.5 + (Math.random() - 0.48)) * volatility * currentVal;
+    currentVal = Math.max(basePrice * 0.6, currentVal + randomDelta);
+    if (i === 0) currentVal = basePrice; // Ensure latest point is exact current price
+
+    const dateObj = new Date(t);
+    const timeLabel =
+      timeframe === '1D'
+        ? dateObj.toLocaleTimeString('en-IN', { timeZone: 'Asia/Kolkata', hour: '2-digit', minute: '2-digit', hour12: true })
+        : dateObj.toLocaleDateString('en-IN', { timeZone: 'Asia/Kolkata', month: 'short', day: 'numeric' });
+
+    points.push({
+      time: timeLabel,
+      price: Number(currentVal.toFixed(currentVal < 1 ? 4 : 2)),
+      timestamp: t,
+    });
+  }
+
+  return points;
+}
