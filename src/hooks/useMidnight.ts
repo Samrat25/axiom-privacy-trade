@@ -617,6 +617,8 @@ export function useMidnight() {
     shieldedAddress,
     walletName,
     networkId,
+    detected1AMNetwork: session?.detected1AMNetwork ?? networkId,
+    isNetworkAligned: session ? session.isNetworkAligned : true,
     balance,
     shieldedBalance,
     unshieldedBalance,

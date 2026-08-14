@@ -59,6 +59,8 @@ export interface LiveWalletSession {
   encryptionPublicKey: string;
   network: string;
   networkId: MidnightNetwork;
+  detected1AMNetwork: MidnightNetwork;
+  isNetworkAligned: boolean;
   walletName: string;
   walletIcon: string;
   apiVersion: string;
@@ -394,6 +396,17 @@ async function parseConnectedSession(
     };
   }
 
+  // Detect actual network reported by 1AM extension
+  let detected1AMNetwork: MidnightNetwork = networkId;
+  if (serviceConfig?.networkId) {
+    const raw = serviceConfig.networkId.toLowerCase();
+    if (raw.includes("preprod")) detected1AMNetwork = "preprod";
+    else if (raw.includes("preview")) detected1AMNetwork = "preview";
+    else if (raw.includes("mainnet")) detected1AMNetwork = "mainnet";
+  }
+
+  const isNetworkAligned = networkId === detected1AMNetwork;
+
   return {
     address: unshieldedAddress,
     shieldedAddress,
@@ -402,6 +415,8 @@ async function parseConnectedSession(
     encryptionPublicKey: encryptionPublicKey || unshieldedAddress,
     network: `Midnight ${networkId.charAt(0).toUpperCase() + networkId.slice(1)} (1AM)`,
     networkId,
+    detected1AMNetwork,
+    isNetworkAligned,
     walletName,
     walletIcon: "",
     apiVersion: apiVersion || "4.0.0",

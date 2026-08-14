@@ -13,6 +13,8 @@ interface WalletModalProps {
   unshieldedBalance: string;
   dustBalance: string;
   networkId: MidnightNetwork;
+  detected1AMNetwork?: MidnightNetwork;
+  isNetworkAligned?: boolean;
   onSelectNetwork: (net: MidnightNetwork) => void;
   onConnect: () => void;
   onDisconnect: () => void;
@@ -30,6 +32,8 @@ export const WalletModal: React.FC<WalletModalProps> = ({
   unshieldedBalance,
   dustBalance,
   networkId,
+  detected1AMNetwork,
+  isNetworkAligned = true,
   onSelectNetwork,
   onConnect,
   onDisconnect,
@@ -206,6 +210,30 @@ export const WalletModal: React.FC<WalletModalProps> = ({
                 ))}
               </div>
             </div>
+
+            {/* NETWORK MISMATCH ALERT BANNER */}
+            {!isNetworkAligned && detected1AMNetwork && (
+              <div className="bg-amber-50 border border-amber-300 rounded-2xl p-3.5 space-y-2 text-amber-950">
+                <div className="flex items-start gap-2.5">
+                  <span className="text-base">⚠️</span>
+                  <div className="text-xs space-y-0.5">
+                    <p className="font-bold text-amber-900">
+                      1AM Extension Running on Midnight {detected1AMNetwork.toUpperCase()}
+                    </p>
+                    <p className="text-amber-800 leading-relaxed text-[11px]">
+                      Your 1AM extension dropdown is set to <strong>{detected1AMNetwork.toUpperCase()}</strong>, while Axiom is targeting <strong>{networkId.toUpperCase()}</strong>.
+                    </p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => onSelectNetwork(detected1AMNetwork)}
+                  className="w-full py-2 px-3 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs shadow-sm transition-all cursor-pointer flex items-center justify-center gap-1.5"
+                >
+                  <RefreshCw className="w-3.5 h-3.5" />
+                  <span>Switch Axiom Target to {detected1AMNetwork.toUpperCase()}</span>
+                </button>
+              </div>
+            )}
 
             {/* 1AM Extension Network Alignment Notice */}
             <div className="bg-orange-50/80 border border-orange-200 rounded-xl p-3 text-[11px] text-orange-900 leading-relaxed">

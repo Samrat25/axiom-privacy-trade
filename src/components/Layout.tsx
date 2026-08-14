@@ -22,6 +22,8 @@ interface LayoutProps {
   shieldedAddress?: string | null;
   walletName: string;
   networkId?: string;
+  detected1AMNetwork?: string;
+  isNetworkAligned?: boolean;
   balance: string;
   shieldedBalance?: string;
   unshieldedBalance?: string;
@@ -47,6 +49,8 @@ export const Layout: React.FC<LayoutProps> = ({
   shieldedAddress,
   walletName,
   networkId = 'preview',
+  detected1AMNetwork,
+  isNetworkAligned = true,
   balance,
   shieldedBalance,
   unshieldedBalance,
@@ -121,6 +125,8 @@ export const Layout: React.FC<LayoutProps> = ({
               shieldedAddress={shieldedAddress}
               walletName={walletName}
               networkId={networkId}
+              detected1AMNetwork={detected1AMNetwork}
+              isNetworkAligned={isNetworkAligned}
               balance={balance}
               shieldedBalance={shieldedBalance}
               unshieldedBalance={unshieldedBalance}

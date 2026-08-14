@@ -38,6 +38,8 @@ export function App() {
     shieldedAddress,
     walletName,
     networkId,
+    detected1AMNetwork,
+    isNetworkAligned,
     balance,
     shieldedBalance,
     unshieldedBalance,
@@ -111,6 +113,8 @@ export function App() {
           shieldedAddress={shieldedAddress}
           walletName={walletName}
           networkId={networkId}
+          detected1AMNetwork={detected1AMNetwork}
+          isNetworkAligned={isNetworkAligned}
           balance={balance}
           shieldedBalance={shieldedBalance}
           unshieldedBalance={unshieldedBalance}
@@ -584,6 +588,8 @@ export function App() {
         unshieldedBalance={unshieldedBalance}
         dustBalance={dustBalance}
         networkId={networkId}
+        detected1AMNetwork={detected1AMNetwork}
+        isNetworkAligned={isNetworkAligned}
         onSelectNetwork={handleSelectNetwork}
         onConnect={connectWallet}
         onDisconnect={disconnectWallet}

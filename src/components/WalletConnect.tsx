@@ -8,6 +8,8 @@ interface WalletConnectProps {
   shieldedAddress?: string | null;
   walletName: string;
   networkId?: string;
+  detected1AMNetwork?: string;
+  isNetworkAligned?: boolean;
   balance: string;
   shieldedBalance?: string;
   unshieldedBalance?: string;
@@ -27,6 +29,8 @@ export const WalletConnect: React.FC<WalletConnectProps> = ({
   address,
   walletName,
   networkId = 'preview',
+  detected1AMNetwork,
+  isNetworkAligned = true,
   balance,
   isConnecting,
   error,
@@ -49,13 +53,18 @@ export const WalletConnect: React.FC<WalletConnectProps> = ({
           onClick={onOpenModal}
           className="flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-gray-100 hover:bg-gray-200/80 border border-gray-300/80 text-left transition-all cursor-pointer shadow-xs"
         >
-          <span className="w-2 h-2 rounded-full bg-emerald-500 shrink-0 animate-pulse"></span>
+          <span className={`w-2 h-2 rounded-full shrink-0 ${!isNetworkAligned ? 'bg-amber-500 animate-bounce' : 'bg-emerald-500 animate-pulse'}`}></span>
           <div className="flex items-center gap-1.5 text-xs font-medium text-gray-900">
             <span className="font-semibold">{walletName}</span>
             <span className="text-gray-400">•</span>
             <span className="font-bold text-gray-800">{String(balance)}</span>
           </div>
-          {displayAddress && (
+          {!isNetworkAligned && detected1AMNetwork && (
+            <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-amber-100 text-amber-900 border border-amber-300">
+              1AM: {detected1AMNetwork.toUpperCase()}
+            </span>
+          )}
+          {displayAddress && isNetworkAligned && (
             <span className="text-[11px] font-mono text-gray-600 bg-white px-2 py-0.5 rounded-full border border-gray-200 shadow-2xs">
               {displayAddress}
             </span>
