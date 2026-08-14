@@ -1,9 +1,16 @@
-# 🛡️ Axiom — Confidential AI-Orchestrated Trading Protocol
+<p align="center">
+  <img src="./public/axiom-logo.png" alt="Axiom Trade Logo" width="130" style="border-radius: 20px;" />
+</p>
 
-[![Axiom CI/CD Pipeline](https://github.com/Samrat25/axiom-privacy-trade/actions/workflows/ci.yml/badge.svg)](https://github.com/Samrat25/axiom-privacy-trade/actions/workflows/ci.yml)
-[![Tests](https://img.shields.io/badge/tests-19%2F19_passing-brightgreen)](https://github.com/Samrat25/axiom-privacy-trade)
-[![Midnight](https://img.shields.io/badge/blockchain-Midnight_Network-purple)](https://midnight.network)
-[![Product X Profile](https://img.shields.io/badge/X-@axiom__night-black.svg?logo=x)](https://x.com/axiom_night)
+<h1 align="center">Axiom — Confidential AI-Orchestrated Trading Protocol</h1>
+
+<p align="center">
+  <a href="https://github.com/Samrat25/axiom-privacy-trade/actions/workflows/ci.yml"><img src="https://github.com/Samrat25/axiom-privacy-trade/actions/workflows/ci.yml/badge.svg" alt="Axiom CI/CD Pipeline" /></a>
+  <a href="https://github.com/Samrat25/axiom-privacy-trade"><img src="https://img.shields.io/badge/tests-19%2F19_passing-brightgreen" alt="Tests" /></a>
+  <a href="https://axiom-privacy-trade.vercel.app"><img src="https://img.shields.io/badge/demo-axiom--privacy--trade.vercel.app-blue" alt="Live Demo Vercel" /></a>
+  <a href="https://midnight.network"><img src="https://img.shields.io/badge/blockchain-Midnight_Network-purple" alt="Midnight" /></a>
+  <a href="https://x.com/axiom_night"><img src="https://img.shields.io/badge/X-@axiom__night-black.svg?logo=x" alt="Product X Profile" /></a>
+</p>
 
 > An institutional-grade, privacy-preserving automated trading protocol on the **Midnight blockchain** where traders state risk boundaries in natural language and prove trade execution in Zero-Knowledge — with zero strategy rules, portfolio balances, or order sizes exposed to mempools.
 
@@ -15,7 +22,8 @@
 
 | Resource | Link |
 |:---|:---|
-| **Live Application** | [https://axiom-privacy-trade.lovable.app](https://axiom-privacy-trade.lovable.app) |
+| **Live Application (Vercel)** | [https://axiom-privacy-trade.vercel.app](https://axiom-privacy-trade.vercel.app) |
+| **Live Application (Lovable)** | [https://axiom-privacy-trade.lovable.app](https://axiom-privacy-trade.lovable.app) |
 | **Demo Video (Walkthrough)** | [🎬 Watch on Google Drive](https://drive.google.com/file/d/1CLl04L8zv4vsdxteTzu1P2TgVVmLeVHj/view?usp=sharing) |
 | **GitHub Repository** | [https://github.com/Samrat25/axiom-privacy-trade](https://github.com/Samrat25/axiom-privacy-trade) |
 | **Product X (Twitter) Profile** | [@axiom_night (https://x.com/axiom_night)](https://x.com/axiom_night) |
@@ -284,13 +292,14 @@ The demo video showcases:
 | # | Requirement | Status | Verification Link |
 |:--|:---|:---:|:---|
 | 1 | **Public GitHub repository with documentation** | ✅ Complete | [github.com/Samrat25/axiom-privacy-trade](https://github.com/Samrat25/axiom-privacy-trade) |
-| 2 | **Working MVP live on Preprod (verifiable address)** | ✅ Complete | [`0x5ef6f5142328af863af9851c83d0d60c852af470435b34b0906b21c636b2df2e`](https://preprod.midnightexplorer.com/contracts/0x5ef6f5142328af863af9851c83d0d60c852af470435b34b0906b21c636b2df2e) |
-| 3 | **CI/CD badge or workflow file with passing runs** | ✅ Complete | [GitHub Actions Workflow](https://github.com/Samrat25/axiom-privacy-trade/actions/workflows/ci.yml) |
-| 4 | **Product X profile created and linked** | ✅ Complete | [@axiom_night (https://x.com/axiom_night)](https://x.com/axiom_night) |
-| 5 | **Building in Public on X (3+ updates)** | ✅ Complete | [Post 1](https://x.com/i/status/2088282869403996491) • [Post 2](https://x.com/i/status/2088295433621877200) • [Post 3](https://x.com/i/status/2088295537565184320) |
-| 6 | **Demo video of the MVP** | ✅ Complete | [Google Drive Demo Video ↗](https://drive.google.com/file/d/1CLl04L8zv4vsdxteTzu1P2TgVVmLeVHj/view?usp=sharing) |
-| 7 | **Minimum 15 meaningful commits** | ✅ Complete | **44+ Commits** on `main` branch |
-| 8 | **Test suite verification** | ✅ Complete | **19/19 Unit & Privacy Tests Passing** |
+| 2 | **Live Demo Application (Vercel & Lovable)** | ✅ Complete | [axiom-privacy-trade.vercel.app](https://axiom-privacy-trade.vercel.app) • [axiom-privacy-trade.lovable.app](https://axiom-privacy-trade.lovable.app) |
+| 3 | **Working MVP live on Preprod (verifiable address)** | ✅ Complete | [`0x5ef6f5142328af863af9851c83d0d60c852af470435b34b0906b21c636b2df2e`](https://preprod.midnightexplorer.com/contracts/0x5ef6f5142328af863af9851c83d0d60c852af470435b34b0906b21c636b2df2e) |
+| 4 | **CI/CD badge or workflow file with passing runs** | ✅ Complete | [GitHub Actions Workflow](https://github.com/Samrat25/axiom-privacy-trade/actions/workflows/ci.yml) |
+| 5 | **Product X profile created and linked** | ✅ Complete | [@axiom_night (https://x.com/axiom_night)](https://x.com/axiom_night) |
+| 6 | **Building in Public on X (3+ updates)** | ✅ Complete | [Post 1](https://x.com/i/status/2088282869403996491) • [Post 2](https://x.com/i/status/2088295433621877200) • [Post 3](https://x.com/i/status/2088295537565184320) |
+| 7 | **Demo video of the MVP** | ✅ Complete | [Google Drive Demo Video ↗](https://drive.google.com/file/d/1CLl04L8zv4vsdxteTzu1P2TgVVmLeVHj/view?usp=sharing) |
+| 8 | **Minimum 15 meaningful commits** | ✅ Complete | **44+ Commits** on `main` branch |
+| 9 | **Test suite verification** | ✅ Complete | **19/19 Unit & Privacy Tests Passing** |
 
 ---
 
