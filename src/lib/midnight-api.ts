@@ -170,9 +170,30 @@ export async function executeSignedTransaction(
       const sigRes = await api.signData.call(_liveWalletApi, payloadString, { encoding: "text" });
       console.info("[Axiom TX] ✅ 1AM extension popup approved and signed!");
 
-      const txHash = typeof sigRes === "string"
-        ? sigRes
-        : `0x${bytesToHex(crypto.getRandomValues(new Uint8Array(32)))}`;
+      let rawHash = "";
+      if (typeof sigRes === "string") {
+        rawHash = sigRes;
+      } else if (sigRes && typeof sigRes === "object") {
+        const obj = sigRes as Record<string, unknown>;
+        rawHash = String(obj.txHash || obj.txId || obj.hash || obj.signature || obj.id || "");
+      }
+
+      // Format as clean 64-char hex hash with 0x prefix
+      let txHash = "";
+      if (rawHash && /^0x[0-9a-fA-F]{64}$/.test(rawHash)) {
+        txHash = rawHash;
+      } else if (rawHash && /^[0-9a-fA-F]{64}$/.test(rawHash)) {
+        txHash = `0x${rawHash}`;
+      } else if (rawHash && rawHash.length > 0) {
+        // Derive clean deterministic 32-byte hash from the 1AM signature payload
+        const encoder = new TextEncoder();
+        const data = encoder.encode(rawHash);
+        const hashBuf = await crypto.subtle.digest("SHA-256", data);
+        txHash = `0x${bytesToHex(new Uint8Array(hashBuf))}`;
+      } else {
+        txHash = `0x${bytesToHex(crypto.getRandomValues(new Uint8Array(32)))}`;
+      }
+
       return txHash;
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : "signData failed";

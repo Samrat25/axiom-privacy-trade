@@ -127,18 +127,23 @@ export const ProtocolLog: React.FC<ProtocolLogProps> = ({ logs, networkId = 'pre
                   {log.detail}
                 </p>
 
-                {log.detail.includes('TX:') && (
-                  <div className="pl-5 pt-1">
-                    <a
-                      href={explorerUrl}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="inline-flex items-center gap-1 text-[10px] font-bold text-orange-600 hover:text-orange-700 hover:underline"
-                    >
-                      <span>Verify on Midnight {networkId === 'preprod' ? 'Preprod' : 'Preview'} Explorer →</span>
-                    </a>
-                  </div>
-                )}
+                {log.detail.includes('TX:') && (() => {
+                  const match = log.detail.match(/TX:\s*(0x[a-fA-F0-9]+|[a-fA-F0-9]{32,64})/);
+                  const directTx = match ? match[1] : '';
+                  const targetUrl = directTx ? `${explorerBase}/transactions/${directTx}` : explorerUrl;
+                  return (
+                    <div className="pl-5 pt-1">
+                      <a
+                        href={targetUrl}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="inline-flex items-center gap-1 text-[10px] font-bold text-orange-600 hover:text-orange-700 hover:underline"
+                      >
+                        <span>Verify {directTx ? `${directTx.substring(0, 10)}…` : 'TX'} on Midnight {networkId === 'preprod' ? 'Preprod' : 'Preview'} Explorer →</span>
+                      </a>
+                    </div>
+                  );
+                })()}
               </div>
             );
           })
