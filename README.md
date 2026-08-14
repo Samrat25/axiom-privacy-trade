@@ -8,10 +8,10 @@
 
 | Network | Version | Contract Address | Explorer Link | Status |
 |:--------|:--------|:-----------------|:-------------|:-------|
-| **Midnight Preview Testnet** | `v1.2.0` | `0x33eb41d22028264e9e8bbe7f95b3089cece6e3c2a53008535e72a9f3350d3e30` | [View on Midnight Explorer](https://preview.midnightexplorer.com/contract/0x33eb41d22028264e9e8bbe7f95b3089cece6e3c2a53008535e72a9f3350d3e30) | 🟢 **CURRENT / ACTIVE (Asset-Agnostic Risk Engine)** |
-| **Midnight Preprod Testnet** | `v1.1.0` | `0x5ef6f5142328af863af9851c83d0d60c852af470435b34b0906b21c636b2df2e` | [View on Midnight Explorer](https://preprod.midnightexplorer.com/contract/0x5ef6f5142328af863af9851c83d0d60c852af470435b34b0906b21c636b2df2e) | 🟢 **CURRENT / ACTIVE (Asset-Agnostic Risk Engine)** |
-| **Midnight Preview Testnet** | `v1.1.0` | `0x110f64de15f7f8ae579821999392da4c02c1143cfe7fb4e0572aad52484234d5` | [View on Midnight Explorer](https://preview.midnightexplorer.com/contract/0x110f64de15f7f8ae579821999392da4c02c1143cfe7fb4e0572aad52484234d5) | 🟡 *Historical (Vault v1)* |
-| **Midnight Preprod Testnet** | `v1.0.0` | `0x62a27ceda5eb600263e208768d5d285c659d47f2cd6b14a20c62b160f4da46f3` | [View on Midnight Explorer](https://preprod.midnightexplorer.com/contract/0x62a27ceda5eb600263e208768d5d285c659d47f2cd6b14a20c62b160f4da46f3) | 🟡 *Historical (Initial Deployment)* |
+| **Midnight Preview Testnet** | `v1.2.0` | `0x33eb41d22028264e9e8bbe7f95b3089cece6e3c2a53008535e72a9f3350d3e30` | [View on Midnight Explorer](https://preview.midnightexplorer.com/contracts/0x33eb41d22028264e9e8bbe7f95b3089cece6e3c2a53008535e72a9f3350d3e30) | 🟢 **CURRENT / ACTIVE (Asset-Agnostic Risk Engine)** |
+| **Midnight Preprod Testnet** | `v1.1.0` | `0x5ef6f5142328af863af9851c83d0d60c852af470435b34b0906b21c636b2df2e` | [View on Midnight Explorer](https://preprod.midnightexplorer.com/contracts/0x5ef6f5142328af863af9851c83d0d60c852af470435b34b0906b21c636b2df2e) | 🟢 **CURRENT / ACTIVE (Asset-Agnostic Risk Engine)** |
+| **Midnight Preview Testnet** | `v1.1.0` | `0x110f64de15f7f8ae579821999392da4c02c1143cfe7fb4e0572aad52484234d5` | [View on Midnight Explorer](https://preview.midnightexplorer.com/contracts/0x110f64de15f7f8ae579821999392da4c02c1143cfe7fb4e0572aad52484234d5) | 🟡 *Historical (Vault v1)* |
+| **Midnight Preprod Testnet** | `v1.0.0` | `0x62a27ceda5eb600263e208768d5d285c659d47f2cd6b14a20c62b160f4da46f3` | [View on Midnight Explorer](https://preprod.midnightexplorer.com/contracts/0x62a27ceda5eb600263e208768d5d285c659d47f2cd6b14a20c62b160f4da46f3) | 🟡 *Historical (Initial Deployment)* |
 
 ```
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━

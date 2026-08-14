@@ -39,7 +39,7 @@ export function getMidnightExplorerTxUrl(txHash: string, network: string = 'prev
 export function getMidnightExplorerContractUrl(hashOrAddr: string, network: string = 'preview'): string {
   const formattedAddr = hashOrAddr ? (hashOrAddr.startsWith('0x') ? hashOrAddr : `0x${hashOrAddr}`) : '';
   const domain = network === 'preprod' ? 'preprod.midnightexplorer.com' : 'preview.midnightexplorer.com';
-  return formattedAddr ? `https://${domain}/contract/${formattedAddr}` : `https://${domain}/transactions`;
+  return formattedAddr ? `https://${domain}/contracts/${formattedAddr}` : `https://${domain}/transactions`;
 }
 
 /**

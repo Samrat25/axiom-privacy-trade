@@ -264,7 +264,7 @@ export function App() {
                           <div className="flex items-center justify-between text-[11px] text-gray-500 uppercase tracking-wider font-semibold">
                             <span>Public Risk Commitment Hash</span>
                             <a
-                              href="https://preview.midnightexplorer.com/contract/0x33eb41d22028264e9e8bbe7f95b3089cece6e3c2a53008535e72a9f3350d3e30"
+                              href="https://preview.midnightexplorer.com/contracts/0x33eb41d22028264e9e8bbe7f95b3089cece6e3c2a53008535e72a9f3350d3e30"
                               target="_blank"
                               rel="noreferrer"
                               className="text-orange-600 hover:underline flex items-center gap-1 font-bold"
