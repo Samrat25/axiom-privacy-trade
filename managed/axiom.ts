@@ -11,6 +11,9 @@ export interface StrategyWitnesses {
   getTradeSizeUsd: () => bigint;
   localSecretKey: () => string;
   getRiskCheckPassed?: () => boolean;
+  getDepositTNightAmount?: () => bigint;
+  getBurnTNightAmount?: () => bigint;
+  getTNightPriceUsd?: () => bigint;
 }
 
 export class AxiomContractSimulator {
@@ -105,6 +108,39 @@ export class AxiomContractSimulator {
     } catch (err: any) {
       return { status: 'rejected', reason: err.message };
     }
+  }
+
+  public mintVaultBalance(agentId: string, depositId: string): { success: boolean; reason?: string } {
+    const depositAmount = this.witnesses.getDepositTNightAmount ? this.witnesses.getDepositTNightAmount() : 0n;
+    const priceUsd = this.witnesses.getTNightPriceUsd ? this.witnesses.getTNightPriceUsd() : 0n;
+
+    if (depositAmount <= 0n) {
+      return { success: false, reason: 'invalid deposit amount' };
+    }
+    if (priceUsd <= 0n) {
+      return { success: false, reason: 'invalid tNIGHT price' };
+    }
+
+    this.tradeStatus.set(depositId, 1);
+    return { success: true };
+  }
+
+  public burnVaultBalance(agentId: string, burnId: string, withdrawUsdcAmount: bigint): { success: boolean; reason?: string } {
+    const portfolioVal = this.witnesses.getPortfolioValue();
+    const priceUsd = this.witnesses.getTNightPriceUsd ? this.witnesses.getTNightPriceUsd() : 0n;
+
+    if (withdrawUsdcAmount <= 0n) {
+      return { success: false, reason: 'invalid withdraw amount' };
+    }
+    if (withdrawUsdcAmount > portfolioVal) {
+      return { success: false, reason: 'insufficient vault balance' };
+    }
+    if (priceUsd <= 0n) {
+      return { success: false, reason: 'invalid tNIGHT price' };
+    }
+
+    this.tradeStatus.set(burnId, 3);
+    return { success: true };
   }
 
   public unshieldWithdraw(agentId: string, amountUsd: bigint): { success: boolean; reason?: string } {

@@ -370,9 +370,13 @@ export function useMidnight() {
 
       addLog('success', 'ZK Risk Check Passed', `EZKL Proof Verified: ${riskRes.proofHash.substring(0, 18)}… | Score: ${riskRes.score}`);
 
-      setProofStep('2. Submitting executeTrade via 1AM Wallet...');
+      const basePrice = asset === 'BTC' ? 61250 : asset === 'ETH' ? 3300 : asset === 'SOL' ? 145 : asset === 'AAPL' ? 228.5 : 0.421;
 
-      const basePrice = asset === 'BTC' ? 61250 : asset === 'ETH' ? 3300 : asset === 'SOL' ? 145 : 0.421;
+      // ============================================================================
+      // ASSUMPTION NOTICE: ADA, SOL, BTC, ETH, and Stock tickers (AAPL) are paper
+      // positions valued against the trader's private vault balance. No real custody,
+      // bridging, or order routing is executed for non-Midnight assets.
+      // ============================================================================
 
       const txHash = await executeSignedTransaction('executeTrade', {
         agentId,
@@ -380,6 +384,9 @@ export function useMidnight() {
         tradeSizeUsd,
         currentTime: Math.floor(Date.now() / 1000),
       });
+
+      // Draw down vault balance upon trade execution
+      setVaultBalance((prev) => Math.max(0, prev - tradeSizeUsd));
 
       const isExecuted = tradeSizeUsd <= 5000;
       const simulatedPnlPct = isExecuted ? Number((Math.random() * 8 + 1.5).toFixed(2)) : 0;

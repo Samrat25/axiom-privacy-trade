@@ -162,7 +162,14 @@ export const Portfolio: React.FC<PortfolioProps> = ({
             </thead>
             <tbody className="divide-y divide-gray-800/80 text-gray-200">
               <tr>
-                <td className="p-3.5 font-bold text-purple-300">tNIGHT (Shielded)</td>
+                <td className="p-3.5 font-bold text-purple-300">Shielded Vault (vUSD)</td>
+                <td className="p-3.5 text-purple-400 font-semibold">Shielded Vault Note</td>
+                <td className="p-3.5 font-bold text-purple-300">$10,000 vUSD</td>
+                <td className="p-3.5 font-bold text-white">$10,000.00</td>
+                <td className="p-3.5 text-purple-400">Shielded USDC-Equivalent Note</td>
+              </tr>
+              <tr>
+                <td className="p-3.5 font-bold text-emerald-300">tNIGHT (Shielded)</td>
                 <td className="p-3.5 text-emerald-400 font-semibold">Shielded Note</td>
                 <td className="p-3.5 font-bold text-emerald-400">{shieldedBalance}</td>
                 <td className="p-3.5 font-bold text-white">${(5000.00).toLocaleString(undefined, { minimumFractionDigits: 2 })}</td>
@@ -183,11 +190,18 @@ export const Portfolio: React.FC<PortfolioProps> = ({
                 <td className="p-3.5 text-amber-300">Transaction Gas Reserve</td>
               </tr>
               <tr>
-                <td className="p-3.5 font-bold text-cyan-300">ADA (Cardano Collateral)</td>
+                <td className="p-3.5 font-bold text-cyan-300">ADA (Paper Position)</td>
                 <td className="p-3.5 text-cyan-400 font-semibold">Strategy Witness</td>
                 <td className="p-3.5 font-bold text-cyan-300">5,820 ADA</td>
                 <td className="p-3.5 font-bold text-white">${(5820 * 0.421).toLocaleString(undefined, { minimumFractionDigits: 2 })}</td>
-                <td className="p-3.5 text-cyan-400">Bounded strategy witness</td>
+                <td className="p-3.5 text-cyan-400">Paper position against Vault</td>
+              </tr>
+              <tr>
+                <td className="p-3.5 font-bold text-blue-300">AAPL (Stock Paper Position)</td>
+                <td className="p-3.5 text-blue-400 font-semibold">Stock Paper Feed</td>
+                <td className="p-3.5 font-bold text-blue-300">10 AAPL</td>
+                <td className="p-3.5 font-bold text-white">${(10 * 228.5).toLocaleString(undefined, { minimumFractionDigits: 2 })}</td>
+                <td className="p-3.5 text-blue-400">Paper position against Vault</td>
               </tr>
             </tbody>
           </table>

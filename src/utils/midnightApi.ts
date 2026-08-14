@@ -28,7 +28,7 @@ export interface MidnightApiTransaction {
  */
 export function getMidnightExplorerTxUrl(txHash: string, network: string = 'preview'): string {
   const cleanHash = txHash.startsWith('0x') ? txHash : `0x${txHash}`;
-  const domain = network === 'preprod' ? 'preprod.midnightexplorer.com' : 'midnightexplorer.com';
+  const domain = network === 'preprod' ? 'preprod.midnightexplorer.com' : 'preview.midnightexplorer.com';
   return `https://${domain}/tx/${cleanHash}`;
 }
 
@@ -36,7 +36,7 @@ export function getMidnightExplorerTxUrl(txHash: string, network: string = 'prev
  * Midnight Explorer Contract / Commitment URL
  */
 export function getMidnightExplorerContractUrl(hashOrAddr: string, network: string = 'preview'): string {
-  const domain = network === 'preprod' ? 'preprod.midnightexplorer.com' : 'midnightexplorer.com';
+  const domain = network === 'preprod' ? 'preprod.midnightexplorer.com' : 'preview.midnightexplorer.com';
   return `https://${domain}/contracts/${hashOrAddr}`;
 }
 
@@ -44,7 +44,7 @@ export function getMidnightExplorerContractUrl(hashOrAddr: string, network: stri
  * Midnight Explorer Block URL
  */
 export function getMidnightExplorerBlockUrl(blockHeight: number, network: string = 'preview'): string {
-  const domain = network === 'preprod' ? 'preprod.midnightexplorer.com' : 'midnightexplorer.com';
+  const domain = network === 'preprod' ? 'preprod.midnightexplorer.com' : 'preview.midnightexplorer.com';
   return `https://${domain}/blocks/${blockHeight}`;
 }
 
@@ -52,7 +52,7 @@ export function getMidnightExplorerBlockUrl(blockHeight: number, network: string
  * Midnight Explorer Address URL
  */
 export function getMidnightExplorerAddressUrl(address: string, network: string = 'preview'): string {
-  const domain = network === 'preprod' ? 'preprod.midnightexplorer.com' : 'midnightexplorer.com';
+  const domain = network === 'preprod' ? 'preprod.midnightexplorer.com' : 'preview.midnightexplorer.com';
   return `https://${domain}/address/${address}`;
 }
 

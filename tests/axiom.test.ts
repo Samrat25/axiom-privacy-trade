@@ -115,4 +115,50 @@ describe('Axiom Compact Smart Contract Privacy & Verification Suite', () => {
     expect(failRes.status).toBe('rejected');
     expect(failRes.reason).toContain('risk model check failed');
   });
+
+  it('7. mintVaultBalance: deposits tNIGHT & mints private USDC-equivalent vault note', () => {
+    const mintWitnesses: StrategyWitnesses = {
+      ...defaultWitnesses,
+      getDepositTNightAmount: () => 500n,
+      getTNightPriceUsd: () => 100n // $1.00 per tNIGHT
+    };
+    const contract = new AxiomContractSimulator(mintWitnesses);
+    const agentId = '0xagent_1';
+    const depositId = '0xvault_deposit_01';
+
+    const res = contract.mintVaultBalance(agentId, depositId);
+    expect(res.success).toBe(true);
+    expect(contract.tradeStatus.get(depositId)).toBe(1);
+
+    // Test zero deposit failure
+    const zeroWitnesses: StrategyWitnesses = {
+      ...defaultWitnesses,
+      getDepositTNightAmount: () => 0n,
+      getTNightPriceUsd: () => 100n
+    };
+    const zeroContract = new AxiomContractSimulator(zeroWitnesses);
+    const zeroRes = zeroContract.mintVaultBalance(agentId, '0xdeposit_zero');
+    expect(zeroRes.success).toBe(false);
+    expect(zeroRes.reason).toContain('invalid deposit amount');
+  });
+
+  it('8. burnVaultBalance: burns private vault note and unshields to public wallet', () => {
+    const burnWitnesses: StrategyWitnesses = {
+      ...defaultWitnesses,
+      getPortfolioValue: () => 10000n, // $10,000 in vault
+      getBurnTNightAmount: () => 200n,
+      getTNightPriceUsd: () => 100n
+    };
+    const contract = new AxiomContractSimulator(burnWitnesses);
+    const agentId = '0xagent_1';
+    const burnId = '0xvault_burn_01';
+
+    const validBurn = contract.burnVaultBalance(agentId, burnId, 250n);
+    expect(validBurn.success).toBe(true);
+    expect(contract.tradeStatus.get(burnId)).toBe(3);
+
+    const excessiveBurn = contract.burnVaultBalance(agentId, '0xexcessive_burn', 50000n);
+    expect(excessiveBurn.success).toBe(false);
+    expect(excessiveBurn.reason).toContain('insufficient vault balance');
+  });
 });

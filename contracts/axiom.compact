@@ -39,6 +39,9 @@ witness getTradeAsset(): Bytes<32>;
 witness getTradeSizeUsd(): Uint<64>;
 witness localSecretKey(): Bytes<32>;
 witness getRiskCheckPassed(): Boolean;
+witness getDepositTNightAmount(): Uint<64>;
+witness getBurnTNightAmount(): Uint<64>;
+witness getTNightPriceUsd(): Uint<64>;
 
 // ---------- CIRCUITS ----------
 
@@ -75,6 +78,21 @@ export circuit executeTrade(agentId: Bytes<32>, tradeId: Bytes<32>, currentTime:
 
   tradeStatus.insert(disclose(tradeId), disclose(1 as Uint<8>));
   tradeCount.increment(1);
+}
+
+// Mint: deposit tNIGHT and convert to private USDC-equivalent balance note
+export circuit mintVaultBalance(agentId: Bytes<32>, depositId: Bytes<32>): [] {
+  assert(getDepositTNightAmount() > (0 as Uint<64>), "invalid deposit amount");
+  assert(getTNightPriceUsd() > (0 as Uint<64>), "invalid tNIGHT price");
+  tradeStatus.insert(disclose(depositId), disclose(1 as Uint<8>));
+}
+
+// Burn: convert private vault balance back to tNIGHT and unshield to public wallet
+export circuit burnVaultBalance(agentId: Bytes<32>, burnId: Bytes<32>, withdrawUsdcAmount: Uint<64>): [] {
+  assert(withdrawUsdcAmount > (0 as Uint<64>), "invalid withdraw amount");
+  assert(withdrawUsdcAmount <= getPortfolioValue(), "insufficient vault balance");
+  assert(getTNightPriceUsd() > (0 as Uint<64>), "invalid tNIGHT price");
+  tradeStatus.insert(disclose(burnId), disclose(3 as Uint<8>));
 }
 
 // Withdraw: unshield private balance note back to public wallet balance
