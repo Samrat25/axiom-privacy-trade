@@ -4,7 +4,7 @@
 [![Network](https://img.shields.io/badge/Midnight-Preprod%20%26%20Preview-orange.svg)](https://midnight.network)
 [![Compact Version](https://img.shields.io/badge/Compact-v0.24%20ZKIR-purple.svg)](https://docs.midnight.network)
 [![Tests](https://img.shields.io/badge/Vitest-19%20Passed-emerald.svg)](https://github.com/Samrat25/axiom-privacy-trade)
-[![Product X Profile](https://img.shields.io/badge/X-@AxiomPrivacy-black.svg?logo=x)](https://x.com/AxiomPrivacy)
+[![Product X Profile](https://img.shields.io/badge/X-@axiom__night-black.svg?logo=x)](https://x.com/axiom_night)
 
 > **State your trading strategy once in plain natural language; every trade after is cryptographically proven to follow it on the Midnight blockchain—without revealing your strategy rules, portfolio balance, or trade sizes.**
 
@@ -15,11 +15,13 @@
 | Requirement | Details / Link | Status |
 |:---|:---|:---:|
 | **Public GitHub Repo** | [https://github.com/Samrat25/axiom-privacy-trade](https://github.com/Samrat25/axiom-privacy-trade) | ✅ Complete |
+| **MVP Demo Video** | [🎬 Watch Demo Video on Google Drive ↗](https://drive.google.com/file/d/1CLl04L8zv4vsdxteTzu1P2TgVVmLeVHj/view?usp=sharing) | ✅ Complete |
 | **Live Preprod Contract** | [`0x5ef6f5142328af863af9851c83d0d60c852af470435b34b0906b21c636b2df2e`](https://preprod.midnightexplorer.com/contracts/0x5ef6f5142328af863af9851c83d0d60c852af470435b34b0906b21c636b2df2e) | ✅ Deployed |
 | **Live Preview Contract** | [`0x33eb41d22028264e9e8bbe7f95b3089cece6e3c2a53008535e72a9f3350d3e30`](https://preview.midnightexplorer.com/contracts/0x33eb41d22028264e9e8bbe7f95b3089cece6e3c2a53008535e72a9f3350d3e30) | ✅ Deployed |
 | **CI/CD Pipeline** | [GitHub Actions Workflow `.github/workflows/ci.yml`](https://github.com/Samrat25/axiom-privacy-trade/actions/workflows/ci.yml) | ✅ Passing |
-| **Product X (Twitter) Profile** | [@AxiomPrivacy](https://x.com/AxiomPrivacy) | ✅ Linked |
-| **Meaningful Commits** | **34+ Commits** (Exceeds required 15) | ✅ Verified |
+| **Product X (Twitter) Profile** | [@axiom_night (https://x.com/axiom_night)](https://x.com/axiom_night) | ✅ Linked |
+| **Building in Public (3 X Posts)** | [Post 1](https://x.com/i/status/2088282869403996491) • [Post 2](https://x.com/i/status/2088295433621877200) • [Post 3](https://x.com/i/status/2088295537565184320) | ✅ Published |
+| **Meaningful Commits** | **43+ Commits** (Exceeds required 15) | ✅ Verified |
 | **Test Suite** | 19 Unit & Privacy Tests Passing (`npm test`) | ✅ 100% Pass |
 
 ---
@@ -272,6 +274,52 @@ axiom-privacy-trade/
 
 ---
 
+## 📸 MVP Screenshots & Live Verification
+
+### 1. Landing Page & Feature Architecture
+![Landing Page](screenshots/landing_page.png)
+
+### 2. Zero-Knowledge Protocol Architecture & State Machine
+![Architecture](screenshots/architecture.png)
+
+### 3. Live Protocol Dashboard & Real-Time IST Telemetry
+![Dashboard & Telemetry](screenshots/dashboard_monitoring.png)
+
+### 4. Natural-Language Strategy Builder & Pre-Commit AI Risk Engine
+![Strategy Builder](screenshots/strategy.png)
+
+### 5. AI Market Signals & ZK Trade Execution
+![Market Insights & ZK Trade](screenshots/market_execute_trade.png)
+
+### 6. Shielded Trading Vault (vUSD) & 1AM Balance Matrix
+![Shielded Vault](screenshots/vault.png)
+
+### 7. Midnight Explorer Transaction Logs & On-Chain Proofs
+![Trade History & Explorer](screenshots/trade_history.png)
+
+---
+
+## 🧪 Test Verification Suite (19/19 Passing)
+
+```bash
+> axiom-privacy-trade@1.0.0 test
+> vitest run --run
+
+ RUN  v3.2.7 C:/Users/SAMRAT NATTA/OneDrive/Desktop/axiom-privacy-trade
+
+ ✓ tests/riskModel.test.ts (3 tests) 5ms
+ ✓ tests/riskFlowVerification.test.ts (2 tests) 6ms
+ ✓ tests/axiom.test.ts (9 tests) 7ms
+ ✓ tests/agent.test.ts (5 tests) 11ms
+
+ Test Files  4 passed (4)
+      Tests  19 passed (19)
+   Duration  8.06s (transform 482ms, setup 0ms, collect 7.19s, tests 29ms, environment 1ms, prepare 3.86s)
+```
+
+---
+
 ## License
 
 MIT License. Developed for the **Midnight Blockchain Ecosystem**.
+

@@ -258,7 +258,7 @@ export const Layout: React.FC<LayoutProps> = ({
 
           <div className="flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
-            <span className="text-gray-700 font-medium">Midnight Preview Explorer API Active</span>
+            <span className="text-gray-700 font-medium">Midnight {networkId === 'preprod' ? 'Preprod' : 'Preview'} Explorer API Active</span>
           </div>
         </div>
       </footer>

@@ -26,6 +26,7 @@ interface StrategyBuilderProps {
   proofStep: string;
   walletConnected: boolean;
   onConnectWallet: () => void;
+  networkId?: string;
   onNavigateTab?: (tab: string) => void;
 }
 
@@ -42,6 +43,7 @@ export const StrategyBuilder: React.FC<StrategyBuilderProps> = ({
   proofStep,
   walletConnected,
   onConnectWallet,
+  networkId = 'preview',
   onNavigateTab
 }) => {
   const defaultPrompt = PRESET_PROMPTS[0];
@@ -444,12 +446,12 @@ export const StrategyBuilder: React.FC<StrategyBuilderProps> = ({
               </button>
             )}
             <a
-              href="https://preview.midnightexplorer.com/transactions"
+              href={networkId === 'preprod' ? 'https://preprod.midnightexplorer.com/transactions' : 'https://preview.midnightexplorer.com/transactions'}
               target="_blank"
               rel="noreferrer"
               className="w-full sm:w-auto px-5 py-2.5 rounded-full bg-gray-900 hover:bg-black text-white font-bold text-xs flex items-center justify-center gap-2 transition-all cursor-pointer shadow-sm"
             >
-              <span>View Midnight Transactions Explorer</span>
+              <span>View Midnight {networkId === 'preprod' ? 'Preprod' : 'Preview'} Transactions Explorer</span>
               <ExternalLink className="w-3.5 h-3.5" />
             </a>
           </div>

@@ -113,7 +113,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
             <div className="hidden md:flex items-center gap-4 sm:gap-5 pr-1">
               <div className="flex items-center gap-2 text-[12px] font-semibold bg-emerald-50 text-emerald-800 px-3 py-1 rounded-full border border-emerald-200/80">
                 <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                <span>Midnight Preview Live</span>
+                <span>Midnight Preprod & Preview Live</span>
               </div>
 
               <div className="flex items-center gap-1.5 text-[13px] text-gray-600 font-medium">
@@ -389,11 +389,11 @@ export const LandingPage: React.FC<LandingPageProps> = ({
                 <span className="text-[10px] bg-gray-100 text-gray-800 px-2.5 py-0.5 rounded-full font-bold">MODULE 02</span>
               </div>
               <p className="text-xs sm:text-sm text-gray-600 leading-relaxed font-normal">
-                Direct integration with Midnight's 1AM wallet. Execute zero-gas sponsored transactions via ProofStation and track real-time confirmations on <a href="https://preview.midnightexplorer.com/transactions" target="_blank" rel="noreferrer" className="text-orange-600 underline font-medium">preview.midnightexplorer.com/transactions</a>.
+                Direct integration with Midnight's 1AM wallet. Execute zero-gas sponsored transactions via ProofStation and track real-time confirmations on <a href="https://preview.midnightexplorer.com/transactions" target="_blank" rel="noreferrer" className="text-orange-600 underline font-medium">Midnight Preprod & Preview Explorer</a>.
               </p>
               <div className="p-4 bg-gray-50 rounded-xl border border-gray-200 text-xs font-mono text-gray-700 space-y-1">
                 <div>Gas Model: <span className="text-emerald-700 font-bold">ProofStation Sponsored</span></div>
-                <div>Explorer Link: <span className="text-orange-600 font-bold">preview.midnightexplorer.com/transactions/…</span></div>
+                <div>Explorer Link: <span className="text-orange-600 font-bold">midnightexplorer.com/transactions/…</span></div>
               </div>
             </div>
 
@@ -451,7 +451,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
               Midnight Explorer
             </a>
             <a href="https://faucet.preview.midnight.network" target="_blank" rel="noreferrer" className="text-gray-600 hover:text-gray-900 transition-colors">
-              Testnet Faucet
+              Midnight Faucets
             </a>
             <button
               onClick={walletConnected ? onEnterDashboard : onConnectWallet}

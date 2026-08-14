@@ -230,9 +230,10 @@ export const TradeHistory: React.FC<TradeHistoryProps> = ({
                     const isProfit = (trade.pnlUsd || 0) >= 0;
                     const hasRealTx = Boolean(trade.txHash && trade.txHash.length > 20);
                     const formattedHash = hasRealTx && trade.txHash ? (trade.txHash.startsWith('0x') ? trade.txHash : `0x${trade.txHash}`) : '';
+                    const explorerDomain = net === 'preprod' ? 'preprod.midnightexplorer.com' : 'preview.midnightexplorer.com';
                     const explorerUrl = formattedHash
-                      ? `https://preview.midnightexplorer.com/transactions/${formattedHash}`
-                      : 'https://preview.midnightexplorer.com/transactions';
+                      ? `https://${explorerDomain}/transactions/${formattedHash}`
+                      : `https://${explorerDomain}/transactions`;
                     const displayLabel = formattedHash ? `Tx: ${formattedHash.substring(0, 12)}…` : 'Midnight Transactions';
 
                     return (
@@ -255,7 +256,7 @@ export const TradeHistory: React.FC<TradeHistoryProps> = ({
                             <span
                               className={`text-[10px] px-2 py-0.5 rounded-full font-bold uppercase ${
                                 trade.type === 'BUY'
-                                  ? 'bg-emerald-100 text-emerald-800'
+                                   ? 'bg-emerald-100 text-emerald-800'
                                   : trade.type === 'STOP_LOSS'
                                   ? 'bg-red-100 text-red-800'
                                   : 'bg-gray-100 text-gray-800'
@@ -293,7 +294,7 @@ export const TradeHistory: React.FC<TradeHistoryProps> = ({
                               target="_blank"
                               rel="noreferrer"
                               className="text-orange-600 hover:text-orange-700 hover:underline flex items-center gap-1 text-[11px] font-bold"
-                              title={`Open Preview Midnight Explorer for ${displayLabel}`}
+                              title={`Open ${net === 'preprod' ? 'Preprod' : 'Preview'} Midnight Explorer for ${displayLabel}`}
                             >
                               <span>{displayLabel}</span>
                               <ExternalLink className="w-3 h-3 shrink-0 text-orange-500" />
@@ -383,7 +384,8 @@ export const TradeHistory: React.FC<TradeHistoryProps> = ({
               <tbody className="divide-y divide-gray-100 text-gray-800">
                 {explorerTxs.map((tx) => {
                   const formattedTx = tx.txHash.startsWith('0x') ? tx.txHash : `0x${tx.txHash}`;
-                  const url = `https://preview.midnightexplorer.com/transactions/${formattedTx}`;
+                  const explorerDomain = net === 'preprod' ? 'preprod.midnightexplorer.com' : 'preview.midnightexplorer.com';
+                  const url = `https://${explorerDomain}/transactions/${formattedTx}`;
                   return (
                     <tr key={tx.txHash} className="hover:bg-gray-50/80 transition-colors">
                       <td className="p-3.5 font-bold text-gray-900 truncate max-w-[200px]">

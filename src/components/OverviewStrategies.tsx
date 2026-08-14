@@ -14,12 +14,14 @@ import { formatISTDateTime } from '../utils/time';
 interface OverviewStrategiesProps {
   activeStrategies: ActiveStrategy[];
   vaultBalance: number;
+  networkId?: string;
   onNavigateTab: (tab: string) => void;
 }
 
 export const OverviewStrategies: React.FC<OverviewStrategiesProps> = ({
   activeStrategies,
   vaultBalance,
+  networkId = 'preview',
   onNavigateTab,
 }) => {
   const [showAll, setShowAll] = useState<boolean>(false);
@@ -130,11 +132,11 @@ export const OverviewStrategies: React.FC<OverviewStrategiesProps> = ({
                     <span className="font-semibold text-gray-700">ZK Hash:</span>
                     <span className="truncate">{strat.commitmentHash}</span>
                     <a
-                      href="https://preview.midnightexplorer.com/contracts/0x62a27ceda5eb600263e208768d5d285c659d47f2cd6b14a20c62b160f4da46f3"
+                      href={networkId === 'preprod' ? 'https://preprod.midnightexplorer.com/contracts/0x62a27ceda5eb600263e208768d5d285c659d47f2cd6b14a20c62b160f4da46f3' : 'https://preview.midnightexplorer.com/contracts/0x62a27ceda5eb600263e208768d5d285c659d47f2cd6b14a20c62b160f4da46f3'}
                       target="_blank"
                       rel="noreferrer"
                       className="text-orange-600 hover:underline inline-flex items-center gap-0.5 font-bold shrink-0"
-                      title="View contract on Midnight Explorer"
+                      title={`View contract on Midnight ${networkId === 'preprod' ? 'Preprod' : 'Preview'} Explorer`}
                     >
                       <span>Explorer</span>
                       <ExternalLink className="w-2.5 h-2.5" />

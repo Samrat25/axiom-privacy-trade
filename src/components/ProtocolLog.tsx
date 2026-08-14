@@ -22,11 +22,14 @@ export interface ProtocolLogEntry {
 
 interface ProtocolLogProps {
   logs: ProtocolLogEntry[];
+  networkId?: string;
   onClearLogs?: () => void;
 }
 
-export const ProtocolLog: React.FC<ProtocolLogProps> = ({ logs }) => {
+export const ProtocolLog: React.FC<ProtocolLogProps> = ({ logs, networkId = 'preview' }) => {
   const [filter, setFilter] = useState<'all' | 'success' | 'info' | 'error'>('all');
+  const explorerUrl = networkId === 'preprod' ? 'https://preprod.midnightexplorer.com/transactions' : 'https://preview.midnightexplorer.com/transactions';
+  const explorerBase = networkId === 'preprod' ? 'https://preprod.midnightexplorer.com' : 'https://preview.midnightexplorer.com';
 
   const filteredLogs = logs.filter((l) => {
     if (filter === 'all') return true;
@@ -127,12 +130,12 @@ export const ProtocolLog: React.FC<ProtocolLogProps> = ({ logs }) => {
                 {log.detail.includes('TX:') && (
                   <div className="pl-5 pt-1">
                     <a
-                      href="https://preview.midnightexplorer.com/transactions"
+                      href={explorerUrl}
                       target="_blank"
                       rel="noreferrer"
                       className="inline-flex items-center gap-1 text-[10px] font-bold text-orange-600 hover:text-orange-700 hover:underline"
                     >
-                      <span>Verify on Midnight Explorer →</span>
+                      <span>Verify on Midnight {networkId === 'preprod' ? 'Preprod' : 'Preview'} Explorer →</span>
                     </a>
                   </div>
                 )}
@@ -145,12 +148,12 @@ export const ProtocolLog: React.FC<ProtocolLogProps> = ({ logs }) => {
       {/* Footer Info */}
       <div className="pt-2 border-t border-gray-100 flex items-center justify-between text-[10px] text-gray-500 font-mono">
         <a
-          href="https://preview.midnightexplorer.com"
+          href={explorerBase}
           target="_blank"
           rel="noreferrer"
           className="flex items-center gap-1 text-gray-500 hover:text-orange-600 transition-colors"
         >
-          <Terminal className="w-3 h-3 text-gray-400" /> Midnight Explorer Live
+          <Terminal className="w-3 h-3 text-gray-400" /> Midnight {networkId === 'preprod' ? 'Preprod' : 'Preview'} Explorer Live
         </a>
         <span className="text-emerald-700 font-bold">● Synchronized</span>
       </div>

@@ -294,7 +294,7 @@ export const WalletModal: React.FC<WalletModalProps> = ({
                   <div className="space-y-1">
                     <h3 className="text-sm font-bold text-gray-900">Connect 1AM Midnight Wallet</h3>
                     <p className="text-xs text-gray-600 leading-relaxed max-w-sm mx-auto">
-                      Connect your 1AM browser extension to prove shielded trades and manage your private vault on Midnight Preview.
+                      Connect your 1AM browser extension to prove shielded trades and manage your private vault on Midnight Preprod & Preview.
                     </p>
                   </div>
                 </div>

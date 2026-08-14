@@ -228,13 +228,14 @@ export function App() {
                   <OverviewStrategies
                     activeStrategies={activeStrategies}
                     vaultBalance={vaultBalance}
+                    networkId={networkId}
                     onNavigateTab={setActiveTab}
                   />
                 </div>
 
                 {/* Right 1 Column: Live Real-Time Protocol Event Log in IST */}
                 <div className="lg:col-span-1">
-                  <ProtocolLog logs={protocolLogs} />
+                  <ProtocolLog logs={protocolLogs} networkId={networkId} />
                 </div>
               </div>
             </div>
@@ -248,6 +249,7 @@ export function App() {
             proofStep={proofStep}
             walletConnected={walletConnected}
             onConnectWallet={() => setIsModalOpen(true)}
+            networkId={networkId}
             onNavigateTab={setActiveTab}
           />
         )}
@@ -328,7 +330,7 @@ export function App() {
                 <h3 className="text-xs font-bold text-gray-700 uppercase tracking-wider">
                   Connected Wallet & Shielded Token Balances
                 </h3>
-                <span className="text-[11px] text-gray-500">Auto-synced with 1AM Extension & Midnight Preview</span>
+                <span className="text-[11px] text-gray-500">Auto-synced with 1AM Extension & Midnight {networkId === 'preprod' ? 'Preprod' : 'Preview'}</span>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
