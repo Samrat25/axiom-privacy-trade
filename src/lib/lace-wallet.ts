@@ -220,6 +220,54 @@ function parseBalanceValue(val: unknown): number {
   return num;
 }
 
+/** Fetch live balances directly from connected 1AM API */
+export async function fetchWalletBalances(connectedAPI: Midnight1AMConnectedAPI): Promise<{
+  tNightShielded: number;
+  tNightUnshielded: number;
+  tDust: number;
+}> {
+  let tNightShielded = 0;
+  let tNightUnshielded = 0;
+  let tDust = 0;
+
+  try {
+    const sBals = await connectedAPI.getShieldedBalances();
+    if (sBals !== null && sBals !== undefined) {
+      if (typeof sBals === "bigint" || typeof sBals === "number") {
+        tNightShielded = parseBalanceValue(sBals);
+      } else if (typeof sBals === "object") {
+        const vals = Object.values(sBals);
+        if (vals.length > 0) tNightShielded = parseBalanceValue(vals[0]);
+      }
+    }
+  } catch (e) {
+    console.warn("[Axiom Wallet] getShieldedBalances warning:", e);
+  }
+
+  try {
+    const uBals = await connectedAPI.getUnshieldedBalances();
+    if (uBals !== null && uBals !== undefined) {
+      if (typeof uBals === "bigint" || typeof uBals === "number") {
+        tNightUnshielded = parseBalanceValue(uBals);
+      } else if (typeof uBals === "object") {
+        const vals = Object.values(uBals);
+        if (vals.length > 0) tNightUnshielded = parseBalanceValue(vals[0]);
+      }
+    }
+  } catch (e) {
+    console.warn("[Axiom Wallet] getUnshieldedBalances warning:", e);
+  }
+
+  try {
+    const dustRes = await connectedAPI.getDustBalance();
+    tDust = parseBalanceValue(dustRes);
+  } catch (e) {
+    console.warn("[Axiom Wallet] getDustBalance warning:", e);
+  }
+
+  return { tNightShielded, tNightUnshielded, tDust };
+}
+
 /** Switch network on 1AM wallet and trigger extension popup */
 export async function switch1AMNetwork(
   networkId: MidnightNetwork,
@@ -250,6 +298,9 @@ export async function switch1AMNetwork(
       console.warn("[Axiom Wallet] 1AM popup sign notice:", err);
     }
   }
+
+  // Small delay for extension RPC to settle on the new network
+  await new Promise((r) => setTimeout(r, 400));
 
   return parseConnectedSession(connectedAPI, networkId, wallet.name || "1AM", wallet.apiVersion);
 }

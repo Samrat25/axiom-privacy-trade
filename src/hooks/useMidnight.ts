@@ -16,6 +16,7 @@ import { fetchLatestMidnightBlock, MidnightLatestBlock } from '../utils/midnight
 import {
   connect1AMWallet,
   switch1AMNetwork,
+  fetchWalletBalances,
   isWalletInstalled,
   getDetectedWallets,
   type LiveWalletSession,
@@ -187,6 +188,34 @@ export function useMidnight() {
     const interval = setInterval(scanWallets, 500);
     return () => clearInterval(interval);
   }, [scanWallets]);
+
+  // ─── Periodic balance polling from connected 1AM API ────────────────
+  useEffect(() => {
+    if (!session?.api) return;
+    const refreshBals = async () => {
+      try {
+        const fresh = await fetchWalletBalances(session.api);
+        setSession((prev) => {
+          if (!prev) return null;
+          if (
+            prev.balances.tNightUnshielded === fresh.tNightUnshielded &&
+            prev.balances.tNightShielded === fresh.tNightShielded &&
+            prev.balances.tDust === fresh.tDust
+          ) {
+            return prev;
+          }
+          return {
+            ...prev,
+            balances: fresh,
+          };
+        });
+      } catch {
+        /* ignore */
+      }
+    };
+    const interval = setInterval(refreshBals, 3500);
+    return () => clearInterval(interval);
+  }, [session?.api]);
 
   // ─── Check proof server health ─────────────────────────────────────
   useEffect(() => {
