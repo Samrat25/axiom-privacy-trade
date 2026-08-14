@@ -132,7 +132,7 @@ export const OverviewStrategies: React.FC<OverviewStrategiesProps> = ({
                     <span className="font-semibold text-gray-700">ZK Hash:</span>
                     <span className="truncate">{strat.commitmentHash}</span>
                     <a
-                      href={networkId === 'preprod' ? 'https://preprod.midnightexplorer.com/contracts/0x62a27ceda5eb600263e208768d5d285c659d47f2cd6b14a20c62b160f4da46f3' : 'https://preview.midnightexplorer.com/contracts/0x62a27ceda5eb600263e208768d5d285c659d47f2cd6b14a20c62b160f4da46f3'}
+                      href={networkId === 'preprod' ? 'https://preprod.midnightexplorer.com/contracts/0x2428cd4ae7c2cd0bb501e1e9162de3003b103c1063c220e0d5cfc3f0b438e524' : 'https://preview.midnightexplorer.com/contracts/0x33eb41d22028264e9e8bbe7f95b3089cece6e3c2a53008535e72a9f3350d3e30'}
                       target="_blank"
                       rel="noreferrer"
                       className="text-orange-600 hover:underline inline-flex items-center gap-0.5 font-bold shrink-0"

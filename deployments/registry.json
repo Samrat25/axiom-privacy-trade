@@ -52,9 +52,11 @@
         ]
       },
       {
-        "version": "1.1.0",
-        "contractAddress": "0x5ef6f5142328af863af9851c83d0d60c852af470435b34b0906b21c636b2df2e",
-        "deployedAt": "2026-08-14T08:43:28.189Z",
+        "version": "1.2.0",
+        "contractAddress": "0x2428cd4ae7c2cd0bb501e1e9162de3003b103c1063c220e0d5cfc3f0b438e524",
+        "deploymentTx": "0x27ffe1f7a2db3a071c5f2070c9ae6de476f839d7870a6f3c4da78d326cd28645",
+        "block": 2098826,
+        "deployedAt": "2026-08-14T11:03:00.000Z",
         "commitHash": "0x6f6b07f8e83d3de5273b19755ac3b7e3",
         "circuits": [
           "commitStrategy",

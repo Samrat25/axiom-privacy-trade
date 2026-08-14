@@ -124,7 +124,7 @@ export const TradeHistory: React.FC<TradeHistoryProps> = ({
           </div>
 
           <a
-            href={networkId === 'preprod' ? 'https://preprod.midnightexplorer.com/contracts/0x62a27ceda5eb600263e208768d5d285c659d47f2cd6b14a20c62b160f4da46f3' : 'https://preview.midnightexplorer.com/contracts/0x62a27ceda5eb600263e208768d5d285c659d47f2cd6b14a20c62b160f4da46f3'}
+            href={networkId === 'preprod' ? 'https://preprod.midnightexplorer.com/contracts/0x2428cd4ae7c2cd0bb501e1e9162de3003b103c1063c220e0d5cfc3f0b438e524' : 'https://preview.midnightexplorer.com/contracts/0x33eb41d22028264e9e8bbe7f95b3089cece6e3c2a53008535e72a9f3350d3e30'}
             target="_blank"
             rel="noreferrer"
             className="hidden sm:flex items-center gap-1.5 px-3.5 py-2.5 rounded-full bg-white hover:bg-gray-100 border border-gray-200 text-gray-800 text-xs font-bold transition-all shadow-xs cursor-pointer"

@@ -35,7 +35,7 @@
 
 | Network | Version | Contract Address | Explorer Link | Status |
 |:--------|:--------|:-----------------|:--------------|:-------|
-| **Midnight Preprod Testnet** | `v1.2.0` | `0x5ef6f5142328af863af9851c83d0d60c852af470435b34b0906b21c636b2df2e` | [View on Preprod Explorer ↗](https://preprod.midnightexplorer.com/contracts/0x5ef6f5142328af863af9851c83d0d60c852af470435b34b0906b21c636b2df2e) | 🟢 **ACTIVE PREPROD MVP** |
+| **Midnight Preprod Testnet** | `v1.2.0` | `0x2428cd4ae7c2cd0bb501e1e9162de3003b103c1063c220e0d5cfc3f0b438e524` | [View on Preprod Explorer ↗](https://preprod.midnightexplorer.com/contracts/0x2428cd4ae7c2cd0bb501e1e9162de3003b103c1063c220e0d5cfc3f0b438e524) | 🟢 **ACTIVE PREPROD MVP** |
 | **Midnight Preview Testnet** | `v1.2.0` | `0x33eb41d22028264e9e8bbe7f95b3089cece6e3c2a53008535e72a9f3350d3e30` | [View on Preview Explorer ↗](https://preview.midnightexplorer.com/contracts/0x33eb41d22028264e9e8bbe7f95b3089cece6e3c2a53008535e72a9f3350d3e30) | 🟢 **ACTIVE PREVIEW MVP** |
 | **Historical Deployment** | `v1.0.0` | `0x62a27ceda5eb600263e208768d5d285c659d47f2cd6b14a20c62b160f4da46f3` | [View on Historical Explorer ↗](https://preview.midnightexplorer.com/contracts/0x62a27ceda5eb600263e208768d5d285c659d47f2cd6b14a20c62b160f4da46f3) | 🟡 *Historical (Vault v1)* |
 
@@ -45,7 +45,9 @@
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   Contract Source  : ./contracts/axiom.compact
   Managed Bindings : ./managed/axiom.ts
-  Preprod Contract : 0x5ef6f5142328af863af9851c83d0d60c852af470435b34b0906b21c636b2df2e
+  Preprod Contract : 0x2428cd4ae7c2cd0bb501e1e9162de3003b103c1063c220e0d5cfc3f0b438e524
+  Deployment Tx    : 0x27ffe1f7a2db3a071c5f2070c9ae6de476f839d7870a6f3c4da78d326cd28645
+  Block Height     : #2,098,826
   Preview Contract : 0x33eb41d22028264e9e8bbe7f95b3089cece6e3c2a53008535e72a9f3350d3e30
   Active Circuits  : commitStrategy, executeTrade, mintVaultBalance,
                      burnVaultBalance, unshieldWithdraw
@@ -269,7 +271,7 @@ The demo video showcases:
 |:--|:---|:---:|:---|
 | 1 | **Public GitHub repository with documentation** | ✅ Complete | [github.com/Samrat25/axiom-privacy-trade](https://github.com/Samrat25/axiom-privacy-trade) |
 | 2 | **Live Demo Application (Vercel)** | ✅ Complete | [https://axiom-night.vercel.app](https://axiom-night.vercel.app) |
-| 3 | **Working MVP live on Preprod (verifiable address)** | ✅ Complete | [`0x5ef6f5142328af863af9851c83d0d60c852af470435b34b0906b21c636b2df2e`](https://preprod.midnightexplorer.com/contracts/0x5ef6f5142328af863af9851c83d0d60c852af470435b34b0906b21c636b2df2e) |
+| 3 | **Working MVP live on Preprod (verifiable address)** | ✅ Complete | [`0x2428cd4ae7c2cd0bb501e1e9162de3003b103c1063c220e0d5cfc3f0b438e524`](https://preprod.midnightexplorer.com/contracts/0x2428cd4ae7c2cd0bb501e1e9162de3003b103c1063c220e0d5cfc3f0b438e524) |
 | 4 | **CI/CD badge or workflow file with passing runs** | ✅ Complete | [GitHub Actions Workflow](https://github.com/Samrat25/axiom-privacy-trade/actions/workflows/ci.yml) |
 | 5 | **Product X profile created and linked** | ✅ Complete | [@axiom_night (https://x.com/axiom_night)](https://x.com/axiom_night) |
 | 6 | **Building in Public on X (3+ updates)** | ✅ Complete | [Post 1](https://x.com/i/status/2088282869403996491) • [Post 2](https://x.com/i/status/2088295433621877200) • [Post 3](https://x.com/i/status/2088295537565184320) |
