@@ -46,8 +46,6 @@
   Contract Source  : ./contracts/axiom.compact
   Managed Bindings : ./managed/axiom.ts
   Preprod Contract : 0x2428cd4ae7c2cd0bb501e1e9162de3003b103c1063c220e0d5cfc3f0b438e524
-  Deployment Tx    : 0x27ffe1f7a2db3a071c5f2070c9ae6de476f839d7870a6f3c4da78d326cd28645
-  Block Height     : #2,098,826
   Preview Contract : 0x33eb41d22028264e9e8bbe7f95b3089cece6e3c2a53008535e72a9f3350d3e30
   Active Circuits  : commitStrategy, executeTrade, mintVaultBalance,
                      burnVaultBalance, unshieldWithdraw
@@ -245,7 +243,10 @@ Open **`http://localhost:5173`** in your browser.
 ### 6. Shielded Trading Vault (vUSD) & 1AM Balance Matrix
 ![Shielded Vault](./screenshots/vault.png)
 
-### 7. Midnight Explorer Transaction Logs & On-Chain Proofs
+### 7. Verifiable Deployed Contract on Midnight Preprod Explorer
+![Deployed Contract on Midnight Explorer](./screenshots/contract_deployment.png)
+
+### 8. Midnight Explorer Transaction Logs & On-Chain Proofs
 ![Trade History & Explorer](./screenshots/trade_history.png)
 
 ---
