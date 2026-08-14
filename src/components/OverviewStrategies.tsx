@@ -1,13 +1,12 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Cpu,
   ExternalLink,
   ShieldCheck,
   Zap,
-  Lock,
   PlusCircle,
-  TrendingUp,
-  Clock
+  ChevronDown,
+  ChevronUp
 } from 'lucide-react';
 import type { ActiveStrategy } from '../hooks/useMidnight';
 import { formatISTDateTime } from '../utils/time';
@@ -23,10 +22,13 @@ export const OverviewStrategies: React.FC<OverviewStrategiesProps> = ({
   vaultBalance,
   onNavigateTab,
 }) => {
+  const [showAll, setShowAll] = useState<boolean>(false);
+  const displayedStrategies = showAll ? activeStrategies : activeStrategies.slice(0, 3);
+
   return (
-    <div className="bg-white border border-gray-200/80 rounded-2xl p-5 sm:p-6 space-y-5 shadow-sm font-sans">
+    <div className="bg-white border border-gray-200/80 rounded-2xl p-5 sm:p-6 space-y-4 shadow-sm font-sans">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-gray-100">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-gray-100">
         <div className="space-y-1">
           <div className="flex items-center gap-2">
             <Cpu className="w-4 h-4 text-orange-500" />
@@ -34,7 +36,7 @@ export const OverviewStrategies: React.FC<OverviewStrategiesProps> = ({
               Active Strategy Commitments & Position Bounds
             </h2>
             <span className="text-[10px] px-2 py-0.5 rounded-full bg-orange-100 text-orange-800 font-bold uppercase">
-              MULTI-ASSET ENGINE
+              {activeStrategies.length} ACTIVE
             </span>
           </div>
           <p className="text-xs text-gray-500">
@@ -72,12 +74,12 @@ export const OverviewStrategies: React.FC<OverviewStrategiesProps> = ({
         </div>
       ) : (
         <div className="space-y-3">
-          {activeStrategies.map((strat, idx) => {
+          {displayedStrategies.map((strat, idx) => {
             const maxAllowed = Math.floor((vaultBalance * strat.params.maxPositionPct) / 100);
             return (
               <div
                 key={strat.id || idx}
-                className="bg-gray-50/60 hover:bg-gray-50 border border-gray-200/80 rounded-2xl p-4 space-y-3 transition-all"
+                className="bg-gray-50/70 hover:bg-gray-50 border border-gray-200/80 rounded-2xl p-4 space-y-3 transition-all"
               >
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                   <div className="flex items-center gap-2">
@@ -150,6 +152,19 @@ export const OverviewStrategies: React.FC<OverviewStrategiesProps> = ({
               </div>
             );
           })}
+
+          {/* Show More / Show Less Toggle Button */}
+          {activeStrategies.length > 3 && (
+            <div className="pt-2 text-center">
+              <button
+                onClick={() => setShowAll((prev) => !prev)}
+                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-800 text-xs font-bold transition-all cursor-pointer"
+              >
+                <span>{showAll ? 'Collapse to Top 3 Strategies' : `View All ${activeStrategies.length} Active Strategies`}</span>
+                {showAll ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
+              </button>
+            </div>
+          )}
         </div>
       )}
     </div>
