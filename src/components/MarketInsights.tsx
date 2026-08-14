@@ -9,17 +9,21 @@ import {
   Cpu,
   RefreshCw,
   AlertCircle,
-  ExternalLink
+  ExternalLink,
+  Sliders,
+  CheckCircle2
 } from 'lucide-react';
 import { createGeminiLLM } from '../utils/agent';
 import { fetchLiveMarketData, type LiveMarketAsset } from '../utils/marketData';
+import type { ActiveStrategy } from '../hooks/useMidnight';
 
 interface MarketInsightsProps {
-  onExecuteTrade: (asset: string, amountUsd: number) => Promise<unknown>;
+  onExecuteTrade: (asset: string, amountUsd: number, agentId?: string) => Promise<unknown>;
   isProofGenerating: boolean;
   walletConnected: boolean;
   onConnectWallet: () => void;
   vaultBalance?: number;
+  activeStrategies?: ActiveStrategy[];
   onNavigateTab?: (tab: string) => void;
 }
 
@@ -29,13 +33,29 @@ export const MarketInsights: React.FC<MarketInsightsProps> = ({
   walletConnected,
   onConnectWallet,
   vaultBalance = 0,
+  activeStrategies = [],
   onNavigateTab
 }) => {
   const [selectedAsset, setSelectedAsset] = useState<string>('ADA');
+  const [selectedAgentId, setSelectedAgentId] = useState<string>(
+    activeStrategies[0]?.agentId || ''
+  );
   const [isAnalyzing, setIsAnalyzing] = useState<boolean>(false);
   const [analysisResult, setAnalysisResult] = useState<string | null>(null);
   const [customPrompt, setCustomPrompt] = useState<string>('');
   const [marketData, setMarketData] = useState<LiveMarketAsset[]>([]);
+
+  // Update selected agent if strategies load asynchronously
+  useEffect(() => {
+    if (!selectedAgentId && activeStrategies.length > 0) {
+      setSelectedAgentId(activeStrategies[0].agentId);
+    }
+  }, [activeStrategies, selectedAgentId]);
+
+  const currentStrategy = activeStrategies.find((s) => s.agentId === selectedAgentId) || activeStrategies[0];
+  const maxPositionPct = currentStrategy?.params.maxPositionPct || 25;
+  const maxAllowedTradeSize = Math.floor((vaultBalance * maxPositionPct) / 100);
+  const defaultTradeSize = maxAllowedTradeSize > 0 ? Math.min(1200, maxAllowedTradeSize) : 250;
 
   const loadMarketData = async () => {
     const data = await fetchLiveMarketData();
@@ -67,7 +87,7 @@ export const MarketInsights: React.FC<MarketInsightsProps> = ({
       setAnalysisResult(text);
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'AI Analysis failed';
-      setAnalysisResult(`[Fallback AI Intelligence] Analysis for ${assetSymbol}:\n• Bullish momentum detected above key moving averages.\n• Recommended ZK Max Position: 25%\n• Recommended Stop-Loss: 8%\n• Privacy Note: Strategy witnesses remain client-side encrypted.\n\nNote: ${msg}`);
+      setAnalysisResult(`[Fallback AI Intelligence] Analysis for ${assetSymbol}:\n• Bullish momentum detected above key moving averages.\n• Recommended ZK Max Position: ${maxPositionPct}%\n• Recommended Stop-Loss: ${currentStrategy?.params.stopLossPct || 8}%\n• Privacy Note: Strategy witnesses remain client-side encrypted.\n\nNote: ${msg}`);
     } finally {
       setIsAnalyzing(false);
     }
@@ -90,6 +110,68 @@ export const MarketInsights: React.FC<MarketInsightsProps> = ({
 
   return (
     <div className="max-w-6xl mx-auto space-y-6 font-sans text-gray-900">
+      {/* Strategy Selector Bar */}
+      <div className="bg-white border border-gray-200/80 rounded-2xl p-5 shadow-sm space-y-3">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div className="flex items-center gap-2">
+            <Sliders className="w-4 h-4 text-orange-500" />
+            <h2 className="text-sm font-bold text-gray-900">Active Strategy Selection & Governing Bounds</h2>
+          </div>
+          {currentStrategy && (
+            <span className="text-[11px] font-bold bg-emerald-100 text-emerald-800 px-3 py-0.5 rounded-full self-start sm:self-auto">
+              CIRCUIT BOUNDS LOCKED
+            </span>
+          )}
+        </div>
+
+        {activeStrategies.length === 0 ? (
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 p-3.5 bg-gray-50 border border-gray-200 rounded-xl text-xs">
+            <span className="text-gray-600">
+              No active strategy locked on Midnight. You can lock risk boundaries in the Strategy Builder.
+            </span>
+            {onNavigateTab && (
+              <button
+                onClick={() => onNavigateTab('strategy-builder')}
+                className="px-4 py-2 rounded-full bg-gray-900 hover:bg-black text-white font-bold text-xs shrink-0 cursor-pointer shadow-xs"
+              >
+                + Lock Strategy Now
+              </button>
+            )}
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1">
+            <div className="sm:col-span-1">
+              <label className="text-[11px] font-semibold text-gray-600 block mb-1">Select Strategy</label>
+              <select
+                value={currentStrategy?.agentId || ''}
+                onChange={(e) => setSelectedAgentId(e.target.value)}
+                className="w-full bg-gray-50 border border-gray-200 rounded-xl p-2.5 text-xs font-bold text-gray-900 focus:outline-none focus:border-orange-500 cursor-pointer"
+              >
+                {activeStrategies.map((s, idx) => (
+                  <option key={s.agentId} value={s.agentId}>
+                    Strategy #{idx + 1} ({s.params.maxPositionPct}% Max Pos, {s.params.stopLossPct}% SL)
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div className="bg-gray-50 p-2.5 rounded-xl border border-gray-200 flex flex-col justify-between text-xs">
+              <span className="text-[11px] text-gray-500 font-medium">Risk Rules</span>
+              <span className="font-bold text-gray-900">
+                Max {currentStrategy.params.maxPositionPct}% Pos • {currentStrategy.params.stopLossPct}% Stop-Loss
+              </span>
+            </div>
+
+            <div className="bg-gray-50 p-2.5 rounded-xl border border-gray-200 flex flex-col justify-between text-xs">
+              <span className="text-[11px] text-gray-500 font-medium">Max Allowed Trade Size</span>
+              <span className="font-bold text-emerald-700">
+                ${maxAllowedTradeSize.toLocaleString()} vUSD <span className="text-gray-500 font-normal">(${vaultBalance} vault)</span>
+              </span>
+            </div>
+          </div>
+        )}
+      </div>
+
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white border border-gray-200/80 rounded-2xl p-6 shadow-sm">
         <div className="space-y-1">
@@ -221,7 +303,7 @@ export const MarketInsights: React.FC<MarketInsightsProps> = ({
                 <div className="space-y-0.5">
                   <span className="text-xs font-bold text-gray-900 flex items-center gap-1.5">
                     <Shield className="w-4 h-4 text-emerald-600" />
-                    Execute ZK Trade on Signal
+                    Execute ZK Trade under {currentStrategy ? `Strategy #${activeStrategies.findIndex(s => s.agentId === currentStrategy.agentId) + 1}` : 'Selected Strategy'}
                   </span>
                   <p className="text-[11px] text-gray-500">
                     Triggers 1AM Wallet transaction signing. Proven via Compact <code className="text-gray-900 font-bold">executeTrade</code> circuit.
@@ -230,18 +312,18 @@ export const MarketInsights: React.FC<MarketInsightsProps> = ({
 
                 <div className="text-right">
                   <span className="text-[10px] text-gray-500 font-semibold block uppercase">Shielded Vault Available</span>
-                  <span className={`text-xs font-extrabold ${vaultBalance >= 1200 ? 'text-emerald-700' : 'text-amber-600'}`}>
+                  <span className={`text-xs font-extrabold ${vaultBalance >= defaultTradeSize ? 'text-emerald-700' : 'text-amber-600'}`}>
                     ${vaultBalance.toLocaleString()} vUSD
                   </span>
                 </div>
               </div>
 
-              {/* Balance Warning if vault balance < $1,200 */}
-              {vaultBalance < 1200 && (
+              {/* Balance Warning if vault balance < defaultTradeSize */}
+              {vaultBalance < defaultTradeSize && (
                 <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 p-3 bg-amber-50 border border-amber-200 rounded-xl text-xs text-amber-900">
                   <div className="flex items-center gap-1.5 font-medium">
                     <AlertCircle className="w-4 h-4 text-amber-600 shrink-0" />
-                    <span>Insufficient Vault Balance ($1,200 required). Please mint vUSD first.</span>
+                    <span>Insufficient Vault Balance (${vaultBalance} available). Please mint vUSD first.</span>
                   </div>
                   {onNavigateTab && (
                     <button
@@ -260,12 +342,12 @@ export const MarketInsights: React.FC<MarketInsightsProps> = ({
                     if (!walletConnected) {
                       onConnectWallet();
                     } else {
-                      onExecuteTrade(selectedData.symbol, 1200);
+                      onExecuteTrade(selectedData.symbol, defaultTradeSize, currentStrategy?.agentId);
                     }
                   }}
-                  disabled={isProofGenerating || (walletConnected && vaultBalance < 1200)}
+                  disabled={isProofGenerating || (walletConnected && vaultBalance < defaultTradeSize)}
                   className={`w-full sm:w-auto px-5 py-2.5 rounded-full font-bold text-xs shadow-sm transition-all flex items-center justify-center gap-2 ${
-                    !walletConnected || vaultBalance >= 1200
+                    !walletConnected || vaultBalance >= defaultTradeSize
                       ? 'bg-[#F26522] hover:bg-[#e05a1a] text-white cursor-pointer'
                       : 'bg-gray-200 text-gray-400 cursor-not-allowed'
                   }`}
@@ -276,9 +358,9 @@ export const MarketInsights: React.FC<MarketInsightsProps> = ({
                       ? 'Connect Wallet to Trade'
                       : isProofGenerating
                       ? 'Proving ZK Circuit...'
-                      : vaultBalance < 1200
-                      ? `Insufficient Balance ($${vaultBalance} / $1,200 vUSD)`
-                      : `Execute $1,200 ${selectedData.symbol} Trade`}
+                      : vaultBalance < defaultTradeSize
+                      ? `Insufficient Balance ($${vaultBalance} / $${defaultTradeSize} vUSD)`
+                      : `Execute $${defaultTradeSize} ${selectedData.symbol} Trade`}
                   </span>
                 </button>
               </div>

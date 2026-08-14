@@ -464,17 +464,21 @@ export function App() {
             proofStep={proofStep}
             walletConnected={walletConnected}
             onConnectWallet={() => setIsModalOpen(true)}
+            onNavigateTab={setActiveTab}
           />
         )}
 
         {/* 3. MARKET INSIGHTS */}
         {activeTab === 'market-insights' && (
           <MarketInsights
-            onExecuteTrade={(asset, amount) => executeProvenTrade(activeStrategies[0]?.agentId || '0xagent_1', amount, asset, 'BUY')}
+            onExecuteTrade={(asset, amount, agentId) =>
+              executeProvenTrade(agentId || activeStrategies[0]?.agentId || '0xagent_1', amount, asset, 'BUY')
+            }
             isProofGenerating={isProofGenerating}
             walletConnected={walletConnected}
             onConnectWallet={() => setIsModalOpen(true)}
             vaultBalance={vaultBalance}
+            activeStrategies={activeStrategies}
             onNavigateTab={setActiveTab}
           />
         )}

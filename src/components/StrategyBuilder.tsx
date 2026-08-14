@@ -26,6 +26,7 @@ interface StrategyBuilderProps {
   proofStep: string;
   walletConnected: boolean;
   onConnectWallet: () => void;
+  onNavigateTab?: (tab: string) => void;
 }
 
 const PRESET_PROMPTS = [
@@ -40,7 +41,8 @@ export const StrategyBuilder: React.FC<StrategyBuilderProps> = ({
   isProofGenerating,
   proofStep,
   walletConnected,
-  onConnectWallet
+  onConnectWallet,
+  onNavigateTab
 }) => {
   const defaultPrompt = PRESET_PROMPTS[0];
   const [promptText, setPromptText] = useState<string>(defaultPrompt);
@@ -433,6 +435,14 @@ export const StrategyBuilder: React.FC<StrategyBuilderProps> = ({
 
           {/* Post-Commitment Action Bar */}
           <div className="pt-2 flex flex-col sm:flex-row items-center gap-3 border-t border-gray-200">
+            {onNavigateTab && (
+              <button
+                onClick={() => onNavigateTab('overview')}
+                className="w-full sm:w-auto px-6 py-2.5 rounded-full bg-[#F26522] hover:bg-[#e05a1a] text-white font-bold text-xs flex items-center justify-center gap-2 transition-all cursor-pointer shadow-md"
+              >
+                <span>Select & Execute Trades with this Strategy →</span>
+              </button>
+            )}
             <a
               href="https://preview.midnightexplorer.com/transactions"
               target="_blank"
