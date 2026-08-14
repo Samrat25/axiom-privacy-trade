@@ -38,6 +38,7 @@ witness getPortfolioValue(): Uint<64>;
 witness getTradeAsset(): Bytes<32>;
 witness getTradeSizeUsd(): Uint<64>;
 witness localSecretKey(): Bytes<32>;
+witness getRiskCheckPassed(): Boolean;
 
 // ---------- CIRCUITS ----------
 
@@ -70,6 +71,7 @@ export circuit executeTrade(agentId: Bytes<32>, tradeId: Bytes<32>, currentTime:
   assert(getTradeAsset() == getStrategyAsset(), "asset not in strategy");
 
   assert((getTradeSizeUsd() * (100 as Uint<64>)) <= (getPortfolioValue() * (getMaxPositionPct() as Uint<64>)), "exceeds max position size");
+  assert(getRiskCheckPassed(), "risk model check failed");
 
   tradeStatus.insert(disclose(tradeId), disclose(1 as Uint<8>));
   tradeCount.increment(1);

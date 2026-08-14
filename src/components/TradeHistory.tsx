@@ -183,13 +183,14 @@ export const TradeHistory: React.FC<TradeHistoryProps> = ({
                   <th className="p-4">P&L</th>
                   <th className="p-4">1AM Transaction Hash</th>
                   <th className="p-4">Proof Time</th>
+                  <th className="p-4 font-bold text-amber-300">RPC Status</th>
                   <th className="p-4">Status</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-800/80 text-gray-200">
                 {filteredTrades.length === 0 ? (
                   <tr>
-                    <td colSpan={8} className="p-8 text-center text-gray-500 font-mono">
+                    <td colSpan={9} className="p-8 text-center text-gray-500 font-mono">
                       No trade records matching filter criteria.
                     </td>
                   </tr>
@@ -276,6 +277,23 @@ export const TradeHistory: React.FC<TradeHistoryProps> = ({
 
                         {/* Proof Time */}
                         <td className="p-4 text-gray-400 font-mono">{trade.proofTimeMs} ms</td>
+
+                        {/* RPC Status */}
+                        <td className="p-4">
+                          {trade.rpcStatus === 'confirmed' ? (
+                            <span className="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-400 bg-emerald-950 px-2 py-0.5 rounded border border-emerald-800/40">
+                              <CheckCircle2 className="w-3 h-3 text-emerald-400" /> Confirmed
+                            </span>
+                          ) : trade.rpcStatus === 'failed' ? (
+                            <span className="inline-flex items-center gap-1 text-[10px] font-bold text-red-400 bg-red-950 px-2 py-0.5 rounded border border-red-800/40">
+                              <XCircle className="w-3 h-3 text-red-400" /> Failed
+                            </span>
+                          ) : (
+                            <span className="inline-flex items-center gap-1 text-[10px] font-bold text-amber-300 bg-amber-950 px-2 py-0.5 rounded border border-amber-800/40">
+                              <RefreshCw className="w-3 h-3 animate-spin text-amber-400" /> Pending
+                            </span>
+                          )}
+                        </td>
 
                         {/* Status */}
                         <td className="p-4">

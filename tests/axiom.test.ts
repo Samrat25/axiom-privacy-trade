@@ -91,4 +91,28 @@ describe('Axiom Compact Smart Contract Privacy & Verification Suite', () => {
     expect(invalidWithdraw.success).toBe(false);
     expect(invalidWithdraw.reason).toContain('insufficient private balance');
   });
+
+  it('6. executeTrade: asserts getRiskCheckPassed() witness status', () => {
+    const passingRiskWitnesses: StrategyWitnesses = {
+      ...defaultWitnesses,
+      getRiskCheckPassed: () => true,
+    };
+    const contractPassing = new AxiomContractSimulator(passingRiskWitnesses);
+    const agentId = '0xagent_1';
+    contractPassing.commitStrategy(agentId);
+
+    const passRes = contractPassing.executeTrade(agentId, '0xtrade_risk_pass', 1750000000n);
+    expect(passRes.status).toBe('executed');
+
+    const failingRiskWitnesses: StrategyWitnesses = {
+      ...defaultWitnesses,
+      getRiskCheckPassed: () => false,
+    };
+    const contractFailing = new AxiomContractSimulator(failingRiskWitnesses);
+    contractFailing.commitStrategy(agentId);
+
+    const failRes = contractFailing.executeTrade(agentId, '0xtrade_risk_fail', 1750000000n);
+    expect(failRes.status).toBe('rejected');
+    expect(failRes.reason).toContain('risk model check failed');
+  });
 });

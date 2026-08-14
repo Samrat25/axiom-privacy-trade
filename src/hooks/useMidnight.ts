@@ -35,6 +35,15 @@ import {
   fetchPersistedTrades,
 } from '../lib/supabase-sync';
 
+import { evaluateRiskModel } from '../lib/riskModel';
+import {
+  getLocalVaultBalance,
+  mintVaultBalance,
+  burnVaultBalance,
+} from '../lib/vault';
+import { confirmTransaction } from '../utils/rpc';
+import { runManualAnalysis, TradeRecommendation } from '../utils/agent';
+
 export interface ActiveStrategy {
   id: string;
   agentId: string;
@@ -51,6 +60,9 @@ export function useMidnight() {
   const [isConnecting, setIsConnecting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [networkId, setNetworkId] = useState<MidnightNetwork>('preview');
+
+  // ─── Shielded Vault state ──────────────────────────────────────────
+  const [vaultBalance, setVaultBalance] = useState<number>(() => getLocalVaultBalance());
 
   // ─── Detected wallets ──────────────────────────────────────────────
   const [detectedWallets, setDetectedWallets] = useState<DetectedWallet[]>([]);
@@ -72,13 +84,17 @@ export function useMidnight() {
   const [isProofGenerating, setIsProofGenerating] = useState(false);
   const [proofStep, setProofStep] = useState('');
 
+  // ─── Analysis state ────────────────────────────────────────────────
+  const [isAnalyzing, setIsAnalyzing] = useState<boolean>(false);
+  const [recommendationMap, setRecommendationMap] = useState<Record<string, TradeRecommendation>>({});
+
   // ─── Protocol log ──────────────────────────────────────────────────
   const [protocolLogs, setProtocolLogs] = useState<ProtocolLogEntry[]>([
     {
       id: 'log_init',
       type: 'info',
       title: 'Circuit Model Active',
-      detail: 'Compact v0.24 ZK witness circuit initialized.',
+      detail: 'Compact v0.24 ZK witness circuit & EZKL ZK-ML model initialized.',
       timestamp: new Date().toLocaleTimeString(),
     },
   ]);
@@ -193,13 +209,66 @@ export function useMidnight() {
     }
   }, [walletConnected, connectWallet]);
 
+  // ─── Shielded Vault Actions ────────────────────────────────────────
+  const mintVault = useCallback(async (amountVusd: number) => {
+    setError(null);
+    try {
+      addLog('info', 'Minting Vault Balance', `Requesting 1AM signature to mint $${amountVusd} vUSD...`);
+      const txHash = await mintVaultBalance(amountVusd);
+      setVaultBalance(getLocalVaultBalance());
+      addLog('success', 'Vault Minted', `Minted $${amountVusd} vUSD to shielded vault. TX: ${txHash.substring(0, 18)}…`);
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Vault mint failed';
+      setError(msg);
+      addLog('error', 'Vault Mint Failed', msg);
+    }
+  }, [addLog]);
+
+  const burnVault = useCallback(async (amountVusd: number) => {
+    setError(null);
+    try {
+      addLog('info', 'Burning Vault Balance', `Requesting 1AM signature to burn $${amountVusd} vUSD...`);
+      const txHash = await burnVaultBalance(amountVusd);
+      setVaultBalance(getLocalVaultBalance());
+      addLog('success', 'Vault Burned', `Burned $${amountVusd} vUSD from shielded vault. TX: ${txHash.substring(0, 18)}…`);
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Vault burn failed';
+      setError(msg);
+      addLog('error', 'Vault Burn Failed', msg);
+    }
+  }, [addLog]);
+
+  // ─── Analyze Strategy (Two-step flow step 1) ───────────────────────
+  const analyzeStrategy = useCallback(async (agentId: string) => {
+    setIsAnalyzing(true);
+    setError(null);
+    try {
+      const strategy = activeStrategies.find((s) => s.agentId === agentId) || activeStrategies[0];
+      if (!strategy) {
+        throw new Error('No active strategy commitment found to analyze.');
+      }
+      addLog('info', 'AI Analysis Triggered', `Running Gemini analysis on committed strategy for agent ${agentId}...`);
+
+      const rec = await runManualAnalysis(strategy.params, 10000);
+      setRecommendationMap((prev) => ({ ...prev, [agentId]: rec }));
+
+      addLog('success', 'Analysis Complete', `Recommendation: ${rec.recommendation}`);
+      return rec;
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Analysis failed';
+      setError(msg);
+      addLog('error', 'Analysis Error', msg);
+      return null;
+    } finally {
+      setIsAnalyzing(false);
+    }
+  }, [activeStrategies, addLog]);
+
   // ─── Commit strategy (triggers real 1AM wallet popup) ──────────────
   const commitStrategyCircuit = useCallback(async (params: StrategyParams): Promise<string> => {
     if (!walletConnected) {
       throw new Error('Please connect your 1AM Wallet before committing a strategy.');
     }
-
-
 
     setIsProofGenerating(true);
     setError(null);
@@ -216,7 +285,7 @@ export function useMidnight() {
 
       const agentId = `0xagent_${Math.random().toString(16).substring(2, 8)}`;
 
-      // This triggers the REAL 1AM wallet extension popup
+      // Triggers the REAL 1AM wallet extension popup
       const txHash = await executeSignedTransaction('commitStrategy', {
         agentId,
         strategyHash: hash,
@@ -260,28 +329,50 @@ export function useMidnight() {
     } finally {
       setIsProofGenerating(false);
     }
-  }, [walletConnected, proofServerUp, session, addLog]);
+  }, [walletConnected, session, addLog]);
 
-  // ─── Execute proven trade (triggers real wallet popup) ─────────────
+  // ─── Execute proven trade (EZKL risk model check + 1AM wallet popup) ──
   const executeProvenTrade = useCallback(async (
     agentId: string,
     tradeSizeUsd: number = 1200,
     targetAsset?: string,
-    tradeType: 'BUY' | 'SELL' | 'STOP_LOSS' = 'BUY'
+    tradeType: 'BUY' | 'SELL' | 'STOP_LOSS' = 'BUY',
+    forceRiskFail: boolean = false
   ): Promise<TradeRecord | undefined> => {
     setIsProofGenerating(true);
     setError(null);
 
     try {
-      addLog('info', 'Trade Proving', `Proving ZK trade compliance for agent ${agentId}...`);
+      addLog('info', 'EZKL Risk Model Evaluation', `Running EZKL ZK-ML Risk Check for agent ${agentId}...`);
 
-      setProofStep('1. Recomputing strategy hash from local witnesses...');
+      setProofStep('1. Running EZKL ZK-ML Risk Eligibility Model...');
 
       const strategy = activeStrategies.find((s) => s.agentId === agentId) || activeStrategies[0];
       const asset = targetAsset || strategy?.params.asset || 'ADA';
-      const basePrice = asset === 'BTC' ? 61250 : asset === 'ETH' ? 3300 : asset === 'SOL' ? 145 : 0.421;
+
+      const volatilityPct = forceRiskFail ? 85 : asset === 'BTC' ? 20 : asset === 'ETH' ? 30 : 22;
+      const portfolioVal = 10000;
+      const positionSizePct = forceRiskFail ? 75 : Math.min(100, Math.round((tradeSizeUsd * 100) / portfolioVal));
+      const stopLossDistancePct = forceRiskFail ? 15 : strategy?.params.stopLossPct ? 100 - strategy.params.stopLossPct : 92;
+
+      const riskRes = await evaluateRiskModel({
+        volatilityPct,
+        positionSizePct,
+        stopLossDistancePct,
+      });
+
+      if (!riskRes.passed) {
+        const riskErrMsg = `Trade blocked by ZK Risk Model: Risk parameters exceed safety threshold (Score: ${riskRes.score} > 35.0). ${riskRes.details}`;
+        setError(riskErrMsg);
+        addLog('error', 'ZK Risk Check Failed', riskErrMsg);
+        throw new Error(riskErrMsg);
+      }
+
+      addLog('success', 'ZK Risk Check Passed', `EZKL Proof Verified: ${riskRes.proofHash.substring(0, 18)}… | Score: ${riskRes.score}`);
 
       setProofStep('2. Submitting executeTrade via 1AM Wallet...');
+
+      const basePrice = asset === 'BTC' ? 61250 : asset === 'ETH' ? 3300 : asset === 'SOL' ? 145 : 0.421;
 
       const txHash = await executeSignedTransaction('executeTrade', {
         agentId,
@@ -307,6 +398,7 @@ export function useMidnight() {
         proofTimeMs: Math.floor(350 + Math.random() * 150),
         commitmentHash: strategy?.commitmentHash || txHash,
         txHash,
+        rpcStatus: 'pending',
       };
 
       setTrades((prev) => [newTrade, ...prev]);
@@ -322,17 +414,30 @@ export function useMidnight() {
         proof_time_ms: newTrade.proofTimeMs,
         timestamp: newTrade.timestamp,
       }).catch((e) => console.warn('[Axiom Sync] Trade sync error:', e));
+
       addLog('success', 'Trade Proven', `Trade ${newTrade.id} — ${asset} $${tradeSizeUsd} — TX: ${txHash.substring(0, 18)}…`);
+
+      // Async RPC confirmation
+      const net = networkId === 'preprod' ? 'preprod' : 'preview';
+      confirmTransaction(txHash, net).then((rpcState) => {
+        if (rpcState === 'confirmed') {
+          setTrades((prev) =>
+            prev.map((t) => (t.id === newTrade.id ? { ...t, rpcStatus: 'confirmed' } : t))
+          );
+          addLog('info', 'RPC Confirmed', `Transaction ${txHash.substring(0, 18)}… confirmed by Midnight RPC.`);
+        }
+      });
+
       return newTrade;
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Trade execution failed';
       setError(msg);
-      addLog('error', 'Trade Failed', msg);
+      addLog('error', 'Trade Execution Failed', msg);
       return undefined;
     } finally {
       setIsProofGenerating(false);
     }
-  }, [activeStrategies, addLog]);
+  }, [activeStrategies, networkId, addLog]);
 
   return {
     // Wallet state
@@ -347,6 +452,7 @@ export function useMidnight() {
     shieldedBalance,
     unshieldedBalance,
     dustBalance,
+    vaultBalance,
     isConnecting,
     error,
 
@@ -367,18 +473,24 @@ export function useMidnight() {
     handleSelectNetwork,
     connectWallet,
     disconnectWallet,
+    mintVault,
+    burnVault,
 
     // Strategy & trading
     activeStrategies,
     trades,
     isProofGenerating,
     proofStep,
+    isAnalyzing,
+    recommendationMap,
+    analyzeStrategy,
     commitStrategyCircuit,
     executeProvenTrade,
 
-    // Compat shims for existing components
+    // Compat shims
     windowMidnightKeys: detectedWallets.map((w) => w.id),
     serviceConfig: session?.serviceConfig ?? null,
     addProtocolLog: addLog,
   };
 }
+

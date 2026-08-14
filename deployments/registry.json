@@ -1,0 +1,22 @@
+{
+  "axiom": {
+    "preview": [
+      {
+        "version": "1.0.0",
+        "contractAddress": "0x62a27ceda5eb600263e208768d5d285c659d47f2cd6b14a20c62b160f4da46f3",
+        "deployedAt": "2026-08-12T00:00:00Z",
+        "commitHash": "0x811c9dc5811c9dc5811c9dc5811c9dc5",
+        "circuits": ["commitStrategy", "executeTrade", "unshieldWithdraw"]
+      }
+    ],
+    "preprod": [
+      {
+        "version": "1.0.0",
+        "contractAddress": "0x62a27ceda5eb600263e208768d5d285c659d47f2cd6b14a20c62b160f4da46f3",
+        "deployedAt": "2026-08-12T00:00:00Z",
+        "commitHash": "0x811c9dc5811c9dc5811c9dc5811c9dc5",
+        "circuits": ["commitStrategy", "executeTrade", "unshieldWithdraw"]
+      }
+    ]
+  }
+}

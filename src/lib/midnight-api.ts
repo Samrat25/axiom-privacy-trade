@@ -18,6 +18,8 @@ import {
   type MidnightNetwork,
 } from "./lace-wallet";
 
+import { getActiveContractAddress } from "../utils/registry";
+
 // ─── Module-level singleton ───────────────────────────────────────────────────
 
 let _liveWalletApi: Midnight1AMConnectedAPI | null = null;
@@ -94,15 +96,7 @@ export async function executeSignedTransaction(
   }
 
   const activeNet = _walletSession?.networkId || "preview";
-  const envContract =
-    activeNet === "preprod"
-      ? (typeof import.meta !== "undefined" && (import.meta.env?.["VITE_PREPROD_CONTRACT_ADDRESS"] as string))
-      : (typeof import.meta !== "undefined" && (import.meta.env?.["VITE_PREVIEW_CONTRACT_ADDRESS"] as string));
-
-  const contractAddress =
-    envContract ||
-    (typeof import.meta !== "undefined" && (import.meta.env?.["VITE_CONTRACT_ADDRESS"] as string)) ||
-    "0x62a27ceda5eb600263e208768d5d285c659d47f2cd6b14a20c62b160f4da46f3";
+  const contractAddress = getActiveContractAddress(activeNet);
 
   // Build clean JSON-serializable transaction payload (NO BigInts!)
   const txPayload = {

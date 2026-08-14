@@ -10,6 +10,7 @@ export interface StrategyWitnesses {
   getTradeAsset: () => string;
   getTradeSizeUsd: () => bigint;
   localSecretKey: () => string;
+  getRiskCheckPassed?: () => boolean;
 }
 
 export class AxiomContractSimulator {
@@ -89,6 +90,12 @@ export class AxiomContractSimulator {
       if (positionPct > BigInt(maxPos)) {
         this.tradeStatus.set(tradeId, 2);
         throw new Error('exceeds max position size');
+      }
+
+      const riskCheckPassed = this.witnesses.getRiskCheckPassed ? this.witnesses.getRiskCheckPassed() : true;
+      if (!riskCheckPassed) {
+        this.tradeStatus.set(tradeId, 2);
+        throw new Error('risk model check failed');
       }
 
       // Success

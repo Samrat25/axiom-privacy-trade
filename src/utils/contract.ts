@@ -23,6 +23,7 @@ export interface TradeRecord {
   proofTimeMs: number;
   commitmentHash: string;
   txHash?: string;
+  rpcStatus?: 'pending' | 'confirmed' | 'failed';
 }
 
 export interface MarketTicker {
