@@ -27,17 +27,19 @@ export interface MidnightApiTransaction {
  * Midnight Explorer Transaction Log URL
  */
 export function getMidnightExplorerTxUrl(txHash: string, network: string = 'preview'): string {
-  const cleanHash = txHash.startsWith('0x') ? txHash : `0x${txHash}`;
+  const cleanHash = txHash ? (txHash.startsWith('0x') ? txHash.slice(2) : txHash) : '';
   const domain = network === 'preprod' ? 'preprod.midnightexplorer.com' : 'preview.midnightexplorer.com';
-  return `https://${domain}/tx/${cleanHash}`;
+  return cleanHash ? `https://${domain}/tx/${cleanHash}` : `https://${domain}`;
 }
 
 /**
  * Midnight Explorer Contract / Commitment URL
  */
 export function getMidnightExplorerContractUrl(hashOrAddr: string, network: string = 'preview'): string {
+  const clean = hashOrAddr ? (hashOrAddr.startsWith('0x') ? hashOrAddr.slice(2) : hashOrAddr) : '';
   const domain = network === 'preprod' ? 'preprod.midnightexplorer.com' : 'preview.midnightexplorer.com';
-  return `https://${domain}/contracts/${hashOrAddr}`;
+  // Use /contract/${clean} or /address/${clean}
+  return clean ? `https://${domain}/contract/${clean}` : `https://${domain}`;
 }
 
 /**
@@ -45,15 +47,16 @@ export function getMidnightExplorerContractUrl(hashOrAddr: string, network: stri
  */
 export function getMidnightExplorerBlockUrl(blockHeight: number, network: string = 'preview'): string {
   const domain = network === 'preprod' ? 'preprod.midnightexplorer.com' : 'preview.midnightexplorer.com';
-  return `https://${domain}/blocks/${blockHeight}`;
+  return `https://${domain}/block/${blockHeight}`;
 }
 
 /**
  * Midnight Explorer Address URL
  */
 export function getMidnightExplorerAddressUrl(address: string, network: string = 'preview'): string {
+  const clean = address ? (address.startsWith('0x') ? address.slice(2) : address) : '';
   const domain = network === 'preprod' ? 'preprod.midnightexplorer.com' : 'preview.midnightexplorer.com';
-  return `https://${domain}/address/${address}`;
+  return clean ? `https://${domain}/address/${clean}` : `https://${domain}`;
 }
 
 // Aliases for backwards compatibility

@@ -11,7 +11,8 @@ import {
   Clock,
   Percent,
   Coins,
-  Bot
+  Bot,
+  ExternalLink
 } from 'lucide-react';
 import { parseNaturalLanguageStrategy, StrategyParams } from '../utils/contract';
 import { parseStrategyNode } from '../utils/agent';
@@ -385,12 +386,13 @@ export const StrategyBuilder: React.FC<StrategyBuilderProps> = ({
           {/* Post-Commitment Action Bar */}
           <div className="pt-2 flex flex-col sm:flex-row items-center gap-3 border-t border-gray-200">
             <a
-              href={`https://preview.midnightexplorer.com/tx/${committedHash}`}
+              href="https://preview.midnightexplorer.com/contract/0x62a27ceda5eb600263e208768d5d285c659d47f2cd6b14a20c62b160f4da46f3"
               target="_blank"
               rel="noreferrer"
-              className="w-full sm:w-auto px-4 py-2.5 rounded-full bg-gray-100 hover:bg-gray-200 border border-gray-200 text-gray-900 font-bold text-xs flex items-center justify-center gap-2 transition-all cursor-pointer"
+              className="w-full sm:w-auto px-5 py-2.5 rounded-full bg-gray-900 hover:bg-black text-white font-bold text-xs flex items-center justify-center gap-2 transition-all cursor-pointer shadow-sm"
             >
-              <span>View Midnight Preview Explorer</span>
+              <span>View Axiom Contract on Midnight Explorer</span>
+              <ExternalLink className="w-3.5 h-3.5" />
             </a>
           </div>
         </div>

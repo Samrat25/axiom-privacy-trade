@@ -364,7 +364,16 @@ export function useMidnight() {
     setError(null);
 
     try {
-      addLog('info', 'EZKL Risk Model Evaluation', `Running EZKL ZK-ML Risk Check for agent ${agentId}...`);
+      // 0. Strict Shielded Vault Balance Requirement Check
+      const currentVault = getLocalVaultBalance();
+      if (currentVault < tradeSizeUsd) {
+        const vaultErrMsg = `Insufficient Shielded Vault Balance: You have $${currentVault.toLocaleString()} vUSD available, but this trade requires $${tradeSizeUsd.toLocaleString()} vUSD. Please mint or deposit to your Shielded Vault in the 'Shielded Vault & Withdraw' tab before trading.`;
+        setError(vaultErrMsg);
+        addLog('error', 'Trade Blocked — Insufficient Vault', vaultErrMsg);
+        throw new Error(vaultErrMsg);
+      }
+
+      addLog('info', 'EZKL Risk Model Evaluation', `Running EZKL ZK-ML Risk Check for agent ${agentId} ($${tradeSizeUsd} ${targetAsset || 'ADA'})...`);
 
       setProofStep('1. Running EZKL ZK-ML Risk Eligibility Model...');
 

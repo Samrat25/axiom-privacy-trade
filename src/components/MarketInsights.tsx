@@ -19,13 +19,17 @@ interface MarketInsightsProps {
   isProofGenerating: boolean;
   walletConnected: boolean;
   onConnectWallet: () => void;
+  vaultBalance?: number;
+  onNavigateTab?: (tab: string) => void;
 }
 
 export const MarketInsights: React.FC<MarketInsightsProps> = ({
   onExecuteTrade,
   isProofGenerating,
   walletConnected,
-  onConnectWallet
+  onConnectWallet,
+  vaultBalance = 0,
+  onNavigateTab
 }) => {
   const [selectedAsset, setSelectedAsset] = useState<string>('ADA');
   const [isAnalyzing, setIsAnalyzing] = useState<boolean>(false);
@@ -212,31 +216,72 @@ export const MarketInsights: React.FC<MarketInsightsProps> = ({
             </div>
 
             {/* Execute Proven ZK Trade Button directly from Market Insights */}
-            <div className="pt-2 flex flex-col sm:flex-row items-center justify-between gap-4 bg-gray-50 p-4 rounded-xl border border-gray-200">
-              <div className="space-y-0.5">
-                <span className="text-xs font-bold text-gray-900 flex items-center gap-1.5">
-                  <Shield className="w-4 h-4 text-emerald-600" />
-                  Execute ZK Trade on Signal
-                </span>
-                <p className="text-[11px] text-gray-500">
-                  Triggers 1AM Wallet transaction signing. Proven via Compact <code className="text-gray-900 font-bold">executeTrade</code> circuit.
-                </p>
+            <div className="pt-2 flex flex-col gap-3 bg-gray-50 p-4 rounded-xl border border-gray-200">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
+                <div className="space-y-0.5">
+                  <span className="text-xs font-bold text-gray-900 flex items-center gap-1.5">
+                    <Shield className="w-4 h-4 text-emerald-600" />
+                    Execute ZK Trade on Signal
+                  </span>
+                  <p className="text-[11px] text-gray-500">
+                    Triggers 1AM Wallet transaction signing. Proven via Compact <code className="text-gray-900 font-bold">executeTrade</code> circuit.
+                  </p>
+                </div>
+
+                <div className="text-right">
+                  <span className="text-[10px] text-gray-500 font-semibold block uppercase">Shielded Vault Available</span>
+                  <span className={`text-xs font-extrabold ${vaultBalance >= 1200 ? 'text-emerald-700' : 'text-amber-600'}`}>
+                    ${vaultBalance.toLocaleString()} vUSD
+                  </span>
+                </div>
               </div>
 
-              <button
-                onClick={() => {
-                  if (!walletConnected) {
-                    onConnectWallet();
-                  } else {
-                    onExecuteTrade(selectedData.symbol, 1200);
-                  }
-                }}
-                disabled={isProofGenerating}
-                className="w-full sm:w-auto px-5 py-2.5 rounded-full bg-[#F26522] hover:bg-[#e05a1a] text-white font-bold text-xs shadow-sm transition-all cursor-pointer shrink-0 disabled:opacity-50 flex items-center justify-center gap-2"
-              >
-                <Zap className="w-4 h-4 text-white" />
-                <span>{isProofGenerating ? 'Proving ZK Circuit...' : `Execute $1,200 ${selectedData.symbol} Trade`}</span>
-              </button>
+              {/* Balance Warning if vault balance < $1,200 */}
+              {vaultBalance < 1200 && (
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 p-3 bg-amber-50 border border-amber-200 rounded-xl text-xs text-amber-900">
+                  <div className="flex items-center gap-1.5 font-medium">
+                    <AlertCircle className="w-4 h-4 text-amber-600 shrink-0" />
+                    <span>Insufficient Vault Balance ($1,200 required). Please mint vUSD first.</span>
+                  </div>
+                  {onNavigateTab && (
+                    <button
+                      onClick={() => onNavigateTab('withdraw')}
+                      className="text-xs font-bold text-amber-800 hover:text-amber-950 underline cursor-pointer shrink-0"
+                    >
+                      Mint in Vault Tab →
+                    </button>
+                  )}
+                </div>
+              )}
+
+              <div className="flex justify-end pt-1">
+                <button
+                  onClick={() => {
+                    if (!walletConnected) {
+                      onConnectWallet();
+                    } else {
+                      onExecuteTrade(selectedData.symbol, 1200);
+                    }
+                  }}
+                  disabled={isProofGenerating || (walletConnected && vaultBalance < 1200)}
+                  className={`w-full sm:w-auto px-5 py-2.5 rounded-full font-bold text-xs shadow-sm transition-all flex items-center justify-center gap-2 ${
+                    !walletConnected || vaultBalance >= 1200
+                      ? 'bg-[#F26522] hover:bg-[#e05a1a] text-white cursor-pointer'
+                      : 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                  }`}
+                >
+                  <Zap className="w-4 h-4" />
+                  <span>
+                    {!walletConnected
+                      ? 'Connect Wallet to Trade'
+                      : isProofGenerating
+                      ? 'Proving ZK Circuit...'
+                      : vaultBalance < 1200
+                      ? `Insufficient Balance ($${vaultBalance} / $1,200 vUSD)`
+                      : `Execute $1,200 ${selectedData.symbol} Trade`}
+                  </span>
+                </button>
+              </div>
             </div>
           </div>
         </div>

@@ -30,6 +30,8 @@ interface TradeHistoryProps {
   walletConnected: boolean;
   onConnectWallet: () => void;
   networkId: string;
+  vaultBalance?: number;
+  onNavigateTab?: (tab: string) => void;
 }
 
 export const TradeHistory: React.FC<TradeHistoryProps> = ({
@@ -38,7 +40,9 @@ export const TradeHistory: React.FC<TradeHistoryProps> = ({
   isProofGenerating,
   walletConnected,
   onConnectWallet,
-  networkId
+  networkId,
+  vaultBalance = 0,
+  onNavigateTab
 }) => {
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [statusFilter, setStatusFilter] = useState<'all' | 'executed' | 'rejected'>('all');
@@ -122,15 +126,29 @@ export const TradeHistory: React.FC<TradeHistoryProps> = ({
             onClick={() => {
               if (!walletConnected) {
                 onConnectWallet();
+              } else if (vaultBalance < 1200 && onNavigateTab) {
+                onNavigateTab('withdraw');
               } else {
                 onExecuteTrade('ADA', 1200);
               }
             }}
-            disabled={isProofGenerating}
-            className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-full bg-[#F26522] hover:bg-[#e05a1a] text-white font-bold text-xs shadow-sm transition-all cursor-pointer shrink-0 disabled:opacity-50"
+            disabled={isProofGenerating || (walletConnected && vaultBalance < 1200 && !onNavigateTab)}
+            className={`flex items-center justify-center gap-2 px-4 py-2.5 rounded-full font-bold text-xs shadow-sm transition-all shrink-0 cursor-pointer ${
+              !walletConnected || vaultBalance >= 1200
+                ? 'bg-[#F26522] hover:bg-[#e05a1a] text-white'
+                : 'bg-amber-600 hover:bg-amber-700 text-white'
+            }`}
           >
             <Zap className="w-4 h-4 text-white" />
-            <span>{isProofGenerating ? 'Proving ZK Circuit...' : 'Simulate & Sign ZK Trade'}</span>
+            <span>
+              {!walletConnected
+                ? 'Connect Wallet'
+                : isProofGenerating
+                ? 'Proving ZK Circuit...'
+                : vaultBalance < 1200
+                ? `Insufficient Vault ($${vaultBalance}/$1,200) — Mint vUSD`
+                : 'Execute $1,200 ZK Trade'}
+            </span>
           </button>
         </div>
       </div>
@@ -198,9 +216,12 @@ export const TradeHistory: React.FC<TradeHistoryProps> = ({
                   filteredTrades.map((trade) => {
                     const isExecuted = trade.status === 'executed';
                     const isProfit = (trade.pnlUsd || 0) >= 0;
-                    const txHashDisplay = trade.txHash || trade.commitmentHash;
-                    const cleanHash = txHashDisplay.startsWith('0x') ? txHashDisplay.slice(2) : txHashDisplay;
-                    const explorerUrl = `https://preview.midnightexplorer.com/tx/${cleanHash}`;
+                    const hasRealTx = Boolean(trade.txHash && trade.txHash.startsWith('0x') && trade.txHash.length > 20);
+                    const cleanHash = hasRealTx && trade.txHash ? (trade.txHash.startsWith('0x') ? trade.txHash.slice(2) : trade.txHash) : '';
+                    const explorerUrl = cleanHash
+                      ? `https://preview.midnightexplorer.com/tx/${cleanHash}`
+                      : 'https://preview.midnightexplorer.com/contract/0x62a27ceda5eb600263e208768d5d285c659d47f2cd6b14a20c62b160f4da46f3';
+                    const displayLabel = cleanHash ? `Tx: ${cleanHash.substring(0, 10)}…` : 'Contract Verified';
 
                     return (
                       <tr key={trade.id} className="hover:bg-gray-50/80 transition-colors">
@@ -258,9 +279,9 @@ export const TradeHistory: React.FC<TradeHistoryProps> = ({
                               target="_blank"
                               rel="noreferrer"
                               className="text-orange-600 hover:text-orange-700 hover:underline flex items-center gap-1 text-[11px] font-bold"
-                              title={`Open Preview Midnight Explorer for transaction ${txHashDisplay}`}
+                              title={`Open Preview Midnight Explorer for ${displayLabel}`}
                             >
-                              <span>Tx: {txHashDisplay.substring(0, 12)}…</span>
+                              <span>{displayLabel}</span>
                               <ExternalLink className="w-3 h-3 shrink-0 text-orange-500" />
                             </a>
                           </div>

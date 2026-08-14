@@ -252,12 +252,12 @@ export function App() {
                           <div className="flex items-center justify-between text-[11px] text-gray-500 uppercase tracking-wider font-semibold">
                             <span>Public Commitment Hash</span>
                             <a
-                              href={`https://preview.midnightexplorer.com/tx/${strat.commitmentHash}`}
+                              href="https://preview.midnightexplorer.com/contract/0x62a27ceda5eb600263e208768d5d285c659d47f2cd6b14a20c62b160f4da46f3"
                               target="_blank"
                               rel="noreferrer"
                               className="text-orange-600 hover:underline flex items-center gap-1 font-bold"
                             >
-                              <span>Midnight Explorer</span>
+                              <span>Axiom Contract Explorer</span>
                               <ExternalLink className="w-2.5 h-2.5" />
                             </a>
                           </div>
@@ -298,6 +298,34 @@ export function App() {
 
                             <p className="text-xs text-gray-700 leading-relaxed font-sans">{rec.recommendation}</p>
 
+                            {/* Shielded Vault Balance Requirement Check */}
+                            <div className="p-3 bg-white rounded-xl border border-gray-200 space-y-1">
+                              <div className="flex items-center justify-between text-xs">
+                                <span className="text-gray-600 font-medium">Shielded Vault Available:</span>
+                                <span className={`font-extrabold ${vaultBalance >= rec.suggestedTradeSizeUsd ? 'text-emerald-700' : 'text-amber-600'}`}>
+                                  ${vaultBalance.toLocaleString()} vUSD
+                                </span>
+                              </div>
+                              <div className="flex items-center justify-between text-xs">
+                                <span className="text-gray-600 font-medium">Required Trade Size:</span>
+                                <span className="font-extrabold text-gray-900">${rec.suggestedTradeSizeUsd.toLocaleString()} vUSD</span>
+                              </div>
+                            </div>
+
+                            {vaultBalance < rec.suggestedTradeSizeUsd && (
+                              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 p-3 bg-amber-50 border border-amber-200 rounded-xl text-xs text-amber-900">
+                                <span className="font-medium">
+                                  ⚠️ Insufficient Shielded Vault Balance (${vaultBalance.toLocaleString()} available). You must have at least ${rec.suggestedTradeSizeUsd.toLocaleString()} vUSD in your vault to trade.
+                                </span>
+                                <button
+                                  onClick={() => setActiveTab('withdraw')}
+                                  className="text-xs font-bold text-amber-900 hover:underline cursor-pointer shrink-0"
+                                >
+                                  Mint in Vault →
+                                </button>
+                              </div>
+                            )}
+
                             <div className="flex items-center gap-2 pt-1 border-t border-gray-200">
                               <input
                                 type="checkbox"
@@ -318,15 +346,21 @@ export function App() {
                                 onClick={() =>
                                   executeProvenTrade(strat.agentId, rec.suggestedTradeSizeUsd, strat.params.asset, 'BUY')
                                 }
-                                disabled={!isConfirmed || isProofGenerating}
+                                disabled={!isConfirmed || isProofGenerating || vaultBalance < rec.suggestedTradeSizeUsd}
                                 className={`flex-1 py-2.5 rounded-full font-bold text-xs flex items-center justify-center gap-2 transition-all shadow-sm ${
-                                  isConfirmed && !isProofGenerating
+                                  isConfirmed && !isProofGenerating && vaultBalance >= rec.suggestedTradeSizeUsd
                                     ? 'bg-[#F26522] hover:bg-[#e05a1a] text-white cursor-pointer'
                                     : 'bg-gray-200 text-gray-400 cursor-not-allowed'
                                 }`}
                               >
                                 <CheckCircle2 className="w-4 h-4" />
-                                <span>{isProofGenerating ? 'Proving EZKL ZK Trade...' : `Confirm & Execute Trade ($${rec.suggestedTradeSizeUsd})`}</span>
+                                <span>
+                                  {isProofGenerating
+                                    ? 'Proving EZKL ZK Trade...'
+                                    : vaultBalance < rec.suggestedTradeSizeUsd
+                                    ? `Insufficient Vault Balance ($${vaultBalance}/$${rec.suggestedTradeSizeUsd})`
+                                    : `Confirm & Execute Trade ($${rec.suggestedTradeSizeUsd})`}
+                                </span>
                               </button>
 
                               {/* Button to test Reckless Trade ZK Risk Model failure */}
@@ -373,6 +407,8 @@ export function App() {
             isProofGenerating={isProofGenerating}
             walletConnected={walletConnected}
             onConnectWallet={() => setIsModalOpen(true)}
+            vaultBalance={vaultBalance}
+            onNavigateTab={setActiveTab}
           />
         )}
 
@@ -400,6 +436,8 @@ export function App() {
             walletConnected={walletConnected}
             onConnectWallet={() => setIsModalOpen(true)}
             networkId={networkId}
+            vaultBalance={vaultBalance}
+            onNavigateTab={setActiveTab}
           />
         )}
 

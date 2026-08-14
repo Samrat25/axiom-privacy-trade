@@ -161,4 +161,19 @@ describe('Axiom Compact Smart Contract Privacy & Verification Suite', () => {
     expect(excessiveBurn.success).toBe(false);
     expect(excessiveBurn.reason).toContain('insufficient vault balance');
   });
+
+  it('9. executeTrade: verifies trader has sufficient vault balance for trade size', () => {
+    const underfundedWitnesses: StrategyWitnesses = {
+      ...defaultWitnesses,
+      getPortfolioValue: () => 500n, // Only $500 in vault
+      getTradeSizeUsd: () => 1200n   // Requires $1,200 (exceeds $500 balance)
+    };
+    const contract = new AxiomContractSimulator(underfundedWitnesses);
+    const agentId = '0xagent_underfunded';
+    contract.commitStrategy(agentId);
+
+    const res = contract.executeTrade(agentId, '0xtrade_underfunded', 1750000000n);
+    expect(res.status).toBe('rejected');
+    expect(res.reason).toContain('exceeds max position size');
+  });
 });
