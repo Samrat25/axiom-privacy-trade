@@ -2,7 +2,6 @@
 
 [![Axiom CI/CD Pipeline](https://github.com/Samrat25/axiom-privacy-trade/actions/workflows/ci.yml/badge.svg)](https://github.com/Samrat25/axiom-privacy-trade/actions/workflows/ci.yml)
 [![Tests](https://img.shields.io/badge/tests-19%2F19_passing-brightgreen)](https://github.com/Samrat25/axiom-privacy-trade)
-[![Live Demo](https://img.shields.io/badge/demo-axiom--trade.lovable.app-blue)](https://axiom-privacy-trade.lovable.app)
 [![Midnight](https://img.shields.io/badge/blockchain-Midnight_Network-purple)](https://midnight.network)
 [![Product X Profile](https://img.shields.io/badge/X-@axiom__night-black.svg?logo=x)](https://x.com/axiom_night)
 
