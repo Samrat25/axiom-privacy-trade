@@ -7,7 +7,7 @@
 <p align="center">
   <a href="https://github.com/Samrat25/axiom-privacy-trade/actions/workflows/ci.yml"><img src="https://github.com/Samrat25/axiom-privacy-trade/actions/workflows/ci.yml/badge.svg" alt="Axiom CI/CD Pipeline" /></a>
   <a href="https://github.com/Samrat25/axiom-privacy-trade"><img src="https://img.shields.io/badge/tests-19%2F19_passing-brightgreen" alt="Tests" /></a>
-  <a href="https://axiom-privacy-trade.vercel.app"><img src="https://img.shields.io/badge/demo-axiom--privacy--trade.vercel.app-blue" alt="Live Demo Vercel" /></a>
+  <a href="https://axiom-night.vercel.app"><img src="https://img.shields.io/badge/demo-axiom--privacy--trade.vercel.app-blue" alt="Live Demo Vercel" /></a>
   <a href="https://midnight.network"><img src="https://img.shields.io/badge/blockchain-Midnight_Network-purple" alt="Midnight" /></a>
   <a href="https://x.com/axiom_night"><img src="https://img.shields.io/badge/X-@axiom__night-black.svg?logo=x" alt="Product X Profile" /></a>
 </p>
@@ -22,8 +22,7 @@
 
 | Resource | Link |
 |:---|:---|
-| **Live Application (Vercel)** | [https://axiom-privacy-trade.vercel.app](https://axiom-privacy-trade.vercel.app) |
-| **Live Application (Lovable)** | [https://axiom-privacy-trade.lovable.app](https://axiom-privacy-trade.lovable.app) |
+| **Live Application (Vercel)** | [https://axiom-night.vercel.app](https://axiom-privacy-trade.vercel.app) |
 | **Demo Video (Walkthrough)** | [🎬 Watch on Google Drive](https://drive.google.com/file/d/1CLl04L8zv4vsdxteTzu1P2TgVVmLeVHj/view?usp=sharing) |
 | **GitHub Repository** | [https://github.com/Samrat25/axiom-privacy-trade](https://github.com/Samrat25/axiom-privacy-trade) |
 | **Product X (Twitter) Profile** | [@axiom_night (https://x.com/axiom_night)](https://x.com/axiom_night) |
