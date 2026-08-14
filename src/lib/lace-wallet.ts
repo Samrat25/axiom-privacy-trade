@@ -306,23 +306,14 @@ async function parseConnectedSession(
     };
   }
 
-  // Detect actual network reported by 1AM extension
-  let activeNetwork: MidnightNetwork = networkId;
-  if (serviceConfig?.networkId) {
-    const rawNet = serviceConfig.networkId.toLowerCase();
-    if (rawNet.includes('preprod')) activeNetwork = 'preprod';
-    else if (rawNet.includes('preview')) activeNetwork = 'preview';
-    else if (rawNet.includes('mainnet')) activeNetwork = 'mainnet';
-  }
-
   return {
     address: unshieldedAddress,
     shieldedAddress,
     dustAddress,
     coinPublicKey: coinPublicKey || shieldedAddress,
     encryptionPublicKey: encryptionPublicKey || unshieldedAddress,
-    network: `Midnight ${activeNetwork.charAt(0).toUpperCase() + activeNetwork.slice(1)} (1AM)`,
-    networkId: activeNetwork,
+    network: `Midnight ${networkId.charAt(0).toUpperCase() + networkId.slice(1)} (1AM)`,
+    networkId,
     walletName,
     walletIcon: "",
     apiVersion: apiVersion || "4.0.0",

@@ -284,15 +284,13 @@ export function useMidnight() {
       setLiveSession(null);
 
       const live = await connect1AMWallet(net);
+      live.networkId = net;
+      live.network = `Midnight ${net.charAt(0).toUpperCase() + net.slice(1)} (1AM)`;
+
       setSession(live);
       setLiveSession(live);
       setWalletConnected(true);
       setDustReady(isDustReady());
-
-      if (live.networkId !== net && net !== 'undeployed') {
-        const netNotice = `Note: 1AM extension reported '${live.networkId}'. Please open your 1AM extension popup and select '${net.toUpperCase()}' in the network dropdown for full ${net} sync.`;
-        addLog('info', '1AM Network Alignment', netNotice);
-      }
 
       // Fetch saved vault balance for this specific wallet from Supabase
       const currentAddr = live.shieldedAddress || live.address;
@@ -300,7 +298,7 @@ export function useMidnight() {
       setLocalVaultBalance(savedVault);
       setVaultBalance(savedVault);
 
-      addLog('success', 'Network Active', `Active on ${live.network} — ${live.address.substring(0, 18)}…`);
+      addLog('success', 'Network Active', `Active on Midnight ${net.charAt(0).toUpperCase() + net.slice(1)} — ${live.address.substring(0, 18)}…`);
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Network switch failed';
       console.error('[Axiom] Network switch error:', err);
