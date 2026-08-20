@@ -7,6 +7,27 @@ This directory contains versioned deployment records for Axiom's Compact ZK circ
 
 ---
 
+## Deployer / Funding Wallet
+
+| Field | Value |
+|:------|:------|
+| **Deployer Wallet** | `@axiom_night` — [x.com/axiom_night](https://x.com/axiom_night) |
+| **Preprod Deployment TX** | [`0x27ffe1f7a2db3a071c5f2070c9ae6de476f839d7870a6f3c4da78d326cd28645`](https://preprod.midnightexplorer.com/transactions/0x27ffe1f7a2db3a071c5f2070c9ae6de476f839d7870a6f3c4da78d326cd28645) |
+| **Preprod Contract Address** | [`0x2428cd4ae7c2cd0bb501e1e9162de3003b103c1063c220e0d5cfc3f0b438e524`](https://preprod.midnightexplorer.com/contracts/0x2428cd4ae7c2cd0bb501e1e9162de3003b103c1063c220e0d5cfc3f0b438e524) |
+| **Block** | `2098826` |
+| **Deployed At** | `2026-08-14T11:03:00Z` |
+| **Funded With** | tDUST (Midnight Preprod gas token) via the Preprod faucet |
+| **Faucet Used** | [https://midnight-tmnight-preprod.nethermind.dev](https://midnight-tmnight-preprod.nethermind.dev) |
+
+The deployer wallet is the wallet address that:
+1. Received tNIGHT and tDUST from the Midnight Preprod faucet
+2. Signed and funded the `deployContract` transaction for `contracts/axiom.compact`
+3. Has the deployment TX `0x27ffe1...cd28645` in its 1AM wallet transaction history
+
+All subsequent user interactions (strategy commits, vault mints, trade executions) via [axiom-night.vercel.app](https://axiom-night.vercel.app) appear as separate transactions in each user's own 1AM wallet history, linked to the same contract.
+
+---
+
 ## Deployment Records
 
 ### Midnight Preview Testnet
@@ -18,10 +39,10 @@ This directory contains versioned deployment records for Axiom's Compact ZK circ
 
 ### Midnight Preprod Testnet
 
-| Version | Contract Address | Deployed At | Circuits | Status |
-| :--- | :--- | :--- | :--- | :--- |
-| `1.2.0` | `0x2428cd4ae7c2cd0bb501e1e9162de3003b103c1063c220e0d5cfc3f0b438e524` | 2026-08-14 | `commitStrategy`, `executeTrade`, `mintVaultBalance`, `burnVaultBalance`, `unshieldWithdraw` | **Active (Verified)** |
-| `1.0.0` | `0x62a27ceda5eb600263e208768d5d285c659d47f2cd6b14a20c62b160f4da46f3` | 2026-08-12 | `commitStrategy`, `executeTrade`, `unshieldWithdraw` | Historical |
+| Version | Contract Address | Deployment TX | Block | Deployed At | Circuits | Status |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| `1.2.0` | `0x2428cd4ae7c2cd0bb501e1e9162de3003b103c1063c220e0d5cfc3f0b438e524` | `0x27ffe1f7...cd28645` | `2098826` | 2026-08-14 | `commitStrategy`, `executeTrade`, `mintVaultBalance`, `burnVaultBalance`, `unshieldWithdraw` | **Active (Verified)** |
+| `1.0.0` | `0x62a27ceda5eb600263e208768d5d285c659d47f2cd6b14a20c62b160f4da46f3` | — | — | 2026-08-12 | `commitStrategy`, `executeTrade`, `unshieldWithdraw` | Historical |
 
 ---
 
