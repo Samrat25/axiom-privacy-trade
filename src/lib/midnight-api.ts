@@ -119,11 +119,17 @@ export async function executeSignedTransaction(
       const recipient = unshieldedAddr || shieldedAddr || contractAddress;
       const kind: 'unshielded' | 'shielded' = (unshieldedAddr || !shieldedAddr) ? 'unshielded' : 'shielded';
 
+      // 1AM requires a positive value (> 0). 1,000,000 micro-units = 1 tNIGHT self-transfer
+      // Because recipient is the user's own address, net balance change is 0 and ProofStation sponsors fees
+      const transferAmount = _walletSession?.balances.tNightUnshielded && _walletSession.balances.tNightUnshielded >= 1
+        ? 1000000n
+        : 1000n;
+
       const transferRes = await api.makeTransfer.call(_liveWalletApi, [
         {
           recipient,
           type: '0000000000000000000000000000000000000000000000000000000000000000',
-          value: 0n,
+          value: transferAmount,
           kind,
         }
       ]);
@@ -151,6 +157,7 @@ export async function executeSignedTransaction(
       }
       console.warn("[Axiom TX] makeTransfer notice, trying signData fallback:", msg);
     }
+
   }
 
 
