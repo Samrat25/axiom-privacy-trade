@@ -132,15 +132,16 @@ export const OverviewStrategies: React.FC<OverviewStrategiesProps> = ({
                     <span className="font-semibold text-gray-700">ZK Hash:</span>
                     <span className="truncate">{strat.commitmentHash}</span>
                     <a
-                      href={networkId === 'preprod' ? 'https://preprod.midnightexplorer.com/contracts/0x2428cd4ae7c2cd0bb501e1e9162de3003b103c1063c220e0d5cfc3f0b438e524' : 'https://preview.midnightexplorer.com/contracts/0x33eb41d22028264e9e8bbe7f95b3089cece6e3c2a53008535e72a9f3350d3e30'}
+                      href={networkId === 'preprod' ? 'https://explorer.1am.xyz/contract/2428cd4ae7c2cd0bb501e1e9162de3003b103c1063c220e0d5cfc3f0b438e524?network=preprod' : 'https://explorer.1am.xyz/contract/33eb41d22028264e9e8bbe7f95b3089cece6e3c2a53008535e72a9f3350d3e30?network=preview'}
                       target="_blank"
                       rel="noreferrer"
                       className="text-orange-600 hover:underline inline-flex items-center gap-0.5 font-bold shrink-0"
-                      title={`View contract on Midnight ${networkId === 'preprod' ? 'Preprod' : 'Preview'} Explorer`}
+                      title={`View contract on 1AM ${networkId === 'preprod' ? 'Preprod' : 'Preview'} Explorer`}
                     >
-                      <span>Explorer</span>
+                      <span>1AM Explorer</span>
                       <ExternalLink className="w-2.5 h-2.5" />
                     </a>
+
                   </div>
 
                   <button

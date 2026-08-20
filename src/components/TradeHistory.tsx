@@ -124,15 +124,16 @@ export const TradeHistory: React.FC<TradeHistoryProps> = ({
           </div>
 
           <a
-            href={networkId === 'preprod' ? 'https://preprod.midnightexplorer.com/contracts/0x2428cd4ae7c2cd0bb501e1e9162de3003b103c1063c220e0d5cfc3f0b438e524' : 'https://preview.midnightexplorer.com/contracts/0x33eb41d22028264e9e8bbe7f95b3089cece6e3c2a53008535e72a9f3350d3e30'}
+            href={networkId === 'preprod' ? 'https://explorer.1am.xyz/contract/2428cd4ae7c2cd0bb501e1e9162de3003b103c1063c220e0d5cfc3f0b438e524?network=preprod' : 'https://explorer.1am.xyz/contract/33eb41d22028264e9e8bbe7f95b3089cece6e3c2a53008535e72a9f3350d3e30?network=preview'}
             target="_blank"
             rel="noreferrer"
             className="hidden sm:flex items-center gap-1.5 px-3.5 py-2.5 rounded-full bg-white hover:bg-gray-100 border border-gray-200 text-gray-800 text-xs font-bold transition-all shadow-xs cursor-pointer"
           >
             <Globe className="w-3.5 h-3.5 text-orange-500" />
-            <span>Contract Explorer</span>
+            <span>1AM Contract Explorer</span>
             <ExternalLink className="w-3 h-3 text-gray-400" />
           </a>
+
 
           <button
             onClick={() => {
@@ -229,12 +230,12 @@ export const TradeHistory: React.FC<TradeHistoryProps> = ({
                     const isExecuted = trade.status === 'executed';
                     const isProfit = (trade.pnlUsd || 0) >= 0;
                     const hasRealTx = Boolean(trade.txHash && trade.txHash.length > 20);
-                    const formattedHash = hasRealTx && trade.txHash ? (trade.txHash.startsWith('0x') ? trade.txHash : `0x${trade.txHash}`) : '';
-                    const explorerDomain = net === 'preprod' ? 'preprod.midnightexplorer.com' : 'preview.midnightexplorer.com';
-                    const explorerUrl = formattedHash
-                      ? `https://${explorerDomain}/transactions/${formattedHash}`
-                      : `https://${explorerDomain}/transactions`;
-                    const displayLabel = formattedHash ? `Tx: ${formattedHash.substring(0, 12)}…` : 'Midnight Transactions';
+                    const cleanTx = hasRealTx && trade.txHash ? trade.txHash.replace(/^0x/, '') : '';
+                    const explorerUrl = cleanTx
+                      ? `https://explorer.1am.xyz/tx/${cleanTx}?network=${net}`
+                      : `https://explorer.1am.xyz?network=${net}`;
+                    const displayLabel = cleanTx ? `Tx: ${cleanTx.substring(0, 12)}…` : '1AM Explorer';
+
 
                     return (
                       <tr key={trade.id} className="hover:bg-gray-50/80 transition-colors">
@@ -383,9 +384,8 @@ export const TradeHistory: React.FC<TradeHistoryProps> = ({
               </thead>
               <tbody className="divide-y divide-gray-100 text-gray-800">
                 {explorerTxs.map((tx) => {
-                  const formattedTx = tx.txHash.startsWith('0x') ? tx.txHash : `0x${tx.txHash}`;
-                  const explorerDomain = net === 'preprod' ? 'preprod.midnightexplorer.com' : 'preview.midnightexplorer.com';
-                  const url = `https://${explorerDomain}/transactions/${formattedTx}`;
+                  const cleanTx = tx.txHash.replace(/^0x/, '');
+                  const url = `https://explorer.1am.xyz/tx/${cleanTx}?network=${net}`;
                   return (
                     <tr key={tx.txHash} className="hover:bg-gray-50/80 transition-colors">
                       <td className="p-3.5 font-bold text-gray-900 truncate max-w-[200px]">
@@ -407,13 +407,14 @@ export const TradeHistory: React.FC<TradeHistoryProps> = ({
                           rel="noreferrer"
                           className="inline-flex items-center gap-1 text-orange-600 hover:underline font-bold text-[11px]"
                         >
-                          <span>Open in Midnight Explorer</span>
+                          <span>Open in 1AM Explorer</span>
                           <ExternalLink className="w-3 h-3" />
                         </a>
                       </td>
                     </tr>
                   );
                 })}
+
               </tbody>
             </table>
           </div>

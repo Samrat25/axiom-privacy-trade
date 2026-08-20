@@ -446,14 +446,15 @@ export const StrategyBuilder: React.FC<StrategyBuilderProps> = ({
               </button>
             )}
             <a
-              href={networkId === 'preprod' ? 'https://preprod.midnightexplorer.com/transactions' : 'https://preview.midnightexplorer.com/transactions'}
+              href={networkId === 'preprod' ? 'https://explorer.1am.xyz?network=preprod' : 'https://explorer.1am.xyz?network=preview'}
               target="_blank"
               rel="noreferrer"
               className="w-full sm:w-auto px-5 py-2.5 rounded-full bg-gray-900 hover:bg-black text-white font-bold text-xs flex items-center justify-center gap-2 transition-all cursor-pointer shadow-sm"
             >
-              <span>View Midnight {networkId === 'preprod' ? 'Preprod' : 'Preview'} Transactions Explorer</span>
+              <span>View 1AM {networkId === 'preprod' ? 'Preprod' : 'Preview'} Explorer</span>
               <ExternalLink className="w-3.5 h-3.5" />
             </a>
+
           </div>
         </div>
       )}

@@ -28,8 +28,8 @@ interface ProtocolLogProps {
 
 export const ProtocolLog: React.FC<ProtocolLogProps> = ({ logs, networkId = 'preview' }) => {
   const [filter, setFilter] = useState<'all' | 'success' | 'info' | 'error'>('all');
-  const explorerUrl = networkId === 'preprod' ? 'https://preprod.midnightexplorer.com/transactions' : 'https://preview.midnightexplorer.com/transactions';
-  const explorerBase = networkId === 'preprod' ? 'https://preprod.midnightexplorer.com' : 'https://preview.midnightexplorer.com';
+  const net = networkId === 'preprod' ? 'preprod' : 'preview';
+  const explorerBase = `https://explorer.1am.xyz?network=${net}`;
 
   const filteredLogs = logs.filter((l) => {
     if (filter === 'all') return true;
@@ -129,8 +129,11 @@ export const ProtocolLog: React.FC<ProtocolLogProps> = ({ logs, networkId = 'pre
 
                 {log.detail.includes('TX:') && (() => {
                   const match = log.detail.match(/TX:\s*(0x[a-fA-F0-9]{64}|0x[a-fA-F0-9]+|[a-fA-F0-9]{32,64})/);
-                  const directTx = match ? (match[1].startsWith('0x') ? match[1] : `0x${match[1]}`) : '';
-                  const targetUrl = directTx ? `${explorerBase}/transactions/${directTx}` : explorerUrl;
+                  const directTx = match ? match[1] : '';
+                  const targetUrl = directTx
+                    ? `https://explorer.1am.xyz/tx/${directTx.replace(/^0x/, '')}?network=${net}`
+                    : `https://explorer.1am.xyz?network=${net}`;
+                  const shortTx = directTx ? `${directTx.replace(/^0x/, '').substring(0, 10)}…` : 'TX';
                   return (
                     <div className="pl-5 pt-1">
                       <a
@@ -139,7 +142,7 @@ export const ProtocolLog: React.FC<ProtocolLogProps> = ({ logs, networkId = 'pre
                         rel="noreferrer"
                         className="inline-flex items-center gap-1 text-[10px] font-bold text-orange-600 hover:text-orange-700 hover:underline"
                       >
-                        <span>Verify {directTx ? `${directTx.substring(0, 10)}…` : 'TX'} on Midnight {networkId === 'preprod' ? 'Preprod' : 'Preview'} Explorer →</span>
+                        <span>Verify {shortTx} on 1AM {networkId === 'preprod' ? 'Preprod' : 'Preview'} Explorer →</span>
                       </a>
                     </div>
                   );
@@ -159,10 +162,11 @@ export const ProtocolLog: React.FC<ProtocolLogProps> = ({ logs, networkId = 'pre
           rel="noreferrer"
           className="flex items-center gap-1 text-gray-500 hover:text-orange-600 transition-colors"
         >
-          <Terminal className="w-3 h-3 text-gray-400" /> Midnight {networkId === 'preprod' ? 'Preprod' : 'Preview'} Explorer Live
+          <Terminal className="w-3 h-3 text-gray-400" /> 1AM {networkId === 'preprod' ? 'Preprod' : 'Preview'} Explorer Live
         </a>
         <span className="text-emerald-700 font-bold">● Synchronized</span>
       </div>
     </div>
   );
 };
+

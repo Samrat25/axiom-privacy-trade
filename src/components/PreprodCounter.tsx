@@ -68,10 +68,11 @@ export const PreprodCounter: React.FC = () => {
       </div>
       <p className="text-[10px] text-gray-400">
         Each wallet performed a real transaction on Midnight Preprod. Verifiable on{' '}
-        <a href="https://preprod.midnightexplorer.com" target="_blank" rel="noreferrer" className="text-orange-500 hover:underline">
-          midnightexplorer.com
+        <a href="https://explorer.1am.xyz?network=preprod" target="_blank" rel="noreferrer" className="text-orange-500 hover:underline">
+          explorer.1am.xyz
         </a>.
       </p>
+
     </div>
   );
 };

@@ -44,16 +44,16 @@ async function exportUsers() {
   console.log('Target: 50 verified wallet addresses on Midnight Preprod');
   console.log('');
   console.log('> Automatically captured from real Preprod transactions on https://axiom-night.vercel.app');
-  console.log('> Verifiable on https://preprod.midnightexplorer.com');
+  console.log('> Verifiable on https://explorer.1am.xyz?network=preprod');
   console.log('');
-  console.log('| #  | Wallet Address | First Transaction | Explorer |');
-  console.log('|----|----------------|-------------------|----------|');
+  console.log('| #  | Wallet Address | First Transaction | 1AM Explorer |');
+  console.log('|----|----------------|-------------------|--------------|');
 
   if (users.length === 0) {
     console.log('| —  | No Preprod transactions recorded yet | — | — |');
   } else {
     for (const u of users) {
-      const link = `[View](https://preprod.midnightexplorer.com/addresses/${u.address})`;
+      const link = `[View](https://explorer.1am.xyz/address/${u.address}?network=preprod)`;
       console.log(`| ${String(u.n).padEnd(2)} | \`${u.address}\` | ${u.date} | ${link} |`);
     }
   }

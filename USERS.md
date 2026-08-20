@@ -4,12 +4,13 @@ Target: 50 verified wallet addresses on Midnight Preprod
 
 > Wallet addresses are captured automatically when real users connect and transact
 > on Midnight Preprod via the live demo at https://axiom-night.vercel.app.
-> Each address is verifiable on [Midnight Preprod Explorer](https://preprod.midnightexplorer.com).
+> Each address is verifiable on [1AM Preprod Explorer](https://explorer.1am.xyz?network=preprod).
 > To regenerate this table from live data: `npm run analytics:export-users`
 
-| #  | Wallet Address | First Transaction | Explorer |
-|----|----------------|-------------------|----------|
+| #  | Wallet Address | First Transaction | 1AM Explorer |
+|----|----------------|-------------------|--------------|
 | —  | No real Preprod transactions recorded yet | — | — |
+
 
 Current count: **0 / 50**
 

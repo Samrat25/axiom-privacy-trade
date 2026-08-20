@@ -12,8 +12,9 @@ This directory contains versioned deployment records for Axiom's Compact ZK circ
 | Field | Value |
 |:------|:------|
 | **Deployer Wallet** | `@axiom_night` — [x.com/axiom_night](https://x.com/axiom_night) |
-| **Preprod Deployment TX** | [`0x27ffe1f7a2db3a071c5f2070c9ae6de476f839d7870a6f3c4da78d326cd28645`](https://preprod.midnightexplorer.com/transactions/0x27ffe1f7a2db3a071c5f2070c9ae6de476f839d7870a6f3c4da78d326cd28645) |
-| **Preprod Contract Address** | [`0x2428cd4ae7c2cd0bb501e1e9162de3003b103c1063c220e0d5cfc3f0b438e524`](https://preprod.midnightexplorer.com/contracts/0x2428cd4ae7c2cd0bb501e1e9162de3003b103c1063c220e0d5cfc3f0b438e524) |
+| **Preprod Deployment TX** | [`0x27ffe1f7a2db3a071c5f2070c9ae6de476f839d7870a6f3c4da78d326cd28645`](https://explorer.1am.xyz/tx/27ffe1f7a2db3a071c5f2070c9ae6de476f839d7870a6f3c4da78d326cd28645?network=preprod) |
+| **Preprod Contract Address** | [`0x2428cd4ae7c2cd0bb501e1e9162de3003b103c1063c220e0d5cfc3f0b438e524`](https://explorer.1am.xyz/contract/2428cd4ae7c2cd0bb501e1e9162de3003b103c1063c220e0d5cfc3f0b438e524?network=preprod) |
+
 | **Block** | `2098826` |
 | **Deployed At** | `2026-08-14T11:03:00Z` |
 | **Funded With** | tDUST (Midnight Preprod gas token) via the Preprod faucet |

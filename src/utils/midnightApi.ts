@@ -21,47 +21,54 @@ export interface MidnightApiTransaction {
   circuitName?: string;
 }
 
-// ─── Midnight Explorer URL Builders ──────────────────────────────────────────
+// ─── 1AM & Midnight Explorer URL Builders ───────────────────────────────────
 
 /**
- * Midnight Explorer Transaction URL
- * Target format: https://preview.midnightexplorer.com/transactions/0x8cc0af6d1ac076b0da4a356b84173ae5e92128f3417b94d685b36c47ba0f126d
+ * 1AM / Midnight Explorer Transaction URL
+ * Format: https://explorer.1am.xyz/tx/fbd5fb67f0681bdcc6dc0e4621aaa01db1f49f4b7c23de18919c9fc6cf5eb90a?network=preview
  */
 export function getMidnightExplorerTxUrl(txHash: string, network: string = 'preview'): string {
-  const formattedHash = txHash ? (txHash.startsWith('0x') ? txHash : `0x${txHash}`) : '';
-  const domain = network === 'preprod' ? 'preprod.midnightexplorer.com' : 'preview.midnightexplorer.com';
-  return formattedHash ? `https://${domain}/transactions/${formattedHash}` : `https://${domain}/transactions`;
+  const cleanHash = txHash ? txHash.replace(/^0x/, '') : '';
+  const net = network === 'preprod' ? 'preprod' : 'preview';
+  return cleanHash
+    ? `https://explorer.1am.xyz/tx/${cleanHash}?network=${net}`
+    : `https://explorer.1am.xyz?network=${net}`;
 }
 
 /**
- * Midnight Explorer Contract / Commitment URL
+ * 1AM / Midnight Explorer Contract / Commitment URL
  */
 export function getMidnightExplorerContractUrl(hashOrAddr: string, network: string = 'preview'): string {
-  const formattedAddr = hashOrAddr ? (hashOrAddr.startsWith('0x') ? hashOrAddr : `0x${hashOrAddr}`) : '';
-  const domain = network === 'preprod' ? 'preprod.midnightexplorer.com' : 'preview.midnightexplorer.com';
-  return formattedAddr ? `https://${domain}/contracts/${formattedAddr}` : `https://${domain}/transactions`;
+  const cleanAddr = hashOrAddr ? hashOrAddr.replace(/^0x/, '') : '';
+  const net = network === 'preprod' ? 'preprod' : 'preview';
+  return cleanAddr
+    ? `https://explorer.1am.xyz/contract/${cleanAddr}?network=${net}`
+    : `https://explorer.1am.xyz?network=${net}`;
 }
 
 /**
- * Midnight Explorer Block URL
+ * 1AM / Midnight Explorer Block URL
  */
 export function getMidnightExplorerBlockUrl(blockHeight: number, network: string = 'preview'): string {
-  const domain = network === 'preprod' ? 'preprod.midnightexplorer.com' : 'preview.midnightexplorer.com';
-  return `https://${domain}/block/${blockHeight}`;
+  const net = network === 'preprod' ? 'preprod' : 'preview';
+  return `https://explorer.1am.xyz/block/${blockHeight}?network=${net}`;
 }
 
 /**
- * Midnight Explorer Address URL
+ * 1AM / Midnight Explorer Address URL
  */
 export function getMidnightExplorerAddressUrl(address: string, network: string = 'preview'): string {
-  const formattedAddr = address ? (address.startsWith('0x') ? address : `0x${address}`) : '';
-  const domain = network === 'preprod' ? 'preprod.midnightexplorer.com' : 'preview.midnightexplorer.com';
-  return formattedAddr ? `https://${domain}/address/${formattedAddr}` : `https://${domain}/transactions`;
+  const cleanAddr = address ? address.replace(/^0x/, '') : '';
+  const net = network === 'preprod' ? 'preprod' : 'preview';
+  return cleanAddr
+    ? `https://explorer.1am.xyz/address/${cleanAddr}?network=${net}`
+    : `https://explorer.1am.xyz?network=${net}`;
 }
 
 // Aliases for backwards compatibility
 export const get1AMExplorerTxUrl = getMidnightExplorerTxUrl;
 export const get1AMExplorerAddressUrl = getMidnightExplorerAddressUrl;
+export const get1AMExplorerContractUrl = getMidnightExplorerContractUrl;
 
 import { getActiveContractAddress } from './registry';
 
