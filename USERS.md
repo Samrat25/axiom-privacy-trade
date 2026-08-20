@@ -1,9 +1,17 @@
 # Preprod Users — Level 5
 
-Target: 50 verified wallet addresses
+Target: 50 verified wallet addresses on Midnight Preprod
 
-| #  | Wallet Address | Date Added |
-|----|----------------|------------|
-| 1  | 0x0000000000000000000000000000000000000000 | 2026-08-10 |
+> Wallet addresses are captured automatically when real users connect and transact
+> on Midnight Preprod via the live demo at https://axiom-night.vercel.app.
+> Each address is verifiable on [Midnight Preprod Explorer](https://preprod.midnightexplorer.com).
+> To regenerate this table from live data: `npm run analytics:export-users`
 
-Current count: 1 / 50
+| #  | Wallet Address | First Transaction | Explorer |
+|----|----------------|-------------------|----------|
+| —  | No real Preprod transactions recorded yet | — | — |
+
+Current count: **0 / 50**
+
+---
+*Auto-generated from real Preprod activity. Run `npm run analytics:export-users` to update.*

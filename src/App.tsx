@@ -11,6 +11,7 @@ import { MarketChart } from './components/MarketChart';
 import { OverviewStrategies } from './components/OverviewStrategies';
 import { formatISTDate, formatISTTime } from './utils/time';
 import { useMidnight } from './hooks/useMidnight';
+import { PreprodCounter } from './components/PreprodCounter';
 import {
   Shield,
   ArrowUpRight,
@@ -231,6 +232,8 @@ export function App() {
                     networkId={networkId}
                     onNavigateTab={setActiveTab}
                   />
+
+                  <PreprodCounter />
                 </div>
 
                 {/* Right 1 Column: Live Real-Time Protocol Event Log in IST */}

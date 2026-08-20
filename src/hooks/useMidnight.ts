@@ -52,6 +52,7 @@ import {
 } from '../lib/vault';
 import { confirmTransaction } from '../utils/rpc';
 import { runManualAnalysis, TradeRecommendation } from '../utils/agent';
+import { postEvent, newEventId } from '../lib/analytics';
 
 export interface ActiveStrategy {
   id: string;
@@ -260,6 +261,7 @@ export function useMidnight() {
       addLog('success', 'Wallet Connected',
         `Connected to ${live.network} — ${live.address.substring(0, 18)}… (Vault Balance: $${savedVault} vUSD)`
       );
+      void postEvent({ client_event_id: newEventId(), wallet_address: live.address || live.shieldedAddress || 'unknown', operation: 'wallet_connected', status: 'success', network: live.network || targetNetwork });
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Wallet connection failed';
       console.error('[Axiom] Wallet connection error:', err);
@@ -348,6 +350,7 @@ export function useMidnight() {
       const updated = getLocalVaultBalance();
       setVaultBalance(updated);
       addLog('success', 'Vault Minted', `Minted $${amountVusd} vUSD to shielded vault. TX: ${txHash.substring(0, 18)}…`);
+      void postEvent({ client_event_id: newEventId(), wallet_address: currentAddr, operation: 'vault_minted', status: 'success', tx_hash: txHash, network: (session?.network as string) || networkId });
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Vault mint failed';
       setError(msg);
@@ -462,6 +465,7 @@ export function useMidnight() {
       }).catch((e) => console.warn('[Axiom Sync] Strategy sync error:', e));
 
       addLog('success', 'Strategy Committed', `TX: ${txHash.substring(0, 24)}… | Hash: ${hash.substring(0, 18)}…`);
+      void postEvent({ client_event_id: newEventId(), wallet_address: session?.shieldedAddress || session?.address || 'unknown', operation: 'strategy_committed', status: 'success', tx_hash: txHash, network: (session?.network as string) || networkId });
       return hash;
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Strategy commitment failed';
@@ -585,6 +589,7 @@ export function useMidnight() {
       }).catch((e) => console.warn('[Axiom Sync] Trade sync error:', e));
 
       addLog('success', 'Trade Proven', `Trade ${newTrade.id} — ${asset} $${tradeSizeUsd} — TX: ${txHash.substring(0, 18)}…`);
+      void postEvent({ client_event_id: newEventId(), wallet_address: session?.shieldedAddress || session?.address || 'unknown', operation: 'trade_executed', status: 'success', tx_hash: txHash, network: networkId });
 
       // Async RPC confirmation
       const net = networkId === 'preprod' ? 'preprod' : 'preview';
