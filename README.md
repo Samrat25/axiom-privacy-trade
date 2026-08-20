@@ -6,7 +6,7 @@
 
 <p align="center">
   <a href="https://github.com/Samrat25/axiom-privacy-trade/actions/workflows/ci.yml"><img src="https://github.com/Samrat25/axiom-privacy-trade/actions/workflows/ci.yml/badge.svg" alt="Axiom CI/CD Pipeline" /></a>
-  <a href="https://github.com/Samrat25/axiom-privacy-trade"><img src="https://img.shields.io/badge/tests-19%2F19_passing-brightgreen" alt="Tests" /></a>
+  <a href="https://github.com/Samrat25/axiom-privacy-trade"><img src="https://img.shields.io/badge/tests-26%2F26_passing-brightgreen" alt="Tests" /></a>
   <a href="https://axiom-night.vercel.app"><img src="https://img.shields.io/badge/demo-axiom--night.vercel.app-blue" alt="Live Demo" /></a>
   <a href="https://midnight.network"><img src="https://img.shields.io/badge/blockchain-Midnight_Network-purple" alt="Midnight" /></a>
   <a href="https://x.com/axiom_night"><img src="https://img.shields.io/badge/X-@axiom__night-black.svg?logo=x" alt="Product X Profile" /></a>
@@ -277,11 +277,57 @@ The demo video showcases:
 | 5 | **Product X profile created and linked** | ✅ Complete | [@axiom_night (https://x.com/axiom_night)](https://x.com/axiom_night) |
 | 6 | **Building in Public on X (3+ updates)** | ✅ Complete | [Post 1](https://x.com/i/status/2088282869403996491) • [Post 2](https://x.com/i/status/2088295433621877200) • [Post 3](https://x.com/i/status/2088295537565184320) |
 | 7 | **Demo video of the MVP** | ✅ Complete | [Google Drive Demo Video ↗](https://drive.google.com/file/d/1CLl04L8zv4vsdxteTzu1P2TgVVmLeVHj/view?usp=sharing) |
-| 8 | **Minimum 15 meaningful commits** | ✅ Complete | **44+ Commits** on `main` branch |
-| 9 | **Test suite verification** | ✅ Complete | **19/19 Unit & Privacy Tests Passing** |
+| 8 | **Minimum 15 meaningful commits** | ✅ Complete | **46+ Commits** on `main` branch |
+| 9 | **Test suite verification** | ✅ Complete | **26/26 Unit, Privacy & Analytics Tests Passing** |
+
+---
+
+## 👥 Level 5 — User Validation
+
+| Metric | Value |
+|:---|:---|
+| **Target** | 50 verified Preprod wallet addresses |
+| **Current Count** | See live counter on [axiom-night.vercel.app](https://axiom-night.vercel.app) Overview |
+| **Wallet List** | [USERS.md](./USERS.md) |
+| **Feedback Log** | [docs/FEEDBACK.md](./docs/FEEDBACK.md) |
+
+### How wallet addresses are collected
+
+When a real user connects their Midnight Preprod wallet and performs any
+on-chain transaction (vault mint, strategy commit, or trade execute), the
+dApp automatically records their **public wallet address** to Supabase via
+the `axiom_events` analytics table. No private data is ever captured —
+the `validateEvent()` function whitelists exactly 7 fields and strips
+everything else (including `maxPositionPct`, `stopLossPct`,
+`tradeSizeUsd`, `portfolioValue`) before any row reaches the database.
+
+Every recorded address is **verifiable on [Midnight Preprod Explorer](https://preprod.midnightexplorer.com)** — the review team can paste any wallet address and see real transaction history.
+
+### User acquisition
+
+Share the live demo with your network:
+- **Discord/Telegram**: "Axiom is a ZK trading protocol on Midnight Preprod. Connect your 1AM Wallet at https://axiom-night.vercel.app, mint vault balance, lock a strategy — your wallet is auto-recorded. Takes 2 minutes."
+- **X post**: "Just shipped a real ZK trading agent on Midnight Preprod 🛡️ Connect your 1AM wallet, lock a risk strategy on-chain, execute proven trades. Live now: axiom-night.vercel.app #Midnight #ZKProofs"
+
+### Analytics privacy model (mirrors ProofGate)
+
+`validateEvent()` strips private fields before Supabase persistence — verified by `tests/analytics.test.ts`:
+
+```
+✓ maxPositionPct    — never reaches Supabase
+✓ stopLossPct       — never reaches Supabase
+✓ tradeSizeUsd      — never reaches Supabase
+✓ portfolioValue    — never reaches Supabase
+```
+
+To regenerate `USERS.md` from real data:
+```bash
+npm run analytics:export-users
+```
 
 ---
 
 ## 📄 License
 
 MIT © 2026 Axiom Protocol Contributors. Developed for the **Midnight Blockchain Ecosystem**.
+
