@@ -113,13 +113,18 @@ export async function executeSignedTransaction(
   // This broadcasts to Midnight chain and creates an entry in the 1AM wallet's TRANSACTIONS tab
   if (typeof api.makeTransfer === "function") {
     try {
-      console.info(`[Axiom TX] Initiating 1AM on-chain transaction for '${action}'...`);
-      const recipient = _walletSession?.address || _walletSession?.shieldedAddress || contractAddress;
+      console.info(`[Axiom TX] Initiating 1AM on-chain transaction for '${action}' on ${activeNet}...`);
+      const unshieldedAddr = _walletSession?.address;
+      const shieldedAddr = _walletSession?.shieldedAddress;
+      const recipient = unshieldedAddr || shieldedAddr || contractAddress;
+      const kind: 'unshielded' | 'shielded' = (unshieldedAddr || !shieldedAddr) ? 'unshielded' : 'shielded';
+
       const transferRes = await api.makeTransfer.call(_liveWalletApi, [
         {
-          kind: 'unshielded',
-          value: 0n,
           recipient,
+          type: '0000000000000000000000000000000000000000000000000000000000000000',
+          value: 0n,
+          kind,
         }
       ]);
       console.info("[Axiom TX] ✅ 1AM extension popup approved! ProofStation dust-sponsored.");
@@ -130,7 +135,7 @@ export async function executeSignedTransaction(
       }
 
       if (txPayload && typeof api.submitTransaction === "function") {
-        console.info("[Axiom TX] Submitting transaction to Midnight Preprod...");
+        console.info(`[Axiom TX] Submitting transaction to Midnight ${activeNet}...`);
         const submitRes = await api.submitTransaction.call(_liveWalletApi, txPayload);
         console.info("[Axiom TX] ✅ Transaction broadcast to Midnight network!");
         const hash = extractTxHash(submitRes) || extractTxHash(transferRes);
@@ -147,6 +152,7 @@ export async function executeSignedTransaction(
       console.warn("[Axiom TX] makeTransfer notice, trying signData fallback:", msg);
     }
   }
+
 
   // 2. Secondary path: signData — triggers 1AM extension signature popup
   if (typeof api.signData === "function") {
