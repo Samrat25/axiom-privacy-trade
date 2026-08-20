@@ -50,6 +50,7 @@ export function App() {
     error,
     proofServerUp,
     dustReady,
+    isSyncing,
     isModalOpen,
     setIsModalOpen,
     protocolLogs,
@@ -163,6 +164,19 @@ export function App() {
                   <span className="uppercase">{networkId} TESTNET (IST)</span>
                 </div>
               </div>
+
+              {/* Wallet Syncing Banner */}
+              {isSyncing && (
+                <div className="bg-amber-50 border border-amber-200 p-4 rounded-2xl text-amber-900 text-xs flex items-center gap-3 shadow-xs">
+                  <div className="w-4 h-4 border-2 border-amber-500 border-t-transparent rounded-full animate-spin shrink-0" />
+                  <div>
+                    <span className="font-bold text-amber-800 block">1AM Wallet Syncing</span>
+                    <p className="leading-relaxed text-amber-700">
+                      Your wallet is syncing with Midnight Preprod. Open the 1AM extension and wait for sync to finish before transacting. Balance will update automatically.
+                    </p>
+                  </div>
+                </div>
+              )}
 
               {/* Error Banner for ZK Risk Model or Wallet Errors */}
               {error && (

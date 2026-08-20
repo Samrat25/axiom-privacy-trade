@@ -190,12 +190,28 @@ export function useMidnight() {
     return () => clearInterval(interval);
   }, [scanWallets]);
 
-  // ─── Periodic balance polling from connected 1AM API ────────────────
+  // ─── Sync state ─────────────────────────────────────────────────────
+  const [isSyncing, setIsSyncing] = useState(false);
+
+  // ─── Periodic balance polling with sync-aware exponential backoff ────
+  // If the wallet says "syncing", back off (3.5s → 7s → 14s → 30s max).
+  // Reset to 3.5s as soon as a balance fetch succeeds.
   useEffect(() => {
     if (!session?.api) return;
+
+    let timeoutId: ReturnType<typeof setTimeout>;
+    let delay = 3500;
+    let mounted = true;
+
     const refreshBals = async () => {
       try {
         const fresh = await fetchWalletBalances(session.api);
+        if (!mounted) return;
+
+        // Success — reset backoff and clear syncing state
+        delay = 3500;
+        setIsSyncing(false);
+
         setSession((prev) => {
           if (!prev) return null;
           if (
@@ -205,17 +221,37 @@ export function useMidnight() {
           ) {
             return prev;
           }
-          return {
-            ...prev,
-            balances: fresh,
-          };
+          return { ...prev, balances: fresh };
         });
-      } catch {
-        /* ignore */
+      } catch (err: unknown) {
+        if (!mounted) return;
+        const msg = err instanceof Error ? err.message : String(err);
+
+        if (msg.includes('syncing') || msg.includes('Wallet is syncing')) {
+          // Wallet is still syncing — back off, don't spam
+          setIsSyncing(true);
+          delay = Math.min(delay * 2, 30000);
+          // Single silent log at the first sign of syncing
+          if (delay <= 7000) {
+            console.info('[Axiom Wallet] 1AM wallet syncing — polling will slow down until sync completes.');
+          }
+        } else {
+          // Other error — keep current delay, clear syncing flag
+          setIsSyncing(false);
+        }
+      }
+
+      if (mounted) {
+        timeoutId = setTimeout(refreshBals, delay);
       }
     };
-    const interval = setInterval(refreshBals, 3500);
-    return () => clearInterval(interval);
+
+    // First call after a short initial delay
+    timeoutId = setTimeout(refreshBals, 1500);
+    return () => {
+      mounted = false;
+      clearTimeout(timeoutId);
+    };
   }, [session?.api]);
 
   // ─── Check proof server health ─────────────────────────────────────
@@ -635,6 +671,7 @@ export function useMidnight() {
     // Health
     proofServerUp,
     dustReady,
+    isSyncing,
 
     // Explorer
     latestBlock,
