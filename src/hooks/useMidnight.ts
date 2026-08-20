@@ -385,7 +385,7 @@ export function useMidnight() {
       const txHash = await mintVaultBalance(amountVusd, currentAddr);
       const updated = getLocalVaultBalance();
       setVaultBalance(updated);
-      addLog('success', 'Vault Minted', `Minted $${amountVusd} vUSD to shielded vault. TX: ${txHash.substring(0, 18)}…`);
+      addLog('success', 'Vault Minted', `Minted $${amountVusd} vUSD to shielded vault. TX: ${txHash}`);
       void postEvent({ client_event_id: newEventId(), wallet_address: currentAddr, operation: 'vault_minted', status: 'success', tx_hash: txHash, network: (session?.network as string) || networkId });
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Vault mint failed';
@@ -402,7 +402,7 @@ export function useMidnight() {
       const txHash = await burnVaultBalance(amountVusd, currentAddr);
       const updated = getLocalVaultBalance();
       setVaultBalance(updated);
-      addLog('success', 'Vault Burned', `Burned $${amountVusd} vUSD from shielded vault. TX: ${txHash.substring(0, 18)}…`);
+      addLog('success', 'Vault Burned', `Burned $${amountVusd} vUSD from shielded vault. TX: ${txHash}`);
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Vault burn failed';
       setError(msg);
@@ -500,7 +500,7 @@ export function useMidnight() {
         status: 'active',
       }).catch((e) => console.warn('[Axiom Sync] Strategy sync error:', e));
 
-      addLog('success', 'Strategy Committed', `TX: ${txHash.substring(0, 24)}… | Hash: ${hash.substring(0, 18)}…`);
+      addLog('success', 'Strategy Committed', `TX: ${txHash} | Hash: ${hash}`);
       void postEvent({ client_event_id: newEventId(), wallet_address: session?.shieldedAddress || session?.address || 'unknown', operation: 'strategy_committed', status: 'success', tx_hash: txHash, network: (session?.network as string) || networkId });
       return hash;
     } catch (err: unknown) {
@@ -624,8 +624,9 @@ export function useMidnight() {
         timestamp: newTrade.timestamp,
       }).catch((e) => console.warn('[Axiom Sync] Trade sync error:', e));
 
-      addLog('success', 'Trade Proven', `Trade ${newTrade.id} — ${asset} $${tradeSizeUsd} — TX: ${txHash.substring(0, 18)}…`);
+      addLog('success', 'Trade Proven', `Trade ${newTrade.id} — ${asset} $${tradeSizeUsd} — TX: ${txHash}`);
       void postEvent({ client_event_id: newEventId(), wallet_address: session?.shieldedAddress || session?.address || 'unknown', operation: 'trade_executed', status: 'success', tx_hash: txHash, network: networkId });
+
 
       // Async RPC confirmation
       const net = networkId === 'preprod' ? 'preprod' : 'preview';

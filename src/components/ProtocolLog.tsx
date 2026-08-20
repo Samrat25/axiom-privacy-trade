@@ -124,12 +124,12 @@ export const ProtocolLog: React.FC<ProtocolLogProps> = ({ logs, networkId = 'pre
                 </div>
 
                 <p className="text-[11px] font-mono text-gray-600 leading-relaxed pl-5 break-all">
-                  {log.detail}
+                  {log.detail.replace(/TX:\s*(0x[a-fA-F0-9]{10})[a-fA-F0-9]{40,54}/g, 'TX: $1…')}
                 </p>
 
                 {log.detail.includes('TX:') && (() => {
-                  const match = log.detail.match(/TX:\s*(0x[a-fA-F0-9]+|[a-fA-F0-9]{32,64})/);
-                  const directTx = match ? match[1] : '';
+                  const match = log.detail.match(/TX:\s*(0x[a-fA-F0-9]{64}|0x[a-fA-F0-9]+|[a-fA-F0-9]{32,64})/);
+                  const directTx = match ? (match[1].startsWith('0x') ? match[1] : `0x${match[1]}`) : '';
                   const targetUrl = directTx ? `${explorerBase}/transactions/${directTx}` : explorerUrl;
                   return (
                     <div className="pl-5 pt-1">
@@ -144,6 +144,7 @@ export const ProtocolLog: React.FC<ProtocolLogProps> = ({ logs, networkId = 'pre
                     </div>
                   );
                 })()}
+
               </div>
             );
           })

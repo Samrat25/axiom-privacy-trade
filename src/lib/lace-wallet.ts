@@ -22,6 +22,7 @@ export interface Midnight1AMConnectedAPI {
   balanceAndProveTransaction?(tx: unknown, newCoins: unknown[]): Promise<unknown>;
   balanceTransaction?(tx: unknown): Promise<unknown>;
   submitTransaction?(tx: unknown): Promise<{ txHash: string } | string>;
+  makeTransfer?(outputs: unknown[], options?: unknown): Promise<{ tx: string } | string>;
   signData?(data: unknown, options?: unknown): Promise<unknown>;
   state?(): Promise<{ address?: string; coinPublicKey?: string; encryptionPublicKey?: string }>;
 }
