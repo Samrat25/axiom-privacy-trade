@@ -138,6 +138,10 @@ export function useMidnight() {
     ]);
   }, []);
 
+  const clearLogs = useCallback(() => {
+    setProtocolLogs([]);
+  }, []);
+
   // ─── Derived display values ────────────────────────────────────────
   const walletAddress = session?.address ?? null;
   const shieldedAddress = session?.shieldedAddress ?? null;
@@ -681,6 +685,7 @@ export function useMidnight() {
     isModalOpen,
     setIsModalOpen,
     protocolLogs,
+    clearLogs,
 
     // Actions
     scanWallets,

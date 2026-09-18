@@ -26,8 +26,9 @@ interface ProtocolLogProps {
   onClearLogs?: () => void;
 }
 
-export const ProtocolLog: React.FC<ProtocolLogProps> = ({ logs, networkId = 'preview' }) => {
+export const ProtocolLog: React.FC<ProtocolLogProps> = ({ logs, networkId = 'preview', onClearLogs }) => {
   const [filter, setFilter] = useState<'all' | 'success' | 'info' | 'error'>('all');
+  const [copiedTx, setCopiedTx] = useState<string | null>(null);
   const net = networkId === 'preprod' ? 'preprod' : 'preview';
   const explorerBase = `https://explorer.1am.xyz?network=${net}`;
 
@@ -35,6 +36,12 @@ export const ProtocolLog: React.FC<ProtocolLogProps> = ({ logs, networkId = 'pre
     if (filter === 'all') return true;
     return l.type === filter;
   });
+
+  const handleCopyTx = (txHash: string) => {
+    navigator.clipboard.writeText(txHash);
+    setCopiedTx(txHash);
+    setTimeout(() => setCopiedTx(null), 2000);
+  };
 
   return (
     <div className="bg-white border border-gray-200/80 rounded-2xl p-5 space-y-4 font-sans shadow-sm sticky top-6">
@@ -54,9 +61,20 @@ export const ProtocolLog: React.FC<ProtocolLogProps> = ({ logs, networkId = 'pre
             </span>
           </div>
 
-          <span className="text-[10px] px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-800 font-bold border border-emerald-200 uppercase tracking-wider">
-            IST LIVE
-          </span>
+          <div className="flex items-center gap-2">
+            {onClearLogs && logs.length > 0 && (
+              <button
+                onClick={onClearLogs}
+                title="Clear logs"
+                className="p-1 rounded-lg hover:bg-gray-100 text-gray-400 hover:text-red-500 transition-colors cursor-pointer"
+              >
+                <Trash2 className="w-3.5 h-3.5" />
+              </button>
+            )}
+            <span className="text-[10px] px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-800 font-bold border border-emerald-200 uppercase tracking-wider">
+              IST LIVE
+            </span>
+          </div>
         </div>
 
         {/* Filter Pills */}
@@ -134,8 +152,10 @@ export const ProtocolLog: React.FC<ProtocolLogProps> = ({ logs, networkId = 'pre
                     ? `https://explorer.1am.xyz/tx/${directTx.replace(/^0x/, '')}?network=${net}`
                     : `https://explorer.1am.xyz?network=${net}`;
                   const shortTx = directTx ? `${directTx.replace(/^0x/, '').substring(0, 10)}…` : 'TX';
+                  const isCopied = copiedTx === directTx;
+
                   return (
-                    <div className="pl-5 pt-1">
+                    <div className="pl-5 pt-1 flex items-center justify-between gap-2">
                       <a
                         href={targetUrl}
                         target="_blank"
@@ -144,6 +164,15 @@ export const ProtocolLog: React.FC<ProtocolLogProps> = ({ logs, networkId = 'pre
                       >
                         <span>Verify {shortTx} on 1AM {networkId === 'preprod' ? 'Preprod' : 'Preview'} Explorer →</span>
                       </a>
+                      {directTx && (
+                        <button
+                          onClick={() => handleCopyTx(directTx)}
+                          title="Copy TX Hash"
+                          className="text-[10px] text-gray-400 hover:text-gray-600 font-mono flex items-center gap-0.5 cursor-pointer"
+                        >
+                          {isCopied ? 'Copied!' : 'Copy Hash'}
+                        </button>
+                      )}
                     </div>
                   );
                 })()}

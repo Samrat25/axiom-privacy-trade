@@ -54,6 +54,7 @@ export function App() {
     isModalOpen,
     setIsModalOpen,
     protocolLogs,
+    clearLogs,
     latestBlock,
     handleSelectNetwork,
     connectWallet,
@@ -252,7 +253,7 @@ export function App() {
 
                 {/* Right 1 Column: Live Real-Time Protocol Event Log in IST */}
                 <div className="lg:col-span-1">
-                  <ProtocolLog logs={protocolLogs} networkId={networkId} />
+                  <ProtocolLog logs={protocolLogs} networkId={networkId} onClearLogs={clearLogs} />
                 </div>
               </div>
             </div>
