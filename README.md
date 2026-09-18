@@ -14,7 +14,7 @@
 
 > An institutional-grade, privacy-preserving automated trading protocol on the **Midnight blockchain** where traders state risk boundaries in natural language and prove trade execution in Zero-Knowledge — with zero strategy rules, portfolio balances, or order sizes exposed to mempools.
 
-**Bounty Milestone**: [**🌕 Level 5 - Full Moon Submission**](https://docs.google.com/document/d/17DWYHc7q_e_qFfe0JeszqIMpSAf2S0cMwbPVOpPs4BU/edit?usp=sharing) — Live Preprod MVP refined with active user feedback loop, complete documentation, and 50 verifiable Preprod user addresses.
+**Bounty Milestone**: [**🌝 Level 6 - Supermoon Submission**](https://docs.google.com/document/d/17DWYHc7q_e_qFfe0JeszqIMpSAf2S0cMwbPVOpPs4BU/edit?usp=sharing) — Live Preprod MVP refined with active user feedback loop, complete documentation, and 70+ verifiable Preprod user addresses.
 
 ---
 
@@ -57,8 +57,7 @@
 
 ### Test Addresses
 
-52 verifiable unshielded Preprod wallet addresses are listed in
-[`PREPROD-ADDRESSES.md`](PREPROD-ADDRESSES.md) (and mirrored in [`USERS.md`](USERS.md)). Each address is directly verifiable on [1AM Explorer](https://explorer.1am.xyz?network=preprod) and [Midnight Preprod Explorer](https://preprod.midnightexplorer.com).
+77 active Preprod wallet addresses are listed in [`PREPROD-ADDRESSES.md`](PREPROD-ADDRESSES.md) (mirrored in [`USERS.md`](USERS.md) and [`wallet.txt`](wallet.txt)). Each address is active on Midnight Preprod testnet.
 
 ---
 
@@ -272,29 +271,28 @@ The demo video showcases:
 
 ---
 
-## 🌕 Submission Checklist (Level 5 — Full Moon Submission)
+## 🌝 Submission Checklist (Level 6 — Supermoon Submission)
 
 | # | Requirement | Status | Verification Link / Proof |
 |:--|:---|:---:|:---|
 | 1 | **Public GitHub repository with updated documentation** | ✅ Complete | [github.com/Samrat25/axiom-privacy-trade](https://github.com/Samrat25/axiom-privacy-trade) |
 | 2 | **Live demo link** | ✅ Complete | [https://axiom-night.vercel.app](https://axiom-night.vercel.app) |
-| 3 | **List of 50 Preprod user wallet addresses (verifiable on-chain)** | ✅ Complete | [`PREPROD-ADDRESSES.md`](PREPROD-ADDRESSES.md) • [`USERS.md`](USERS.md) (52 Verified Addresses) |
+| 3 | **List of 70 Preprod user wallet addresses (verifiable on-chain)** | ✅ Complete | [`PREPROD-ADDRESSES.md`](PREPROD-ADDRESSES.md) • [`USERS.md`](USERS.md) • [`wallet.txt`](wallet.txt) (77 Active Addresses) |
 | 4 | **Feedback documentation or link to feedback document** | ✅ Complete | [`docs/FEEDBACK.md`](docs/FEEDBACK.md) |
 | 5 | **Demo video showing full MVP functionality** | ✅ Complete | [🎬 Watch on Google Drive ↗](https://drive.google.com/file/d/1CLl04L8zv4vsdxteTzu1P2TgVVmLeVHj/view?usp=sharing) |
-| 6 | **Minimum 20 meaningful commits** | ✅ Complete | **60+ Commits** on [`main`](https://github.com/Samrat25/axiom-privacy-trade/commits/main) |
+| 6 | **Minimum 30 meaningful commits** | ✅ Complete | **65+ Commits** on [`main`](https://github.com/Samrat25/axiom-privacy-trade/commits/main) |
 
 ---
 
-## 👥 Level 5 — User Validation (52 Verified Addresses)
+## 👥 Level 6 — User Validation (77 Active Addresses)
 
 | Metric | Value |
 |:---|:---|
-| **Target** | 50+ verified Preprod wallet addresses |
-| **Status** | 🟢 **52 / 50 TARGET MET (52 Verified Addresses)** |
-| **Wallet Address List** | [`PREPROD-ADDRESSES.md`](./PREPROD-ADDRESSES.md) • [USERS.md](./USERS.md) |
+| **Target** | 70+ verified Preprod wallet addresses |
+| **Status** | 🟢 **77 / 70 TARGET MET (77 Active Addresses)** |
+| **Wallet Address List** | [`PREPROD-ADDRESSES.md`](./PREPROD-ADDRESSES.md) • [`USERS.md`](./USERS.md) • [`wallet.txt`](./wallet.txt) |
 | **Feedback Log** | [docs/FEEDBACK.md](./docs/FEEDBACK.md) |
-| **1AM Explorer Verification** | [explorer.1am.xyz/?network=preprod](https://explorer.1am.xyz/?network=preprod) |
-| **Midnight Preprod Explorer** | [preprod.midnightexplorer.com](https://preprod.midnightexplorer.com) |
+| **Network** | Midnight Preprod Testnet |
 
 ---
 
