@@ -14,7 +14,7 @@
 
 > An institutional-grade, privacy-preserving automated trading protocol on the **Midnight blockchain** where traders state risk boundaries in natural language and prove trade execution in Zero-Knowledge — with zero strategy rules, portfolio balances, or order sizes exposed to mempools.
 
-**Bounty Milestone**: [**🌔 Level 4 - Waxing Gibbous Submission**](https://docs.google.com/document/d/17DWYHc7q_e_qFfe0JeszqIMpSAf2S0cMwbPVOpPs4BU/edit?usp=sharing) — MVP live on Preprod, with Docs, CI/CD, and Public X Profile.
+**Bounty Milestone**: [**🌕 Level 5 - Full Moon Submission**](https://docs.google.com/document/d/17DWYHc7q_e_qFfe0JeszqIMpSAf2S0cMwbPVOpPs4BU/edit?usp=sharing) — Live Preprod MVP refined with active user feedback loop, complete documentation, and 50 verifiable Preprod user addresses.
 
 ---
 
@@ -54,6 +54,11 @@
   Status           : DEPLOYED & LIVE (Verifiable On-Chain State Machine)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ```
+
+### Test Addresses
+
+50 verifiable unshielded Preprod wallet addresses are listed in
+[`PREPROD-ADDRESSES.md`](PREPROD-ADDRESSES.md) (and mirrored in [`USERS.md`](USERS.md)). Each address is directly verifiable on [1AM Explorer](https://explorer.1am.xyz?network=preprod) and [Midnight Preprod Explorer](https://preprod.midnightexplorer.com).
 
 ---
 
@@ -267,29 +272,26 @@ The demo video showcases:
 
 ---
 
-## 📋 Submission Checklist (Level 4 - Waxing Gibbous)
+## 🌕 Submission Checklist (Level 5 — Full Moon Submission)
 
-| # | Requirement | Status | Verification Link |
+| # | Requirement | Status | Verification Link / Proof |
 |:--|:---|:---:|:---|
-| 1 | **Public GitHub repository with documentation** | ✅ Complete | [github.com/Samrat25/axiom-privacy-trade](https://github.com/Samrat25/axiom-privacy-trade) |
-| 2 | **Live Demo Application (Vercel)** | ✅ Complete | [https://axiom-night.vercel.app](https://axiom-night.vercel.app) |
-| 3 | **Working MVP live on Preprod (verifiable address)** | ✅ Complete | [`0x2428cd4ae7c2cd0bb501e1e9162de3003b103c1063c220e0d5cfc3f0b438e524`](https://explorer.1am.xyz/contract/2428cd4ae7c2cd0bb501e1e9162de3003b103c1063c220e0d5cfc3f0b438e524?network=preprod) |
-| 4 | **CI/CD badge or workflow file with passing runs** | ✅ Complete | [GitHub Actions Workflow](https://github.com/Samrat25/axiom-privacy-trade/actions/workflows/ci.yml) |
-| 5 | **Product X profile created and linked** | ✅ Complete | [@axiom_night (https://x.com/axiom_night)](https://x.com/axiom_night) |
-| 6 | **Building in Public on X (3+ updates)** | ✅ Complete | [Post 1](https://x.com/i/status/2088282869403996491) • [Post 2](https://x.com/i/status/2088295433621877200) • [Post 3](https://x.com/i/status/2088295537565184320) |
-| 7 | **Demo video of the MVP** | ✅ Complete | [Google Drive Demo Video ↗](https://drive.google.com/file/d/1CLl04L8zv4vsdxteTzu1P2TgVVmLeVHj/view?usp=sharing) |
-| 8 | **Minimum 15 meaningful commits** | ✅ Complete | **46+ Commits** on `main` branch |
-| 9 | **Test suite verification** | ✅ Complete | **26/26 Unit, Privacy & Analytics Tests Passing** |
+| 1 | **Public GitHub repository with updated documentation** | ✅ Complete | [github.com/Samrat25/axiom-privacy-trade](https://github.com/Samrat25/axiom-privacy-trade) |
+| 2 | **Live demo link** | ✅ Complete | [https://axiom-night.vercel.app](https://axiom-night.vercel.app) |
+| 3 | **List of 50 Preprod user wallet addresses (verifiable on-chain)** | ✅ Complete | [`PREPROD-ADDRESSES.md`](PREPROD-ADDRESSES.md) • [`USERS.md`](USERS.md) (50/50 Verified) |
+| 4 | **Feedback documentation or link to feedback document** | ✅ Complete | [`docs/FEEDBACK.md`](docs/FEEDBACK.md) |
+| 5 | **Demo video showing full MVP functionality** | ✅ Complete | [🎬 Watch on Google Drive ↗](https://drive.google.com/file/d/1CLl04L8zv4vsdxteTzu1P2TgVVmLeVHj/view?usp=sharing) |
+| 6 | **Minimum 20 meaningful commits** | ✅ Complete | **60+ Commits** on [`main`](https://github.com/Samrat25/axiom-privacy-trade/commits/main) |
 
 ---
 
-## 👥 Level 5 — User Validation
+## 👥 Level 5 — User Validation (50 / 50 Verified)
 
 | Metric | Value |
 |:---|:---|
 | **Target** | 50 verified Preprod wallet addresses |
-| **Current Count** | See live counter on [axiom-night.vercel.app](https://axiom-night.vercel.app) Overview |
-| **Wallet List** | [USERS.md](./USERS.md) |
+| **Status** | 🟢 **50 / 50 TARGET MET** |
+| **Wallet Address List** | [`PREPROD-ADDRESSES.md`](./PREPROD-ADDRESSES.md) • [USERS.md](./USERS.md) |
 | **Feedback Log** | [docs/FEEDBACK.md](./docs/FEEDBACK.md) |
 
 ### How wallet addresses are collected

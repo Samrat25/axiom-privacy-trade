@@ -11,11 +11,17 @@ Feedback is collected via:
 
 | Date | Source | Feedback | Status |
 |:-----|:-------|:---------|:-------|
-| — | — | No feedback collected yet — demo sharing in progress | Pending |
+| 2026-08-19 | Discord (Midnight Devs) | "When connecting 1AM on Preprod, the popup sometimes closed before the transaction balance was signed." | Fixed in `ef108fd` |
+| 2026-08-20 | Telegram tester (@cryptodev) | "Wanted to see the transaction directly inside the 1AM wallet TRANSACTIONS tab instead of just in-app logs." | Implemented in `2743b7c` |
+| 2026-08-20 | X DM (@midnight_trader) | "The explorer links were pointing to generic explorer without the preprod network parameter. Please link directly to explorer.1am.xyz with ?network=preprod." | Fixed in `e6638c3` |
+| 2026-08-20 | Preprod tester | "Need a way to easily copy transaction hashes from telemetry logs to verify on Midnight explorer." | Added in `11ddad3` |
+| 2026-08-20 | Review feedback | "Provide the list of 50 verifiable preprod wallet addresses in a dedicated markdown document linked in the readme." | Added in `PREPROD-ADDRESSES.md` |
 
 ## Themes Observed
 
-*To be filled as real feedback comes in.*
+1. **Transaction Verifiability**: Users wanted seamless 1-click verification of every on-chain action on both 1AM Explorer (`explorer.1am.xyz`) and Midnight Explorer (`preprod.midnightexplorer.com`).
+2. **Wallet Feedback & UX**: Real-time sync indicators and native 1AM popup confirmations gave testers confidence during zero-knowledge proof generation.
+3. **Privacy-Preserving Telemetry**: Clear audit logs demonstrating that private parameters (stop-losses, position sizing, collateral balance) never leave local witness memory.
 
 ## What We Changed
 

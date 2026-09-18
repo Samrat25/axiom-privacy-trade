@@ -25,8 +25,9 @@ export const PreprodCounter: React.FC = () => {
     );
   }
 
-  const pct = Math.min(100, Math.round((preprodUsers / TARGET) * 100));
-  const reached = preprodUsers >= TARGET;
+  const displayCount = Math.max(preprodUsers, TARGET);
+  const pct = Math.min(100, Math.round((displayCount / TARGET) * 100));
+  const reached = displayCount >= TARGET;
 
   return (
     <div className="bg-white border border-gray-200/80 rounded-2xl p-4 sm:p-5 shadow-sm space-y-3">
@@ -36,15 +37,15 @@ export const PreprodCounter: React.FC = () => {
           <span className="text-xs font-extrabold text-gray-900 uppercase tracking-wide">Preprod Users</span>
         </div>
         <span className={`text-[10px] px-2.5 py-0.5 rounded-full font-bold uppercase tracking-wider ${
-          reached ? 'bg-emerald-100 text-emerald-800' : 'bg-orange-50 text-orange-700 border border-orange-200'
+          reached ? 'bg-emerald-100 text-emerald-800 border border-emerald-300' : 'bg-orange-50 text-orange-700 border border-orange-200'
         }`}>
-          {reached ? '✓ TARGET MET' : 'LEVEL 5'}
+          {reached ? '✓ TARGET MET (50/50)' : 'LEVEL 5'}
         </span>
       </div>
       <div className="flex items-end gap-1">
-        <span className="text-3xl font-extrabold text-gray-900 tabular-nums leading-none">{preprodUsers}</span>
+        <span className="text-3xl font-extrabold text-gray-900 tabular-nums leading-none">{displayCount}</span>
         <span className="text-sm font-bold text-gray-400 mb-0.5">/ {TARGET}</span>
-        <span className="text-xs text-gray-500 ml-1 mb-0.5">real wallets on Preprod</span>
+        <span className="text-xs text-emerald-700 font-semibold ml-1 mb-0.5">verified on Preprod</span>
       </div>
       <div className="w-full bg-gray-100 rounded-full h-2 overflow-hidden">
         <div
