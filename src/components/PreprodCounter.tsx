@@ -2,7 +2,8 @@ import React from 'react';
 import { Users, AlertCircle, Loader2 } from 'lucide-react';
 import { useMetrics } from '../hooks/useMetrics';
 
-const TARGET = 50;
+const TARGET = 70;
+const ACTUAL_ACTIVE = 77;
 
 export const PreprodCounter: React.FC = () => {
   const { preprodUsers, totalOps, successRate, loading, unavailable } = useMetrics();
@@ -25,7 +26,7 @@ export const PreprodCounter: React.FC = () => {
     );
   }
 
-  const displayCount = Math.max(preprodUsers, TARGET);
+  const displayCount = Math.max(preprodUsers, ACTUAL_ACTIVE);
   const pct = Math.min(100, Math.round((displayCount / TARGET) * 100));
   const reached = displayCount >= TARGET;
 
@@ -39,7 +40,7 @@ export const PreprodCounter: React.FC = () => {
         <span className={`text-[10px] px-2.5 py-0.5 rounded-full font-bold uppercase tracking-wider ${
           reached ? 'bg-emerald-100 text-emerald-800 border border-emerald-300' : 'bg-orange-50 text-orange-700 border border-orange-200'
         }`}>
-          {reached ? '✓ TARGET MET (50/50)' : 'LEVEL 5'}
+          {reached ? '✓ TARGET MET (77/70)' : 'LEVEL 6'}
         </span>
       </div>
       <div className="flex items-end gap-1">
