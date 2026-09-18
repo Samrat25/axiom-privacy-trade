@@ -57,7 +57,7 @@
 
 ### Test Addresses
 
-50 verifiable unshielded Preprod wallet addresses are listed in
+52 verifiable unshielded Preprod wallet addresses are listed in
 [`PREPROD-ADDRESSES.md`](PREPROD-ADDRESSES.md) (and mirrored in [`USERS.md`](USERS.md)). Each address is directly verifiable on [1AM Explorer](https://explorer.1am.xyz?network=preprod) and [Midnight Preprod Explorer](https://preprod.midnightexplorer.com).
 
 ---
@@ -278,56 +278,23 @@ The demo video showcases:
 |:--|:---|:---:|:---|
 | 1 | **Public GitHub repository with updated documentation** | ✅ Complete | [github.com/Samrat25/axiom-privacy-trade](https://github.com/Samrat25/axiom-privacy-trade) |
 | 2 | **Live demo link** | ✅ Complete | [https://axiom-night.vercel.app](https://axiom-night.vercel.app) |
-| 3 | **List of 50 Preprod user wallet addresses (verifiable on-chain)** | ✅ Complete | [`PREPROD-ADDRESSES.md`](PREPROD-ADDRESSES.md) • [`USERS.md`](USERS.md) (50/50 Verified) |
+| 3 | **List of 50 Preprod user wallet addresses (verifiable on-chain)** | ✅ Complete | [`PREPROD-ADDRESSES.md`](PREPROD-ADDRESSES.md) • [`USERS.md`](USERS.md) (52 Verified Addresses) |
 | 4 | **Feedback documentation or link to feedback document** | ✅ Complete | [`docs/FEEDBACK.md`](docs/FEEDBACK.md) |
 | 5 | **Demo video showing full MVP functionality** | ✅ Complete | [🎬 Watch on Google Drive ↗](https://drive.google.com/file/d/1CLl04L8zv4vsdxteTzu1P2TgVVmLeVHj/view?usp=sharing) |
 | 6 | **Minimum 20 meaningful commits** | ✅ Complete | **60+ Commits** on [`main`](https://github.com/Samrat25/axiom-privacy-trade/commits/main) |
 
 ---
 
-## 👥 Level 5 — User Validation (50 / 50 Verified)
+## 👥 Level 5 — User Validation (52 Verified Addresses)
 
 | Metric | Value |
 |:---|:---|
-| **Target** | 50 verified Preprod wallet addresses |
-| **Status** | 🟢 **50 / 50 TARGET MET** |
+| **Target** | 50+ verified Preprod wallet addresses |
+| **Status** | 🟢 **52 / 50 TARGET MET (52 Verified Addresses)** |
 | **Wallet Address List** | [`PREPROD-ADDRESSES.md`](./PREPROD-ADDRESSES.md) • [USERS.md](./USERS.md) |
 | **Feedback Log** | [docs/FEEDBACK.md](./docs/FEEDBACK.md) |
-
-### How wallet addresses are collected
-
-When a real user connects their Midnight Preprod wallet and performs any
-on-chain transaction (vault mint, strategy commit, or trade execute), the
-dApp automatically records their **public wallet address** to Supabase via
-the `axiom_events` analytics table. No private data is ever captured —
-the `validateEvent()` function whitelists exactly 7 fields and strips
-everything else (including `maxPositionPct`, `stopLossPct`,
-`tradeSizeUsd`, `portfolioValue`) before any row reaches the database.
-
-Every recorded address is **verifiable on [1AM Preprod Explorer](https://explorer.1am.xyz?network=preprod)** — the review team can paste any wallet address and see real transaction history.
-
-
-### User acquisition
-
-Share the live demo with your network:
-- **Discord/Telegram**: "Axiom is a ZK trading protocol on Midnight Preprod. Connect your 1AM Wallet at https://axiom-night.vercel.app, mint vault balance, lock a strategy — your wallet is auto-recorded. Takes 2 minutes."
-- **X post**: "Just shipped a real ZK trading agent on Midnight Preprod 🛡️ Connect your 1AM wallet, lock a risk strategy on-chain, execute proven trades. Live now: axiom-night.vercel.app #Midnight #ZKProofs"
-
-### Analytics privacy model (mirrors ProofGate)
-
-`validateEvent()` strips private fields before Supabase persistence — verified by `tests/analytics.test.ts`:
-
-```
-✓ maxPositionPct    — never reaches Supabase
-✓ stopLossPct       — never reaches Supabase
-✓ tradeSizeUsd      — never reaches Supabase
-✓ portfolioValue    — never reaches Supabase
-```
-
-To regenerate `USERS.md` from real data:
-```bash
-npm run analytics:export-users
-```
+| **1AM Explorer Verification** | [explorer.1am.xyz/?network=preprod](https://explorer.1am.xyz/?network=preprod) |
+| **Midnight Preprod Explorer** | [preprod.midnightexplorer.com](https://preprod.midnightexplorer.com) |
 
 ---
 
