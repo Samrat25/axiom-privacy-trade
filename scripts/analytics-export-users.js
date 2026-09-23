@@ -37,9 +37,9 @@ async function exportUsers() {
   const count = users.length;
 
   console.log('');
-  console.log('=== USERS.md OUTPUT ===');
+  console.log('=== PREPROD-ADDRESSES.md OUTPUT ===');
   console.log('');
-  console.log('# Preprod Users — Level 5');
+  console.log('# Preprod Users — Level 6');
   console.log('');
   console.log('Target: 50 verified wallet addresses on Midnight Preprod');
   console.log('');

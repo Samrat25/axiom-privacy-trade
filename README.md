@@ -27,6 +27,8 @@
 | **GitHub Repository** | [https://github.com/Samrat25/axiom-privacy-trade](https://github.com/Samrat25/axiom-privacy-trade) |
 | **Product X (Twitter) Profile** | [@axiom_night (https://x.com/axiom_night)](https://x.com/axiom_night) |
 | **Building in Public (3 X Posts)** | [Post 1](https://x.com/i/status/2088282869403996491) • [Post 2](https://x.com/i/status/2088295433621877200) • [Post 3](https://x.com/i/status/2088295537565184320) |
+| **User Feedback Form** | [Submit Preprod Feedback (Google Form) ↗](https://docs.google.com/forms/d/1N8tk4NR4at56WroUt_5jyger578DWpgcueMCqPD2HEw) |
+| **Feedback Responses Sheet** | [View Preprod Feedback Responses (Google Sheets) ↗](https://docs.google.com/spreadsheets/d/18DYi-w9Tj97TKyarRwor4TlHyvXAJjvZLVEQnSFUJas/edit?usp=sharing) |
 | **CI/CD Pipeline** | [GitHub Actions Workflow `.github/workflows/ci.yml`](https://github.com/Samrat25/axiom-privacy-trade/actions/workflows/ci.yml) |
 
 ---
@@ -57,7 +59,7 @@
 
 ### Test Addresses
 
-77 active Preprod wallet addresses are listed in [`PREPROD-ADDRESSES.md`](PREPROD-ADDRESSES.md) (mirrored in [`USERS.md`](USERS.md) and [`wallet.txt`](wallet.txt)). Each address is active on Midnight Preprod testnet.
+77 active Preprod wallet addresses are listed in [`PREPROD-ADDRESSES.md`](PREPROD-ADDRESSES.md) (and [`wallet.txt`](wallet.txt)). Each address is active on Midnight Preprod testnet.
 
 ---
 
@@ -277,21 +279,23 @@ The demo video showcases:
 |:--|:---|:---:|:---|
 | 1 | **Public GitHub repository with updated documentation** | ✅ Complete | [github.com/Samrat25/axiom-privacy-trade](https://github.com/Samrat25/axiom-privacy-trade) |
 | 2 | **Live demo link** | ✅ Complete | [https://axiom-night.vercel.app](https://axiom-night.vercel.app) |
-| 3 | **List of 70 Preprod user wallet addresses (verifiable on-chain)** | ✅ Complete | [`PREPROD-ADDRESSES.md`](PREPROD-ADDRESSES.md) • [`USERS.md`](USERS.md) • [`wallet.txt`](wallet.txt) (77 Active Addresses) |
-| 4 | **Feedback documentation or link to feedback document** | ✅ Complete | [`docs/FEEDBACK.md`](docs/FEEDBACK.md) |
+| 3 | **List of 70 Preprod user wallet addresses (verifiable on-chain)** | ✅ Complete | [`PREPROD-ADDRESSES.md`](PREPROD-ADDRESSES.md) • [`wallet.txt`](wallet.txt) (77 Active Addresses) |
+| 4 | **Feedback documentation or link to feedback document** | ✅ Complete | [`docs/FEEDBACK.md`](docs/FEEDBACK.md) • [Feedback Form ↗](https://docs.google.com/forms/d/1N8tk4NR4at56WroUt_5jyger578DWpgcueMCqPD2HEw) • [Responses Sheet ↗](https://docs.google.com/spreadsheets/d/18DYi-w9Tj97TKyarRwor4TlHyvXAJjvZLVEQnSFUJas/edit?usp=sharing) |
 | 5 | **Demo video showing full MVP functionality** | ✅ Complete | [🎬 Watch on Google Drive ↗](https://drive.google.com/file/d/1CLl04L8zv4vsdxteTzu1P2TgVVmLeVHj/view?usp=sharing) |
-| 6 | **Minimum 30 meaningful commits** | ✅ Complete | **65+ Commits** on [`main`](https://github.com/Samrat25/axiom-privacy-trade/commits/main) |
+| 6 | **Minimum 30 meaningful commits** | ✅ Complete | **67+ Commits** on [`main`](https://github.com/Samrat25/axiom-privacy-trade/commits/main) |
 
 ---
 
-## 👥 Level 6 — User Validation (77 Active Addresses)
+## 👥 Level 6 — User Validation & Feedback (77 Active Addresses)
 
 | Metric | Value |
 |:---|:---|
 | **Target** | 70+ verified Preprod wallet addresses |
 | **Status** | 🟢 **77 / 70 TARGET MET (77 Active Addresses)** |
-| **Wallet Address List** | [`PREPROD-ADDRESSES.md`](./PREPROD-ADDRESSES.md) • [`USERS.md`](./USERS.md) • [`wallet.txt`](./wallet.txt) |
+| **Wallet Address List** | [`PREPROD-ADDRESSES.md`](./PREPROD-ADDRESSES.md) • [`wallet.txt`](./wallet.txt) |
 | **Feedback Log** | [docs/FEEDBACK.md](./docs/FEEDBACK.md) |
+| **User Feedback Form** | [Submit Preprod Feedback (Google Form) ↗](https://docs.google.com/forms/d/1N8tk4NR4at56WroUt_5jyger578DWpgcueMCqPD2HEw) |
+| **Feedback Responses Sheet** | [View Preprod Feedback Responses (Google Sheets) ↗](https://docs.google.com/spreadsheets/d/18DYi-w9Tj97TKyarRwor4TlHyvXAJjvZLVEQnSFUJas/edit?usp=sharing) |
 | **Network** | Midnight Preprod Testnet |
 
 ---

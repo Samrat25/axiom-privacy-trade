@@ -359,27 +359,27 @@ axiom/
 ├── docs/
 │   ├── USAGE.md
 │   └── FEEDBACK.md
-├── USERS.md
+├── PREPROD-ADDRESSES.md
+└── wallet.txt
 ```
 
-- `docs/FEEDBACK.md`: collection method, raw feedback log table, themes
+- `docs/FEEDBACK.md`: collection method, Google Feedback Form & Sheets links, raw feedback log table, themes
   observed, and a "what we changed" table (change / reason / commit) —
   filled in as real feedback comes in.
-- `USERS.md`: target 50 verified Preprod wallet addresses, table of
-  address + date added, running count out of 50.
+- `PREPROD-ADDRESSES.md`: target 70+ verified Preprod wallet addresses, table of
+  address + network + active status, running count out of 70+.
 - User acquisition materials to prep: a sub-100-word Discord/Telegram
-  message (what Axiom does, connect Lace, try Strategy Builder, demo
+  message (what Axiom does, connect 1AM, try Strategy Builder, demo
   link, how to send their wallet address), a sub-280-char X post, and a
   direct-message template for developer/college contacts.
-- Once real feedback comes in: implement the top 2-3 improvements,
+- Once real feedback comes in: implement the top improvements,
   update `docs/FEEDBACK.md`'s "What We Changed" section, update README
   if product behavior changed.
-- README gets a new **Level 5 — User Validation** section: target 50,
-  current count, links to `USERS.md` and `docs/FEEDBACK.md`. The
+- README gets a new **Level 6 — User Validation & Feedback** section: target 70,
+  current count, links to `PREPROD-ADDRESSES.md`, `wallet.txt`, and `docs/FEEDBACK.md`. The
   Contract Address table from Level 4 must stay present.
 
-**Manual steps**: share the Preprod link everywhere (Discord, X,
-Telegram, college groups); collect 50 verifiable wallet addresses into
-`USERS.md`; collect and log feedback; paste feedback back for
-implementation help; keep the contract address current in README;
-make 20+ meaningful commits; submit on Rise In.
+**Steps**: share the Preprod link everywhere (Discord, X,
+Telegram, college groups); collect verifiable wallet addresses into
+`PREPROD-ADDRESSES.md` & `wallet.txt`; collect and log feedback via Google Form & Sheets;
+keep the contract address current in README; make 30+ meaningful commits; submit on Rise In.
