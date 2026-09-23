@@ -12,6 +12,8 @@ import { OverviewStrategies } from './components/OverviewStrategies';
 import { formatISTDate, formatISTTime } from './utils/time';
 import { useMidnight } from './hooks/useMidnight';
 import { PreprodCounter } from './components/PreprodCounter';
+import { LaunchUsersHub } from './components/LaunchUsersHub';
+import { ZKExecutionBot } from './components/ZKExecutionBot';
 import {
   Shield,
   ArrowUpRight,
@@ -25,7 +27,8 @@ import {
   Lock,
   PlusCircle,
   MinusCircle,
-  Clock
+  Clock,
+  Bot
 } from 'lucide-react';
 
 export function App() {
@@ -249,6 +252,42 @@ export function App() {
                   />
 
                   <PreprodCounter />
+
+                  <div className="bg-white border border-orange-200/80 rounded-2xl p-4 shadow-sm flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-full bg-orange-100 flex items-center justify-center text-orange-600 font-extrabold text-xs">
+                        L6
+                      </div>
+                      <div>
+                        <span className="text-xs font-extrabold text-gray-900 block">Level 6 Launch Users Hub</span>
+                        <span className="text-[11px] text-gray-500">27 distinct launch users • 77 active directory</span>
+                      </div>
+                    </div>
+                    <button
+                      onClick={() => setActiveTab('launch-hub')}
+                      className="px-3.5 py-1.5 rounded-full bg-orange-600 hover:bg-orange-700 text-white font-bold text-xs shadow-xs transition-all cursor-pointer"
+                    >
+                      Open Hub →
+                    </button>
+                  </div>
+
+                  <div className="bg-white border border-purple-200/80 rounded-2xl p-4 shadow-sm flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-full bg-purple-100 flex items-center justify-center text-purple-700 font-extrabold text-xs">
+                        <Bot className="w-4 h-4" />
+                      </div>
+                      <div>
+                        <span className="text-xs font-extrabold text-gray-900 block">Autonomous ZK Execution Bot</span>
+                        <span className="text-[11px] text-gray-500">Algorithmic runner • 4 stress tests • Institutional audit</span>
+                      </div>
+                    </div>
+                    <button
+                      onClick={() => setActiveTab('zk-bot')}
+                      className="px-3.5 py-1.5 rounded-full bg-gray-900 hover:bg-black text-white font-bold text-xs shadow-xs transition-all cursor-pointer"
+                    >
+                      Launch Bot →
+                    </button>
+                  </div>
                 </div>
 
                 {/* Right 1 Column: Live Real-Time Protocol Event Log in IST */}
@@ -591,6 +630,24 @@ export function App() {
                 </div>
               )}
             </div>
+          </div>
+        )}
+
+        {/* 7. LEVEL 6 LAUNCH USERS & COMMUNITY HUB */}
+        {activeTab === 'launch-hub' && (
+          <div className="max-w-6xl mx-auto space-y-6">
+            <LaunchUsersHub />
+          </div>
+        )}
+
+        {/* 8. AUTONOMOUS ZK EXECUTION BOT & INSTITUTIONAL BACKTEST STUDIO */}
+        {activeTab === 'zk-bot' && (
+          <div className="max-w-6xl mx-auto space-y-6">
+            <ZKExecutionBot
+              walletConnected={walletConnected}
+              walletAddress={walletAddress}
+              onNavigateToBuilder={() => setActiveTab('strategy-builder')}
+            />
           </div>
         )}
         </Layout>

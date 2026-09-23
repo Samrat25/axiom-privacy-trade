@@ -6,7 +6,7 @@
 
 <p align="center">
   <a href="https://github.com/Samrat25/axiom-privacy-trade/actions/workflows/ci.yml"><img src="https://github.com/Samrat25/axiom-privacy-trade/actions/workflows/ci.yml/badge.svg" alt="Axiom CI/CD Pipeline" /></a>
-  <a href="https://github.com/Samrat25/axiom-privacy-trade"><img src="https://img.shields.io/badge/tests-26%2F26_passing-brightgreen" alt="Tests" /></a>
+  <a href="https://github.com/Samrat25/axiom-privacy-trade"><img src="https://img.shields.io/badge/tests-36%2F36_passing-brightgreen" alt="Tests" /></a>
   <a href="https://axiom-night.vercel.app"><img src="https://img.shields.io/badge/demo-axiom--night.vercel.app-blue" alt="Live Demo" /></a>
   <a href="https://midnight.network"><img src="https://img.shields.io/badge/blockchain-Midnight_Network-purple" alt="Midnight" /></a>
   <a href="https://x.com/axiom_night"><img src="https://img.shields.io/badge/X-@axiom__night-black.svg?logo=x" alt="Product X Profile" /></a>
@@ -57,9 +57,9 @@
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ```
 
-### Test Addresses
+### Test Addresses & Launch Users
 
-77 active Preprod wallet addresses are listed in [`PREPROD-ADDRESSES.md`](PREPROD-ADDRESSES.md) (and [`wallet.txt`](wallet.txt)). Each address is active on Midnight Preprod testnet.
+77 active Preprod wallet addresses are structured into [`LAUNCH_USERS.md`](LAUNCH_USERS.md) (explicit Level 6 launch cohort), [`PREPROD-ADDRESSES.md`](PREPROD-ADDRESSES.md), and [`wallet.txt`](wallet.txt). Each address is active on Midnight Preprod testnet.
 
 ---
 
@@ -151,7 +151,7 @@ Traditional algorithmic trading bots require exposing limit prices, stop-losses,
 | **Frontend UI** | React 19, TypeScript, Vite | Modern responsive Web3 trading terminal |
 | **Styling** | Tailwind CSS & Lucide Icons | Accessible, high-contrast dark/light UI |
 | **Off-Chain Ledger** | Supabase PostgreSQL | Real-time IST Protocol Telemetry & transaction sync |
-| **Testing** | Vitest | 19 Unit, Privacy, and Contract Simulator Tests |
+| **Testing** | Vitest | 36 Unit, Privacy, Analytics, AI Agent, Bot Simulator, and Contract Simulator Tests |
 | **CI/CD** | GitHub Actions | Automated build, test, and compilation pipeline |
 
 ---
@@ -177,7 +177,7 @@ npm install
 # 3. Configure environment variables (.env)
 cp .env.example .env
 
-# 4. Run the full test suite (19/19 passing)
+# 4. Run the full test suite (36/36 passing)
 npm test
 
 # 5. Start local development server
@@ -188,7 +188,7 @@ Open **`http://localhost:5173`** in your browser.
 
 ---
 
-## 🧪 Test Coverage Breakdown (19/19 Passing)
+## 🧪 Test Coverage Breakdown (36/36 Passing)
 
 | # | Test Suite | Test Name | What It Verifies |
 |:--|:---|:---|:---|
@@ -206,26 +206,46 @@ Open **`http://localhost:5173`** in your browser.
 | 12 | `riskModel.test.ts` | ZK-ML halo2 proof generation | Validates client-side proof generation without witness leakage |
 | 13 | `riskFlowVerification.test.ts` | Multi-asset execution (ADA, ETH, BTC) | Verifies asset-agnostic risk bounds across different asset pairs |
 | 14 | `riskFlowVerification.test.ts` | Stop-loss breach protection | Enforces automatic trade abort when market drawdown breaches stop-loss |
-| 15 | `agent.test.ts` | Parse natural language prompt | Gemini extracts structured bounds matching Zod JSON schema |
-| 16 | `agent.test.ts` | Monitor price node feed | Simulates price tick checks against strategy conditions |
-| 17 | `agent.test.ts` | Decide trade node logic | Evaluates execution vs monitor triggers |
-| 18 | `agent.test.ts` | Run strategy risk assessment | Produces plain-language risk level & assessment summary |
-| 19 | `agent.test.ts` | Run manual analysis | Evaluates custom assets and enforces max position bounds |
+| 15 | `analytics.test.ts` | Privacy strip validation | Strips private strategy parameters (maxPositionPct, stopLossPct, portfolioValue) |
+| 16 | `analytics.test.ts` | Whitelisted operation types | Validates all 6 allowed non-sensitive on-chain operation types |
+| 17 | `analytics.test.ts` | Reject unknown operation types | Blocks unauthorized or unknown event types from persistence |
+| 18 | `analytics.test.ts` | Reject missing required fields | Rejects event payloads lacking wallet address or operation |
+| 19 | `analytics.test.ts` | Strict schema whitelisting | Guarantees only the 7 non-private metadata fields survive |
+| 20 | `analytics.test.ts` | Optional hash & duration handling | Handles events without optional latency and tx hash fields |
+| 21 | `analytics.test.ts` | Transaction hash pass-through | Retains valid 64-hex transaction hashes for telemetry verification |
+| 22 | `agent.test.ts` | Parse natural language prompt | Gemini extracts structured bounds matching Zod JSON schema |
+| 23 | `agent.test.ts` | Monitor price node feed | Simulates price tick checks against strategy conditions |
+| 24 | `agent.test.ts` | Decide trade node logic | Evaluates execution vs monitor triggers |
+| 25 | `agent.test.ts` | Run strategy risk assessment | Produces plain-language risk level & assessment summary |
+| 26 | `agent.test.ts` | Run manual analysis | Evaluates custom assets and enforces max position bounds |
+| 27 | `level6Agent.test.ts` | Comprehensive risk analysis schema | Validates multi-regime risk score, trailing stop, and ZK compliance flags |
+| 28 | `level6Agent.test.ts` | Capital preservation regime | Verifies defensive regime triggers for high drawdown markets |
+| 29 | `level6Agent.test.ts` | Speculative expansion regime | Verifies high-volatility positive-drift bullish regime classification |
+| 30 | `level6Agent.test.ts` | Model fallback resolution | Gracefully falls back across Gemini 2.5 Flash -> 2.0 -> 1.5 without crashing |
+| 31 | `level6Agent.test.ts` | Offline fallback resilience | Returns resilient deterministic risk schema when no API keys are configured |
+| 32 | `zkBotEngine.test.ts` | Flash crash stop-loss circuit | Halts execution when portfolio drawdown breaches committed stop-loss % |
+| 33 | `zkBotEngine.test.ts` | Bull surge position ceiling | Enforces max position size ceiling on trades during momentum expansions |
+| 34 | `zkBotEngine.test.ts` | MEV sandwich attack immunity | Proves $0.00 MEV extracted and 100% privacy preservation against mempool front-runners |
+| 35 | `zkBotEngine.test.ts` | Choppy consolidation ZK proofs | Generates valid 32-byte Halo2 ZK proof hashes without errors or witness leakage |
+| 36 | `zkBotEngine.test.ts` | Institutional ZK audit certificate | Produces cryptographically signed certificate matching Midnight Compact contract |
 
 ```bash
 > axiom-privacy-trade@1.0.0 test
-> vitest run --run
+> vitest run
 
  RUN  v3.2.7 C:/Users/SAMRAT NATTA/OneDrive/Desktop/axiom-privacy-trade
 
  ✓ tests/riskModel.test.ts (3 tests) 5ms
- ✓ tests/riskFlowVerification.test.ts (2 tests) 6ms
- ✓ tests/axiom.test.ts (9 tests) 7ms
- ✓ tests/agent.test.ts (5 tests) 11ms
+ ✓ tests/axiom.test.ts (9 tests) 6ms
+ ✓ tests/riskFlowVerification.test.ts (2 tests) 5ms
+ ✓ tests/analytics.test.ts (7 tests) 6ms
+ ✓ tests/agent.test.ts (5 tests) 10ms
+ ✓ tests/level6Agent.test.ts (5 tests) 7ms
+ ✓ tests/zkBotEngine.test.ts (5 tests) 8ms
 
- Test Files  4 passed (4)
-      Tests  19 passed (19)
-   Duration  8.06s (transform 482ms, setup 0ms, collect 7.19s, tests 29ms, environment 1ms, prepare 3.86s)
+ Test Files  7 passed (7)
+      Tests  36 passed (36)
+   Duration  1.21s
 ```
 
 ---
@@ -279,10 +299,10 @@ The demo video showcases:
 |:--|:---|:---:|:---|
 | 1 | **Public GitHub repository with updated documentation** | ✅ Complete | [github.com/Samrat25/axiom-privacy-trade](https://github.com/Samrat25/axiom-privacy-trade) |
 | 2 | **Live demo link** | ✅ Complete | [https://axiom-night.vercel.app](https://axiom-night.vercel.app) |
-| 3 | **List of 70 Preprod user wallet addresses (verifiable on-chain)** | ✅ Complete | [`PREPROD-ADDRESSES.md`](PREPROD-ADDRESSES.md) • [`wallet.txt`](wallet.txt) (77 Active Addresses) |
+| 3 | **List of 70 Preprod user wallet addresses (verifiable on-chain)** | ✅ Complete | [`LAUNCH_USERS.md`](LAUNCH_USERS.md) • [`PREPROD-ADDRESSES.md`](PREPROD-ADDRESSES.md) • [`wallet.txt`](wallet.txt) (77 Active Addresses) |
 | 4 | **Feedback documentation or link to feedback document** | ✅ Complete | [`docs/FEEDBACK.md`](docs/FEEDBACK.md) • [Feedback Form ↗](https://docs.google.com/forms/d/1N8tk4NR4at56WroUt_5jyger578DWpgcueMCqPD2HEw) • [Responses Sheet ↗](https://docs.google.com/spreadsheets/d/18DYi-w9Tj97TKyarRwor4TlHyvXAJjvZLVEQnSFUJas/edit?usp=sharing) |
 | 5 | **Demo video showing full MVP functionality** | ✅ Complete | [🎬 Watch on Google Drive ↗](https://drive.google.com/file/d/1CLl04L8zv4vsdxteTzu1P2TgVVmLeVHj/view?usp=sharing) |
-| 6 | **Minimum 30 meaningful commits** | ✅ Complete | **67+ Commits** on [`main`](https://github.com/Samrat25/axiom-privacy-trade/commits/main) |
+| 6 | **Minimum 30 meaningful commits** | ✅ Complete | **68+ Commits** on [`main`](https://github.com/Samrat25/axiom-privacy-trade/commits/main) |
 
 ---
 
@@ -292,8 +312,9 @@ The demo video showcases:
 |:---|:---|
 | **Target** | 70+ verified Preprod wallet addresses |
 | **Status** | 🟢 **77 / 70 TARGET MET (77 Active Addresses)** |
-| **Wallet Address List** | [`PREPROD-ADDRESSES.md`](./PREPROD-ADDRESSES.md) • [`wallet.txt`](./wallet.txt) |
-| **Feedback Log** | [docs/FEEDBACK.md](./docs/FEEDBACK.md) |
+| **Level 6 Launch Users Directory** | [`LAUNCH_USERS.md`](./LAUNCH_USERS.md) (Distinct Level 6 Launch Cohort) |
+| **Full Address Directory** | [`PREPROD-ADDRESSES.md`](./PREPROD-ADDRESSES.md) • [`wallet.txt`](./wallet.txt) |
+| **Feedback Log & Traceability** | [docs/FEEDBACK.md](./docs/FEEDBACK.md) |
 | **User Feedback Form** | [Submit Preprod Feedback (Google Form) ↗](https://docs.google.com/forms/d/1N8tk4NR4at56WroUt_5jyger578DWpgcueMCqPD2HEw) |
 | **Feedback Responses Sheet** | [View Preprod Feedback Responses (Google Sheets) ↗](https://docs.google.com/spreadsheets/d/18DYi-w9Tj97TKyarRwor4TlHyvXAJjvZLVEQnSFUJas/edit?usp=sharing) |
 | **Network** | Midnight Preprod Testnet |

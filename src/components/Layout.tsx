@@ -8,7 +8,9 @@ import {
   ArrowUpRight,
   Sparkles,
   Blocks,
-  Clock
+  Clock,
+  Users,
+  Bot
 } from 'lucide-react';
 import { WalletConnect } from './WalletConnect';
 import type { DetectedWallet } from '../lib/lace-wallet';
@@ -70,10 +72,12 @@ export const Layout: React.FC<LayoutProps> = ({
     { id: 'landing', label: 'Studio Home', icon: Sparkles },
     { id: 'overview', label: 'Overview', icon: LayoutDashboard },
     { id: 'strategy-builder', label: 'Strategy Builder', icon: Cpu, highlight: true },
+    { id: 'zk-bot', label: 'ZK Execution Bot', icon: Bot, highlight: true },
     { id: 'market-insights', label: 'Market Insights', icon: LineChart },
     { id: 'portfolio', label: 'Portfolio', icon: PieChart },
     { id: 'trade-history', label: 'Trade History', icon: History },
-    { id: 'withdraw', label: 'Vault & Withdraw', icon: ArrowUpRight }
+    { id: 'withdraw', label: 'Vault & Withdraw', icon: ArrowUpRight },
+    { id: 'launch-hub', label: 'Launch Hub (77)', icon: Users }
   ];
 
   return (
