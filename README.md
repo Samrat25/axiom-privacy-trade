@@ -290,6 +290,7 @@ The demo video showcases:
 5. **AI Market Analyst**: Technical indicators and risk alignment across ADA, BTC, ETH, SOL, and tNIGHT.
 6. **Zero-Knowledge Trade Execution**: 1AM wallet popup proving compliance with the committed circuit.
 7. **Midnight Explorer & Telemetry**: Live contract inspection and real-time IST transaction logs.
+8. **Autonomous ZK Execution Bot & Stress Studio**: Algorithmic runner with client-side proof generation, 4 stress scenarios (Flash Crash, Bull Breakout, MEV Sandwich Attack, Chop), and verifiable ZK Audit Certificate export.
 
 ---
 
@@ -302,7 +303,7 @@ The demo video showcases:
 | 3 | **List of 70 Preprod user wallet addresses (verifiable on-chain)** | ✅ Complete | [`LAUNCH_USERS.md`](LAUNCH_USERS.md) • [`PREPROD-ADDRESSES.md`](PREPROD-ADDRESSES.md) • [`wallet.txt`](wallet.txt) (77 Active Addresses) |
 | 4 | **Feedback documentation or link to feedback document** | ✅ Complete | [`docs/FEEDBACK.md`](docs/FEEDBACK.md) • [Feedback Form ↗](https://docs.google.com/forms/d/1N8tk4NR4at56WroUt_5jyger578DWpgcueMCqPD2HEw) • [Responses Sheet ↗](https://docs.google.com/spreadsheets/d/18DYi-w9Tj97TKyarRwor4TlHyvXAJjvZLVEQnSFUJas/edit?usp=sharing) |
 | 5 | **Demo video showing full MVP functionality** | ✅ Complete | [🎬 Watch on Google Drive ↗](https://drive.google.com/file/d/1CLl04L8zv4vsdxteTzu1P2TgVVmLeVHj/view?usp=sharing) |
-| 6 | **Minimum 30 meaningful commits** | ✅ Complete | **68+ Commits** on [`main`](https://github.com/Samrat25/axiom-privacy-trade/commits/main) |
+| 6 | **Minimum 30 meaningful commits** | ✅ Complete | **70+ Commits** on [`main`](https://github.com/Samrat25/axiom-privacy-trade/commits/main) |
 
 ---
 
