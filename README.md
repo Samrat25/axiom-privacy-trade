@@ -161,7 +161,7 @@ Traditional algorithmic trading bots require exposing limit prices, stop-losses,
 | **Frontend UI** | React 19, TypeScript, Vite | Modern responsive Web3 trading terminal |
 | **Styling** | Tailwind CSS & Lucide Icons | Accessible, high-contrast dark/light UI |
 | **Off-Chain Ledger** | Supabase PostgreSQL | Real-time IST Protocol Telemetry & transaction sync |
-| **Testing** | Vitest | 41 Unit, Privacy, Analytics, AI Agent, Bot Simulator, and Contract Simulator Tests |
+| **Testing** | Vitest | 42 Unit, Privacy, Analytics, AI Agent, Bot Simulator, and Contract Simulator Tests |
 | **CI/CD** | GitHub Actions | 5-Job Verification Matrix (Lint, Compact ZKIR, Multi-Node, Build, Privacy Audit) |
 
 ---
@@ -187,7 +187,7 @@ npm install
 # 3. Configure environment variables (.env)
 cp .env.example .env
 
-# 4. Run the full test suite (41/41 passing)
+# 4. Run the full test suite (42/42 passing)
 npm test
 
 # 5. Start local development server
@@ -198,7 +198,7 @@ Open **`http://localhost:5173`** in your browser.
 
 ---
 
-## 🧪 Test Coverage Breakdown (41/41 Passing)
+## 🧪 Test Coverage Breakdown (42/42 Passing)
 
 | # | Test Suite | Test Name | What It Verifies |
 |:--|:---|:---|:---|
@@ -243,6 +243,7 @@ Open **`http://localhost:5173`** in your browser.
 | 39 | `axiom.test.ts` | Private execution slippage bounds | Enforces execution slippage <= max private tolerance in zero-knowledge |
 | 40 | `axiom.test.ts` | Autonomous batch rebalance | Proves multi-position rebalance compliance in a single zero-knowledge proof |
 | 41 | `axiom.test.ts` | MEV shielded volume counter | Verifies cumulative volume tracking protected from mempool sandwiching |
+| 42 | `analytics.test.ts` | stripPrivateFields zero leakage | Enforces client-side telemetry sanitizer strips private witnesses before broadcast |
 
 ```bash
 > axiom-privacy-trade@1.0.0 test
@@ -253,13 +254,13 @@ Open **`http://localhost:5173`** in your browser.
  ✓ tests/riskModel.test.ts (3 tests) 5ms
  ✓ tests/axiom.test.ts (14 tests) 8ms
  ✓ tests/riskFlowVerification.test.ts (2 tests) 5ms
- ✓ tests/analytics.test.ts (7 tests) 6ms
+ ✓ tests/analytics.test.ts (8 tests) 6ms
  ✓ tests/agent.test.ts (5 tests) 10ms
  ✓ tests/level6Agent.test.ts (5 tests) 7ms
  ✓ tests/zkBotEngine.test.ts (5 tests) 8ms
 
  Test Files  7 passed (7)
-      Tests  41 passed (41)
+      Tests  42 passed (42)
    Duration  1.28s
 ```
 
@@ -275,7 +276,7 @@ The Axiom repository runs an automated 5-job GitHub Actions CI/CD matrix on ever
 ├─────────────────────┬─────────────────────┬─────────────────────────────────┤
 │ 1. Typecheck & Lint │ 2. Compact Contract │ 3. Multi-Node Test Matrix       │
 │    npx tsc -b       │    Compact v1.3.0   │    Node.js 20.x & 22.x          │
-│    Code Quality     │    ZKIR Validation  │    41/41 Vitest Tests Passed    │
+│    Code Quality     │    ZKIR Validation  │    42/42 Vitest Tests Passed    │
 ├─────────────────────┼─────────────────────┼─────────────────────────────────┤
 │ 4. Production Build │ 5. ZK Privacy Audit │ Result: Fully Verified Release  │
 │    Vite Bundle      │    0 Witness Leaks  │ Ready for Midnight Preprod      │
@@ -286,7 +287,7 @@ The Axiom repository runs an automated 5-job GitHub Actions CI/CD matrix on ever
 |:---|:---|:---:|:---|
 | **1** | `typecheck-and-lint` | Ubuntu / Node 22 | TypeScript strict typechecking (`tsc -b --noEmit`) and code quality |
 | **2** | `compact-contract-verification` | Ubuntu / Node 22 | Compact v1.3.0 AST parsing, state maps, circuits, and ZKIR artifact verification |
-| **3** | `test-matrix` | Ubuntu / Node 20 & 22 | Multi-Node matrix testing across all 41 Vitest tests and privacy suites |
+| **3** | `test-matrix` | Ubuntu / Node 20 & 22 | Multi-Node matrix testing across all 42 Vitest tests and privacy suites |
 | **4** | `production-build` | Ubuntu / Node 22 | Production Vite bundle optimization and asset integrity verification |
 | **5** | `privacy-audit` | Ubuntu / Node 22 | Client-side privacy leak audit ensuring 0 private witnesses/keys touch network or logs |
 
