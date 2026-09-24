@@ -219,3 +219,50 @@ export async function fetchRecentMidnightTransactions(
     ];
   }
 }
+
+// ─── Compact v1.3.0 Circuit Dispatch Helpers & Technical Telemetry ─────────────
+
+/**
+ * Construct typed transaction metadata for Compact v1.3.0 emergency circuit breaker calls.
+ * Communicates with Midnight Preprod ProofStation fee-sponsorship layer.
+ */
+export function formatCircuitBreakerPayload(agentId: string, action: 'TRIP' | 'RESET') {
+  return {
+    contractVersion: '1.3.0',
+    circuit: action === 'TRIP' ? 'tripCircuitBreaker' : 'resetCircuitBreaker',
+    agentId,
+    timestamp: Date.now(),
+    network: 'preprod'
+  };
+}
+
+/**
+ * Construct typed transaction metadata for Compact v1.3.0 batch rebalancing calls.
+ * Verifies multi-position allocation within aggregate portfolio limits in zero-knowledge.
+ */
+export function formatBatchRebalancePayload(agentId: string, batchId: string, totalUsd: number) {
+  return {
+    contractVersion: '1.3.0',
+    circuit: 'executeBatchRebalance',
+    agentId,
+    batchId,
+    totalRebalanceUsd: totalUsd,
+    timestamp: Date.now(),
+    network: 'preprod'
+  };
+}
+
+/**
+ * Construct typed transaction metadata for Compact v1.3.0 strategy revocation calls.
+ * Permanently deprecates active strategy commitment on-chain.
+ */
+export function formatRevokeStrategyPayload(agentId: string) {
+  return {
+    contractVersion: '1.3.0',
+    circuit: 'revokeStrategy',
+    agentId,
+    timestamp: Date.now(),
+    network: 'preprod'
+  };
+}
+

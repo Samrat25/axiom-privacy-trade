@@ -177,4 +177,92 @@ describe('Axiom Compact Smart Contract Privacy & Verification Suite', () => {
     expect(res.status).toBe('rejected');
     expect(res.reason).toContain('exceeds max position size');
   });
+
+  it('10. tripCircuitBreaker & resetCircuitBreaker: emergency halts execution and safely resets', () => {
+    const contract = new AxiomContractSimulator(defaultWitnesses);
+    const agentId = '0xagent_circuit';
+    const tradeId = '0xtrade_circuit_1';
+
+    contract.commitStrategy(agentId);
+    expect(contract.circuitBreakerTripped.get(agentId)).toBe(false);
+
+    // Trip circuit breaker
+    contract.tripCircuitBreaker(agentId);
+    expect(contract.circuitBreakerTripped.get(agentId)).toBe(true);
+
+    // Attempt trade while circuit breaker is tripped
+    const haltRes = contract.executeTrade(agentId, tradeId, 1750000000n);
+    expect(haltRes.status).toBe('rejected');
+    expect(haltRes.reason).toContain('trading halted by emergency circuit breaker');
+
+    // Reset circuit breaker
+    const resetRes = contract.resetCircuitBreaker(agentId);
+    expect(resetRes.success).toBe(true);
+    expect(contract.circuitBreakerTripped.get(agentId)).toBe(false);
+
+    // Trade now succeeds
+    const resumeRes = contract.executeTrade(agentId, '0xtrade_circuit_2', 1750000000n);
+    expect(resumeRes.status).toBe('executed');
+  });
+
+  it('11. revokeStrategy: permanently deactivates strategy commitment', () => {
+    const contract = new AxiomContractSimulator(defaultWitnesses);
+    const agentId = '0xagent_revoke';
+
+    contract.commitStrategy(agentId);
+    expect(contract.strategyActive.get(agentId)).toBe(true);
+
+    contract.revokeStrategy(agentId);
+    expect(contract.strategyActive.get(agentId)).toBe(false);
+
+    // Execution rejected on revoked strategy
+    const res = contract.executeTrade(agentId, '0xtrade_revoked', 1750000000n);
+    expect(res.status).toBe('rejected');
+    expect(res.reason).toContain('strategy is revoked or inactive');
+  });
+
+  it('12. executeTrade: enforces private slippage tolerance bounds in zero-knowledge', () => {
+    const highSlippageWitnesses: StrategyWitnesses = {
+      ...defaultWitnesses,
+      getMaxSlippageBps: () => 50,      // Max 0.50% slippage
+      getExecutionSlippageBps: () => 95 // 0.95% slippage (breached)
+    };
+    const contract = new AxiomContractSimulator(highSlippageWitnesses);
+    const agentId = '0xagent_slippage';
+    contract.commitStrategy(agentId);
+
+    const res = contract.executeTrade(agentId, '0xtrade_slippage', 1750000000n);
+    expect(res.status).toBe('rejected');
+    expect(res.reason).toContain('execution slippage exceeded private tolerance');
+  });
+
+  it('13. executeBatchRebalance: executes multi-position rebalance within aggregate ceiling', () => {
+    const contract = new AxiomContractSimulator(defaultWitnesses);
+    const agentId = '0xagent_batch';
+    const batchId = '0xbatch_rebalance_01';
+
+    contract.commitStrategy(agentId);
+
+    // Valid batch size: $1800 <= 20% of $10,000 = $2000
+    const validBatch = contract.executeBatchRebalance(agentId, batchId, 1800n, 1750000000n);
+    expect(validBatch.status).toBe('executed');
+    expect(contract.tradeStatus.get(batchId)).toBe(4); // Status 4 = batch_rebalanced
+
+    // Invalid batch size: $2500 > 20% of $10,000 = $2000
+    const invalidBatch = contract.executeBatchRebalance(agentId, '0xbatch_invalid', 2500n, 1750000000n);
+    expect(invalidBatch.status).toBe('rejected');
+    expect(invalidBatch.reason).toContain('batch exceeds max position size');
+  });
+
+  it('14. mevShieldProtectedVolumeUsd: accumulates volume shielded from front-runners', () => {
+    const contract = new AxiomContractSimulator(defaultWitnesses);
+    const agentId = '0xagent_mev';
+    contract.commitStrategy(agentId);
+
+    contract.executeTrade(agentId, '0xtrade_mev_1', 1750000000n);
+    expect(contract.mevShieldProtectedVolumeUsd).toBe(1500n);
+
+    contract.executeBatchRebalance(agentId, '0xbatch_mev_1', 1000n, 1750000000n);
+    expect(contract.mevShieldProtectedVolumeUsd).toBe(2500n);
+  });
 });

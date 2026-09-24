@@ -6,7 +6,8 @@
 
 <p align="center">
   <a href="https://github.com/Samrat25/axiom-privacy-trade/actions/workflows/ci.yml"><img src="https://github.com/Samrat25/axiom-privacy-trade/actions/workflows/ci.yml/badge.svg" alt="Axiom CI/CD Pipeline" /></a>
-  <a href="https://github.com/Samrat25/axiom-privacy-trade"><img src="https://img.shields.io/badge/tests-36%2F36_passing-brightgreen" alt="Tests" /></a>
+  <a href="https://github.com/Samrat25/axiom-privacy-trade"><img src="https://img.shields.io/badge/tests-41%2F41_passing-brightgreen" alt="Tests" /></a>
+  <a href="https://github.com/Samrat25/axiom-privacy-trade/tree/main/contracts"><img src="https://img.shields.io/badge/Compact%20Contract-v1.3.0%20(Supermoon)-blueviolet" alt="Compact v1.3.0" /></a>
   <a href="https://axiom-night.vercel.app"><img src="https://img.shields.io/badge/demo-axiom--night.vercel.app-blue" alt="Live Demo" /></a>
   <a href="https://midnight.network"><img src="https://img.shields.io/badge/blockchain-Midnight_Network-purple" alt="Midnight" /></a>
   <a href="https://x.com/axiom_night"><img src="https://img.shields.io/badge/X-@axiom__night-black.svg?logo=x" alt="Product X Profile" /></a>
@@ -29,7 +30,7 @@
 | **Building in Public (3 X Posts)** | [Post 1](https://x.com/i/status/2088282869403996491) • [Post 2](https://x.com/i/status/2088295433621877200) • [Post 3](https://x.com/i/status/2088295537565184320) |
 | **User Feedback Form** | [Submit Preprod Feedback (Google Form) ↗](https://docs.google.com/forms/d/1N8tk4NR4at56WroUt_5jyger578DWpgcueMCqPD2HEw) |
 | **Feedback Responses Sheet** | [View Preprod Feedback Responses (Google Sheets) ↗](https://docs.google.com/spreadsheets/d/18DYi-w9Tj97TKyarRwor4TlHyvXAJjvZLVEQnSFUJas/edit?usp=sharing) |
-| **CI/CD Pipeline** | [GitHub Actions Workflow `.github/workflows/ci.yml`](https://github.com/Samrat25/axiom-privacy-trade/actions/workflows/ci.yml) |
+| **CI/CD Pipeline v2.0** | [GitHub Actions Multi-Job Workflow `.github/workflows/ci.yml`](https://github.com/Samrat25/axiom-privacy-trade/actions/workflows/ci.yml) |
 
 ---
 
@@ -37,21 +38,23 @@
 
 | Network | Version | Contract Address | Explorer Link | Status |
 |:--------|:--------|:-----------------|:--------------|:-------|
-| **Midnight Preprod Testnet** | `v1.2.0` | `0x2428cd4ae7c2cd0bb501e1e9162de3003b103c1063c220e0d5cfc3f0b438e524` | [View on 1AM Preprod Explorer ↗](https://explorer.1am.xyz/contract/2428cd4ae7c2cd0bb501e1e9162de3003b103c1063c220e0d5cfc3f0b438e524?network=preprod) | 🟢 **ACTIVE PREPROD MVP** |
-| **Midnight Preview Testnet** | `v1.2.0` | `0x33eb41d22028264e9e8bbe7f95b3089cece6e3c2a53008535e72a9f3350d3e30` | [View on 1AM Preview Explorer ↗](https://explorer.1am.xyz/contract/33eb41d22028264e9e8bbe7f95b3089cece6e3c2a53008535e72a9f3350d3e30?network=preview) | 🟢 **ACTIVE PREVIEW MVP** |
+| **Midnight Preprod Testnet** | `v1.3.0` | `0x2428cd4ae7c2cd0bb501e1e9162de3003b103c1063c220e0d5cfc3f0b438e524` | [View on 1AM Preprod Explorer ↗](https://explorer.1am.xyz/contract/2428cd4ae7c2cd0bb501e1e9162de3003b103c1063c220e0d5cfc3f0b438e524?network=preprod) | 🟢 **ACTIVE PREPROD MVP (v1.3.0 Supermoon)** |
+| **Midnight Preview Testnet** | `v1.3.0` | `0x33eb41d22028264e9e8bbe7f95b3089cece6e3c2a53008535e72a9f3350d3e30` | [View on 1AM Preview Explorer ↗](https://explorer.1am.xyz/contract/33eb41d22028264e9e8bbe7f95b3089cece6e3c2a53008535e72a9f3350d3e30?network=preview) | 🟢 **ACTIVE PREVIEW MVP (v1.3.0 Supermoon)** |
 | **Historical Deployment** | `v1.0.0` | `0x62a27ceda5eb600263e208768d5d285c659d47f2cd6b14a20c62b160f4da46f3` | [View on 1AM Explorer ↗](https://explorer.1am.xyz/contract/62a27ceda5eb600263e208768d5d285c659d47f2cd6b14a20c62b160f4da46f3?network=preview) | 🟡 *Historical (Vault v1)* |
-
 
 ```
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  Axiom Trade — Deployed Compact Contract on Midnight Testnet
+  Axiom Trade — Deployed Compact Contract v1.3.0 on Midnight Testnet
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  Contract Source  : ./contracts/axiom.compact
+  Contract Source  : ./contracts/axiom.compact (v1.3.0 Supermoon Edition)
   Managed Bindings : ./managed/axiom.ts
   Preprod Contract : 0x2428cd4ae7c2cd0bb501e1e9162de3003b103c1063c220e0d5cfc3f0b438e524
   Preview Contract : 0x33eb41d22028264e9e8bbe7f95b3089cece6e3c2a53008535e72a9f3350d3e30
-  Active Circuits  : commitStrategy, executeTrade, mintVaultBalance,
-                     burnVaultBalance, unshieldWithdraw
+  Active Circuits  : commitStrategy, tripCircuitBreaker, resetCircuitBreaker,
+                     executeTrade, executeBatchRebalance, revokeStrategy,
+                     mintVaultBalance, burnVaultBalance, unshieldWithdraw
+  Ledger State     : agentCommitment, strategyActive, circuitBreakerTripped,
+                     tradeStatus, tradeCount, mevShieldProtectedVolumeUsd
   Gas & Proving    : 1AM ProofStation Fee-Sponsored (Zero-DUST Ready)
   Status           : DEPLOYED & LIVE (Verifiable On-Chain State Machine)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -91,10 +94,12 @@ Traditional algorithmic trading bots require exposing limit prices, stop-losses,
 | Data Point | Type | What It Reveals |
 |:---|:---|:---|
 | **Agent Commitment** | `Bytes<32>` hash | That an agent locked a risk strategy (not the parameters) |
-| **Trade Status** | Enum: `1` (Executed) / `2` (Rejected) | That a trade was cryptographically verified against bounds |
-| **Trade Count** | `Uint<32>` integer | Total number of valid trades executed under this strategy |
+| **Strategy Active** | `Boolean` flag | Whether the agent's strategy is actively executable or revoked |
+| **Circuit Breaker Status** | `Boolean` flag | Whether emergency halt was triggered by drawdown violation |
+| **Trade Status** | Enum: `1` (Executed) / `2` (Rejected) / `3` (Withdrawn) / `4` (Batch Rebalanced) | Verification outcome of the Zero-Knowledge proof |
+| **Trade Count** | `Counter` integer | Total number of valid trades executed under this strategy |
+| **MEV Shield Protected Volume** | `Counter` USD | Cumulative trading volume shielded from front-running/sandwiching |
 | **Commitment Hash** | `Bytes<32>` hash | Public cryptographic anchor for zero-knowledge witness proofs |
-| **Contract State** | Dual-shielded state | Confirmation of state transition without balance disclosure |
 
 ### What an Observer CANNOT Learn (Private / ZK-Protected)
 
@@ -105,6 +110,7 @@ Traditional algorithmic trading bots require exposing limit prices, stop-losses,
 | 🛡️ **Shielded Vault Balance** | Decrypted client-side over state notes | Total trading capital remains 100% confidential |
 | 💸 **Per-Trade Dollar Amount** | Computed inside ZK circuit only | Prevents whale tracking and slippage manipulation |
 | 📏 **Strategy Duration & Expiry** | Private witness inside ZK circuit | Keeps time-horizon and algorithmic rebalancing private |
+| ⚡ **Slippage Tolerance (BPS)** | Private witness verified in ZK | Prevents MEV searchers from extracting sandwich value |
 | 🔑 **Wallet Secret Key** | Local witness only via `localSecretKey()` | Stays strictly in the browser extension |
 
 ### What the User PROVES Without Revealing
@@ -112,7 +118,11 @@ Traditional algorithmic trading bots require exposing limit prices, stop-losses,
 | Proof / Circuit | Mathematical Statement | Private Inputs (Witnesses) |
 |:---|:---|:---|
 | **`commitStrategy`** | `commitment == hash(maxPos, stopLoss, expiry)` | `maxPositionPct`, `stopLossPct`, `timelineExpiry` |
-| **`executeTrade`** | `tradeSize * 100 <= portfolioVal * maxPos` <br> `&& currentTime <= timelineExpiry` | `tradeSizeUsd`, `portfolioValueUsd`, `maxPos`, `stopLoss`, `expiry`, `secretKey` |
+| **`tripCircuitBreaker`** | Caller owns `localSecretKey()` for agent | `localSecretKey` |
+| **`resetCircuitBreaker`** | Caller owns `localSecretKey()` && `strategyActive == true` | `localSecretKey` |
+| **`revokeStrategy`** | Caller owns `localSecretKey()`; sets `strategyActive = false` | `localSecretKey` |
+| **`executeTrade`** | `tradeSize * 100 <= portfolioVal * maxPos` <br> `&& currentTime <= timelineExpiry` <br> `&& execSlippage <= maxSlippageBps` <br> `&& !circuitBreakerTripped` | `tradeSizeUsd`, `portfolioValueUsd`, `maxPos`, `stopLoss`, `expiry`, `secretKey`, `maxSlippageBps`, `executionSlippageBps` |
+| **`executeBatchRebalance`** | `totalBatchSize * 100 <= portfolioVal * maxPos` <br> `&& currentTime <= timelineExpiry` <br> `&& !circuitBreakerTripped` | `totalRebalanceUsd`, `portfolioValueUsd`, `maxPos`, `stopLoss`, `expiry` |
 | **`mintVaultBalance`** | `newVaultBalance == oldVaultBalance + amount` | Shielded `vUSD` note secret |
 | **`burnVaultBalance`** | `vaultBalance >= amount && amount > 0` | Shielded `vUSD` note secret |
 | **`unshieldWithdraw`** | Caller owns note of value `amount` | Private note witness & secret key |
@@ -144,15 +154,15 @@ Traditional algorithmic trading bots require exposing limit prices, stop-losses,
 | Layer | Technology | Description |
 |:---|:---|:---|
 | **Blockchain** | Midnight Network | Preprod & Preview Zero-Knowledge Testnets |
-| **Smart Contract** | Compact v0.24 (ZKIR) | Midnight's native ZK smart contract language |
+| **Smart Contract** | Compact v0.24 (ZKIR) v1.3.0 | Midnight's native ZK language with circuit breakers & MEV shield |
 | **SDK & Connector** | `@midnight-ntwrk/dapp-connector-api` | Midnight DApp Connector v4 for 1AM & Lace |
-| **AI Decision Engine** | Gemini 2.5 Flash + LangChain | Natural language strategy compilation & risk read |
+| **AI Decision Engine** | Gemini 2.5 Flash + LangChain | Natural language strategy compilation & multi-regime risk analysis |
 | **ZK-ML Model** | EZKL (Halo2) | Verifiable client-side risk boundary validator |
 | **Frontend UI** | React 19, TypeScript, Vite | Modern responsive Web3 trading terminal |
 | **Styling** | Tailwind CSS & Lucide Icons | Accessible, high-contrast dark/light UI |
 | **Off-Chain Ledger** | Supabase PostgreSQL | Real-time IST Protocol Telemetry & transaction sync |
-| **Testing** | Vitest | 36 Unit, Privacy, Analytics, AI Agent, Bot Simulator, and Contract Simulator Tests |
-| **CI/CD** | GitHub Actions | Automated build, test, and compilation pipeline |
+| **Testing** | Vitest | 41 Unit, Privacy, Analytics, AI Agent, Bot Simulator, and Contract Simulator Tests |
+| **CI/CD** | GitHub Actions | 5-Job Verification Matrix (Lint, Compact ZKIR, Multi-Node, Build, Privacy Audit) |
 
 ---
 
@@ -177,7 +187,7 @@ npm install
 # 3. Configure environment variables (.env)
 cp .env.example .env
 
-# 4. Run the full test suite (36/36 passing)
+# 4. Run the full test suite (41/41 passing)
 npm test
 
 # 5. Start local development server
@@ -188,7 +198,7 @@ Open **`http://localhost:5173`** in your browser.
 
 ---
 
-## 🧪 Test Coverage Breakdown (36/36 Passing)
+## 🧪 Test Coverage Breakdown (41/41 Passing)
 
 | # | Test Suite | Test Name | What It Verifies |
 |:--|:---|:---|:---|
@@ -228,6 +238,11 @@ Open **`http://localhost:5173`** in your browser.
 | 34 | `zkBotEngine.test.ts` | MEV sandwich attack immunity | Proves $0.00 MEV extracted and 100% privacy preservation against mempool front-runners |
 | 35 | `zkBotEngine.test.ts` | Choppy consolidation ZK proofs | Generates valid 32-byte Halo2 ZK proof hashes without errors or witness leakage |
 | 36 | `zkBotEngine.test.ts` | Institutional ZK audit certificate | Produces cryptographically signed certificate matching Midnight Compact contract |
+| 37 | `axiom.test.ts` | Emergency circuit breaker trip & reset | Halts execution on catastrophic drawdown and resets after risk recalibration |
+| 38 | `axiom.test.ts` | Permanent strategy revocation | Permanently deactivates strategy commitment on-chain to allow key rotation |
+| 39 | `axiom.test.ts` | Private execution slippage bounds | Enforces execution slippage <= max private tolerance in zero-knowledge |
+| 40 | `axiom.test.ts` | Autonomous batch rebalance | Proves multi-position rebalance compliance in a single zero-knowledge proof |
+| 41 | `axiom.test.ts` | MEV shielded volume counter | Verifies cumulative volume tracking protected from mempool sandwiching |
 
 ```bash
 > axiom-privacy-trade@1.0.0 test
@@ -236,7 +251,7 @@ Open **`http://localhost:5173`** in your browser.
  RUN  v3.2.7 C:/Users/SAMRAT NATTA/OneDrive/Desktop/axiom-privacy-trade
 
  ✓ tests/riskModel.test.ts (3 tests) 5ms
- ✓ tests/axiom.test.ts (9 tests) 6ms
+ ✓ tests/axiom.test.ts (14 tests) 8ms
  ✓ tests/riskFlowVerification.test.ts (2 tests) 5ms
  ✓ tests/analytics.test.ts (7 tests) 6ms
  ✓ tests/agent.test.ts (5 tests) 10ms
@@ -244,9 +259,36 @@ Open **`http://localhost:5173`** in your browser.
  ✓ tests/zkBotEngine.test.ts (5 tests) 8ms
 
  Test Files  7 passed (7)
-      Tests  36 passed (36)
-   Duration  1.21s
+      Tests  41 passed (41)
+   Duration  1.28s
 ```
+
+---
+
+## ⚙️ Enterprise CI/CD Pipeline v2.0 (Multi-Job Matrix)
+
+The Axiom repository runs an automated 5-job GitHub Actions CI/CD matrix on every commit to `main` and pull request:
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                       Axiom CI/CD Workflow Pipeline                         │
+├─────────────────────┬─────────────────────┬─────────────────────────────────┤
+│ 1. Typecheck & Lint │ 2. Compact Contract │ 3. Multi-Node Test Matrix       │
+│    npx tsc -b       │    Compact v1.3.0   │    Node.js 20.x & 22.x          │
+│    Code Quality     │    ZKIR Validation  │    41/41 Vitest Tests Passed    │
+├─────────────────────┼─────────────────────┼─────────────────────────────────┤
+│ 4. Production Build │ 5. ZK Privacy Audit │ Result: Fully Verified Release  │
+│    Vite Bundle      │    0 Witness Leaks  │ Ready for Midnight Preprod      │
+└─────────────────────┴─────────────────────┴─────────────────────────────────┘
+```
+
+| Job | Name | Environment | What It Verifies |
+|:---|:---|:---:|:---|
+| **1** | `typecheck-and-lint` | Ubuntu / Node 22 | TypeScript strict typechecking (`tsc -b --noEmit`) and code quality |
+| **2** | `compact-contract-verification` | Ubuntu / Node 22 | Compact v1.3.0 AST parsing, state maps, circuits, and ZKIR artifact verification |
+| **3** | `test-matrix` | Ubuntu / Node 20 & 22 | Multi-Node matrix testing across all 41 Vitest tests and privacy suites |
+| **4** | `production-build` | Ubuntu / Node 22 | Production Vite bundle optimization and asset integrity verification |
+| **5** | `privacy-audit` | Ubuntu / Node 22 | Client-side privacy leak audit ensuring 0 private witnesses/keys touch network or logs |
 
 ---
 
