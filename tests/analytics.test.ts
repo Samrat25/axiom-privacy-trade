@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { validateEvent, OPERATION_TYPES } from '../src/lib/analytics';
+import { validateEvent, stripPrivateFields, OPERATION_TYPES } from '../src/lib/analytics';
 
 describe('Axiom Analytics — Privacy Strip & Validation', () => {
   const validBase = {
@@ -88,5 +88,28 @@ describe('Axiom Analytics — Privacy Strip & Validation', () => {
     expect(result).not.toBeNull();
     expect(result!.tx_hash).toBe('0x27ffe1f7a2db3a071c5f2070c9ae6de476f839d7870a6f3c4da78d326cd28645');
     expect(result!.duration_ms).toBe(420);
+  });
+
+  it('8. stripPrivateFields: standalone sanitizer removes non-whitelisted fields without touching permitted keys', () => {
+    const rawData = {
+      client_event_id: 'clean-id-999',
+      wallet_address: 'mn_addr_preprod1xyz',
+      operation: 'trade_executed',
+      status: 'success',
+      network: 'preprod',
+      stopLossPct: 15,
+      maxPositionPct: 30,
+      localSecretKey: '0xsupersecret',
+      customWitnessData: [1, 2, 3],
+    };
+    const sanitized = stripPrivateFields(rawData);
+    expect(sanitized.client_event_id).toBe('clean-id-999');
+    expect(sanitized.wallet_address).toBe('mn_addr_preprod1xyz');
+    expect(sanitized.operation).toBe('trade_executed');
+    expect(sanitized.stopLossPct).toBeUndefined();
+    expect(sanitized.maxPositionPct).toBeUndefined();
+    expect(sanitized.localSecretKey).toBeUndefined();
+    expect(sanitized.customWitnessData).toBeUndefined();
+    expect(Object.keys(sanitized)).toEqual(['client_event_id', 'wallet_address', 'operation', 'status', 'network']);
   });
 });

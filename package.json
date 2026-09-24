@@ -8,6 +8,7 @@
                     "build":  "tsc -b \u0026\u0026 vite build",
                     "preview":  "vite preview",
                     "compile":  "node scripts/compile.js",
+                    "lint":  "tsc -b --noEmit",
                     "test":  "vitest run",
                     "analytics:export-users":  "node scripts/analytics-export-users.js",
                     "analytics:setup-table":  "node scripts/setup-analytics-table.js"

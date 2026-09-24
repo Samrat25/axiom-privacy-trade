@@ -54,8 +54,8 @@ jobs:
       - name: Install Dependencies
         run: npm ci
 
-      - name: TypeScript Project Typecheck (tsc -b --noEmit)
-        run: npx tsc -b --noEmit
+      - name: TypeScript Project Typecheck & Lint (npm run lint)
+        run: npm run lint
 
   # ─── Job 2: Midnight Compact Smart Contract v1.3.0 Verification ─────────────
   # Verifies the Compact AST, circuit definitions, and ZKIR intermediate representation
@@ -94,8 +94,8 @@ jobs:
       - name: Run Compact Compiler & ZKIR Artifact Check
         run: npm run compile
 
-  # ─── Job 3: Multi-Node Vitest Test Matrix (41/41 Passing) ─────────────────────
-  # Executes all 41 test specifications across Node 20 and Node 22
+  # ─── Job 3: Multi-Node Vitest Test Matrix (42/42 Passing) ─────────────────────
+  # Executes all 42 test specifications across Node 20 and Node 22
   test-matrix:
     name: Vitest Privacy & Contract Suite
     runs-on: ubuntu-latest
@@ -116,7 +116,7 @@ jobs:
       - name: Install Dependencies
         run: npm ci
 
-      - name: Run Vitest Suite (41 Tests across 7 Suites)
+      - name: Run Vitest Suite (42 Tests across 7 Suites)
         run: npm test
 
   # ─── Job 4: Production Frontend Build ────────────────────────────────────────
@@ -162,5 +162,8 @@ jobs:
           # Confirm telemetry strictly strips private witnesses before broadcast
           grep -q "stripPrivateFields" src/lib/analytics.ts
           # Confirm zero hardcoded mnemonic or private keys in source
-          ! grep -rE "localSecretKey\s*=\s*['\"][0-9a-fA-F]{64}['\"]" src/
+          if grep -rE "localSecretKey\s*=\s*['\"][0-9a-fA-F]{64}['\"]" src/; then
+            echo "❌ CRITICAL: Hardcoded private key or secret detected in src/"
+            exit 1
+          fi
           echo "✅ Privacy audit passed: 0 private strategy parameters exposed."

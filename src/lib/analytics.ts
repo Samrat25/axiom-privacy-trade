@@ -67,13 +67,22 @@ function isRateLimited(operation: string): boolean {
   return false;
 }
 
-export function validateEvent(raw: Record<string, unknown>): AnalyticsEvent | null {
+/**
+ * Strips all private fields, strategy parameters, and secrets.
+ * Only the ALLOWED_FIELDS whitelist is retained before telemetry sync.
+ */
+export function stripPrivateFields(raw: Record<string, unknown>): Record<string, unknown> {
   const clean: Record<string, unknown> = {};
   for (const key of ALLOWED_FIELDS) {
     if (key in raw) {
       clean[key] = raw[key];
     }
   }
+  return clean;
+}
+
+export function validateEvent(raw: Record<string, unknown>): AnalyticsEvent | null {
+  const clean = stripPrivateFields(raw);
 
   if (
     typeof clean.client_event_id !== 'string' ||
@@ -85,7 +94,7 @@ export function validateEvent(raw: Record<string, unknown>): AnalyticsEvent | nu
     return null;
   }
 
-  if (!(OPERATION_TYPES as readonly string[]).includes(clean.operation)) {
+  if (!(OPERATION_TYPES as readonly string[]).includes(clean.operation as string)) {
     return null;
   }
 
