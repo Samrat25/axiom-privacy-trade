@@ -171,17 +171,26 @@ export const LaunchUsersHub: React.FC = () => {
       {/* Top Level 6 Hero Header */}
       <div className="bg-gradient-to-r from-orange-500/10 via-amber-500/10 to-orange-500/5 border border-orange-200/80 rounded-3xl p-6 sm:p-8 shadow-xs">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-          <div className="space-y-2 max-w-2xl">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-orange-100 text-orange-800 text-xs font-bold uppercase tracking-wider">
-              <Sparkles className="w-3.5 h-3.5 text-orange-600" />
-              <span>Level 6 — Supermoon Milestone</span>
+          <div className="flex items-start gap-4">
+            <div className="h-14 w-14 rounded-2xl bg-white border border-orange-200/80 shadow-xs flex items-center justify-center shrink-0">
+              <img
+                src="/axiom-icon-mark.png"
+                alt="Axiom Mark"
+                className="h-9 w-auto object-contain"
+              />
             </div>
-            <h1 className="text-2xl sm:text-3xl font-extrabold text-gray-900 tracking-tight">
-              Preprod Community & Launch Users Hub
-            </h1>
-            <p className="text-xs sm:text-sm text-gray-600 leading-relaxed">
-              Verifiable directory of <strong>77 active Preprod wallet addresses</strong> with an explicit <strong>27-user Level 6 Launch Cohort (#51–#77)</strong> acquired across our public Google Form, Telegram, and Midnight developer community.
-            </p>
+            <div className="space-y-2 max-w-2xl">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-orange-100 text-orange-800 text-xs font-bold uppercase tracking-wider">
+                <Sparkles className="w-3.5 h-3.5 text-orange-600" />
+                <span>Level 6 — Supermoon Milestone</span>
+              </div>
+              <h1 className="text-2xl sm:text-3xl font-extrabold text-gray-900 tracking-tight">
+                Preprod Community & Launch Users Hub
+              </h1>
+              <p className="text-xs sm:text-sm text-gray-600 leading-relaxed">
+                Verifiable directory of <strong>77 active Preprod wallet addresses</strong> with an explicit <strong>27-user Level 6 Launch Cohort (#51–#77)</strong> acquired across our public Google Form, Telegram, and Midnight developer community.
+              </p>
+            </div>
           </div>
 
           {/* Quick Action Buttons */}

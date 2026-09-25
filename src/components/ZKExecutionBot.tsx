@@ -257,28 +257,37 @@ export const ZKExecutionBot: React.FC<ZKExecutionBotProps> = ({
   return (
     <div className="space-y-6">
       {/* Top Banner */}
-      <div className="bg-white rounded-3xl p-6 sm:p-8 border border-gray-200 shadow-sm relative overflow-hidden">
+      <div className="bg-white/90 backdrop-blur-xl rounded-3xl p-6 sm:p-8 border border-white/80 shadow-sm relative overflow-hidden">
         <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-br from-orange-100/50 via-purple-100/30 to-transparent rounded-full blur-3xl pointer-events-none" />
         
         <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
-          <div className="space-y-2">
-            <div className="flex items-center gap-2">
-              <span className="px-3 py-1 bg-orange-50 text-orange-600 rounded-full text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 border border-orange-200/60">
-                <Bot className="w-3.5 h-3.5" />
-                Autonomous ZK Agent Runner
-              </span>
-              <span className="px-3 py-1 bg-purple-50 text-purple-700 rounded-full text-xs font-bold tracking-wider flex items-center gap-1.5 border border-purple-200/60">
-                <ShieldCheck className="w-3.5 h-3.5" />
-                Zero Mempool Exposure
-              </span>
+          <div className="flex items-start gap-4">
+            <div className="h-14 w-14 rounded-2xl bg-white border border-gray-200/80 shadow-xs flex items-center justify-center shrink-0">
+              <img
+                src="/axiom-icon-mark.png"
+                alt="Axiom Mark"
+                className="h-9 w-auto object-contain"
+              />
             </div>
-            <h1 className="text-2xl sm:text-3xl font-extrabold text-gray-900 tracking-tight">
-              ZK Algorithmic Bot & Institutional Stress Studio
-            </h1>
-            <p className="text-sm text-gray-600 max-w-2xl">
-              Simulate and execute autonomous trading strategies backed by Midnight Compact v0.24 zero-knowledge circuits.
-              Every automated order proves risk parameters, position size limits, and stop-loss bounds client-side with 100% MEV immunity.
-            </p>
+            <div className="space-y-2">
+              <div className="flex items-center gap-2">
+                <span className="px-3 py-1 bg-orange-50 text-orange-600 rounded-full text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 border border-orange-200/60">
+                  <Bot className="w-3.5 h-3.5" />
+                  Autonomous ZK Agent Runner
+                </span>
+                <span className="px-3 py-1 bg-purple-50 text-purple-700 rounded-full text-xs font-bold tracking-wider flex items-center gap-1.5 border border-purple-200/60">
+                  <ShieldCheck className="w-3.5 h-3.5" />
+                  Zero Mempool Exposure
+                </span>
+              </div>
+              <h1 className="text-2xl sm:text-3xl font-extrabold text-[#020C21] tracking-tight">
+                ZK Algorithmic Bot & Institutional Stress Studio
+              </h1>
+              <p className="text-sm text-[#59627E] max-w-2xl">
+                Simulate and execute autonomous trading strategies backed by Midnight Compact v0.24 zero-knowledge circuits.
+                Every automated order proves risk parameters, position size limits, and stop-loss bounds client-side with 100% MEV immunity.
+              </p>
+            </div>
           </div>
 
           <div className="flex items-center gap-3 self-start md:self-auto">
@@ -811,20 +820,29 @@ export const ZKExecutionBot: React.FC<ZKExecutionBotProps> = ({
       {activeSubTab === 'certificate' && auditCert && (
         <div className="bg-white rounded-3xl p-6 sm:p-8 border border-gray-200 shadow-sm space-y-6">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-gray-100">
-            <div>
-              <div className="flex items-center gap-2">
-                <span className="px-3 py-1 bg-emerald-50 text-emerald-700 rounded-full text-xs font-bold flex items-center gap-1 border border-emerald-200">
-                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
-                  Cryptographically Verified
-                </span>
-                <span className="text-xs text-gray-400 font-mono">ID: {auditCert.certificateId}</span>
+            <div className="flex items-start gap-4">
+              <div className="h-14 px-3 rounded-2xl bg-white border border-gray-200/80 shadow-xs flex items-center justify-center shrink-0">
+                <img
+                  src="/axiom-logo.png"
+                  alt="Axiom Trade Logo"
+                  className="h-8 w-auto object-contain"
+                />
               </div>
-              <h2 className="text-xl sm:text-2xl font-extrabold text-gray-900 mt-2">
-                Institutional ZK Strategy Compliance Certificate
-              </h2>
-              <p className="text-xs text-gray-600 mt-0.5">
-                Proves that strategy parameters adhere to Midnight Compact v0.24 ZKIR specifications with zero private witness disclosure.
-              </p>
+              <div>
+                <div className="flex items-center gap-2">
+                  <span className="px-3 py-1 bg-emerald-50 text-emerald-700 rounded-full text-xs font-bold flex items-center gap-1 border border-emerald-200">
+                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+                    Cryptographically Verified
+                  </span>
+                  <span className="text-xs text-gray-400 font-mono">ID: {auditCert.certificateId}</span>
+                </div>
+                <h2 className="text-xl sm:text-2xl font-extrabold text-gray-900 mt-2">
+                  Institutional ZK Strategy Compliance Certificate
+                </h2>
+                <p className="text-xs text-gray-600 mt-0.5">
+                  Proves that strategy parameters adhere to Midnight Compact v0.24 ZKIR specifications with zero private witness disclosure.
+                </p>
+              </div>
             </div>
 
             <button

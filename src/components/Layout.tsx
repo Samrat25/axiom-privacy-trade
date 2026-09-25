@@ -253,11 +253,23 @@ export const Layout: React.FC<LayoutProps> = ({
               </span>
             )}
             <span className="text-gray-300">•</span>
-            <span>ADA/USD: <span className="text-gray-900 font-bold">$0.421</span></span>
+            <span className="flex items-center gap-1.5">
+              <span>ADA/USD:</span>
+              <span className="text-[#020C21] font-bold">$0.421</span>
+              <span className="text-[10px] text-emerald-600 font-bold bg-emerald-50 px-1.5 py-0.5 rounded">+2.4%</span>
+            </span>
             <span className="text-gray-300">•</span>
-            <span>BTC/USD: <span className="text-gray-900 font-bold">$61,250</span></span>
+            <span className="flex items-center gap-1.5">
+              <span>BTC/USD:</span>
+              <span className="text-[#020C21] font-bold">$61,250</span>
+              <span className="text-[10px] text-emerald-600 font-bold bg-emerald-50 px-1.5 py-0.5 rounded">+1.1%</span>
+            </span>
             <span className="text-gray-300">•</span>
-            <span>tNIGHT: <span className="text-gray-900 font-bold">$1.00</span></span>
+            <span className="flex items-center gap-1.5">
+              <span>tNIGHT:</span>
+              <span className="text-[#020C21] font-bold">$1.00</span>
+              <span className="text-[10px] text-purple-700 font-bold bg-purple-50 px-1.5 py-0.5 rounded">ZK Pegged</span>
+            </span>
           </div>
 
           <div className="flex items-center gap-2">

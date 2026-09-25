@@ -130,24 +130,35 @@ export const StrategyBuilder: React.FC<StrategyBuilderProps> = ({
   return (
     <div className="max-w-4xl mx-auto space-y-6 font-sans">
       {/* Header Banner */}
-      <div className="bg-white border border-gray-200/80 rounded-2xl p-6 shadow-sm">
-        <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
-          <div className="space-y-2">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-gray-100 border border-gray-200 text-gray-800 text-xs font-semibold">
-              <Shield className="w-3.5 h-3.5 text-orange-500" />
-              <span>Asset-Agnostic ZK Risk Engine • Gemini Pre-Commit Read</span>
+      <div className="bg-white/90 backdrop-blur-xl border border-white/80 rounded-3xl p-6 sm:p-8 shadow-sm">
+        <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-6">
+          <div className="flex items-start gap-4">
+            <div className="h-14 w-14 rounded-2xl bg-white border border-gray-200/80 shadow-xs flex items-center justify-center shrink-0">
+              <img
+                src="/axiom-icon-mark.png"
+                alt="Axiom Mark"
+                className="h-9 w-auto object-contain"
+              />
             </div>
-            <h1 className="text-2xl font-extrabold text-gray-900 tracking-tight">
-              Natural-Language Strategy Risk Locker
-            </h1>
-            <p className="text-gray-600 text-xs leading-relaxed max-w-2xl">
-              Lock your risk boundaries (<strong className="text-gray-900">Max Position %, Stop-Loss %, Duration</strong>) once on Midnight. Once committed on-chain, you can execute zero-knowledge trades across <strong>ADA, BTC, ETH, SOL, and tNIGHT</strong> dynamically from your Shielded Vault.
-            </p>
+            <div className="space-y-2">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white border border-gray-200/80 text-[#020C21] text-xs font-semibold shadow-2xs">
+                <Shield className="w-3.5 h-3.5 text-[#3C1868]" />
+                <span>Asset-Agnostic ZK Risk Engine • Gemini Pre-Commit Read</span>
+              </div>
+              <h1 className="text-2xl sm:text-3xl font-extrabold text-[#020C21] tracking-tight">
+                Natural-Language Strategy Risk Locker
+              </h1>
+              <p className="text-[#59627E] text-xs leading-relaxed max-w-2xl">
+                Lock your risk boundaries (<strong className="text-[#020C21]">Max Position %, Stop-Loss %, Duration</strong>) once on Midnight. Once committed on-chain, you can execute zero-knowledge trades across <strong>ADA, BTC, ETH, SOL, and tNIGHT</strong> dynamically from your Shielded Vault.
+              </p>
+            </div>
           </div>
-          <div className="flex flex-col items-start sm:items-end text-left sm:text-right space-y-1 font-mono text-xs">
-            <span className="text-[11px] font-bold text-orange-600">LLM: Gemini 2.5 Flash</span>
-            <span className="text-gray-500">Public: Risk Commitment Hash</span>
-            <span className="text-emerald-700 font-bold">Scope: Any Supported Asset</span>
+          <div className="flex flex-col items-start sm:items-end text-left sm:text-right space-y-1.5 font-mono text-xs shrink-0">
+            <span className="text-[11px] font-bold px-2.5 py-1 rounded-full bg-purple-50 text-[#3C1868] border border-purple-200/60">
+              LLM: Gemini 2.5 Flash
+            </span>
+            <span className="text-gray-500 text-[11px]">Public: Risk Commitment Hash</span>
+            <span className="text-emerald-700 font-bold text-[11px]">Scope: Any Supported Asset</span>
           </div>
         </div>
       </div>
