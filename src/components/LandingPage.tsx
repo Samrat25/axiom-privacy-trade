@@ -1,6 +1,21 @@
-import React, { useState, useEffect } from 'react';
-import { Clock, ArrowRight, Menu, X, Shield, Lock, ExternalLink, Cpu, Activity, Zap, CheckCircle2, ChevronRight, Layers } from 'lucide-react';
-import { Shader, Swirl, ChromaFlow, FlutedGlass, FilmGrain } from 'shaders/react';
+import React, { useState, useEffect, useRef } from 'react';
+import {
+  Shield,
+  Lock,
+  Cpu,
+  Zap,
+  ArrowRight,
+  ExternalLink,
+  Activity,
+  Layers,
+  Sparkles,
+  CheckCircle2,
+  TrendingUp,
+  Clock,
+  Menu,
+  X
+} from 'lucide-react';
+import { formatISTDate, formatISTTime } from '../utils/time';
 
 interface LandingPageProps {
   onConnectWallet: () => void;
@@ -15,323 +30,475 @@ export const LandingPage: React.FC<LandingPageProps> = ({
   walletConnected,
   walletAddress,
 }) => {
-  const [londonTime, setLondonTime] = useState<string>('');
   const [mobileMenuOpen, setMobileMenuOpen] = useState<boolean>(false);
-  const [hasShaderError, setHasShaderError] = useState<boolean>(false);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const heroRef = useRef<HTMLDivElement>(null);
 
-  // Live London Time (HH:MM format)
+  // Sync video playback with reduced-motion preference & visibility
   useEffect(() => {
-    const updateTime = () => {
-      const now = new Date();
-      const timeString = new Intl.DateTimeFormat('en-GB', {
-        timeZone: 'Europe/London',
-        hour: '2-digit',
-        minute: '2-digit',
-        hour12: false,
-      }).format(now);
-      setLondonTime(timeString);
+    const video = videoRef.current;
+    if (!video) return;
+
+    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const handleSync = () => {
+      if (mediaQuery.matches) {
+        video.pause();
+        video.currentTime = 0;
+      } else {
+        video.play().catch(() => {});
+      }
     };
 
-    updateTime();
-    const interval = setInterval(updateTime, 1000);
-    return () => clearInterval(interval);
+    mediaQuery.addEventListener('change', handleSync);
+    const handleVisibility = () => {
+      if (!document.hidden) handleSync();
+    };
+    document.addEventListener('visibilitychange', handleVisibility);
+
+    handleSync();
+
+    return () => {
+      mediaQuery.removeEventListener('change', handleSync);
+      document.removeEventListener('visibilitychange', handleVisibility);
+    };
+  }, []);
+
+  // Web Animations API (WAAPI) Entrance Timeline
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+    const s = window.matchMedia('(max-width: 640px)').matches ? 0.86 : 1;
+    const EXPO = 'cubic-bezier(.16,1,.3,1)';
+    const SOFT = 'cubic-bezier(.22,.7,.25,1)';
+    const GLASS = 'cubic-bezier(.2,.75,.28,1)';
+    const running: Animation[] = [];
+
+    const rise = (selector: string, delay: number, dur: number) => {
+      const el = document.querySelector(selector) as HTMLElement;
+      if (!el) return;
+      const anim = el.animate(
+        [
+          { clipPath: 'inset(100% 0 -14% 0)', translate: '0 .16em' },
+          { clipPath: 'inset(-18% 0 -14% 0)', translate: '0 0' }
+        ],
+        { duration: dur * s, delay: delay * s, easing: EXPO, fill: 'both' }
+      );
+      running.push(anim);
+    };
+
+    const lift = (selector: string, delay: number, dist = '.7em', dur = 560) => {
+      const el = document.querySelector(selector) as HTMLElement;
+      if (!el) return;
+      const anim = el.animate(
+        [
+          { opacity: 0, translate: `0 ${dist}` },
+          { opacity: 1, translate: '0 0' }
+        ],
+        { duration: dur * s, delay: delay * s, easing: SOFT, fill: 'both' }
+      );
+      running.push(anim);
+    };
+
+    const settle = (selector: string, delay: number, dur = 760, from = 0.985, dist = '1.1em') => {
+      const el = document.querySelector(selector) as HTMLElement;
+      if (!el) return;
+      const anim = el.animate(
+        [
+          { opacity: 0, scale: from, translate: `0 ${dist}` },
+          { opacity: 1, scale: 1, translate: '0 0' }
+        ],
+        { duration: dur * s, delay: delay * s, easing: GLASS, fill: 'both' }
+      );
+      running.push(anim);
+    };
+
+    const runKeyframes = (selector: string, keyframes: Keyframe[], delay: number, dur: number, easing: string) => {
+      const el = document.querySelector(selector) as HTMLElement;
+      if (!el) return;
+      const anim = el.animate(keyframes, {
+        duration: dur * s,
+        delay: delay * s,
+        easing,
+        fill: 'both'
+      });
+      running.push(anim);
+    };
+
+    lift('.axiom-brand', 60, '.55em', 600);
+    settle('.axiom-nav', 150, 700, 0.99, '.5em');
+    settle('.axiom-cta', 200, 700, 0.985, '.5em');
+    lift('.axiom-eyebrow', 300, '.8em', 520);
+    rise('.axiom-h1-1', 380, 980);
+    rise('.axiom-h1-2', 470, 980);
+    settle('.axiom-play', 720, 640, 0.88, '.3em');
+    lift('.axiom-tag', 770, '.7em', 560);
+    settle('.axiom-panel', 800, 880, 0.982, '1.4em');
+    runKeyframes('.axiom-shield', [{ scale: 0.86 }, { scale: 1 }], 700, 1020, EXPO);
+    runKeyframes('.axiom-dot', [{ scale: 0 }, { scale: 1 }], 520, 1080, EXPO);
+    runKeyframes('.axiom-track-bar', [{ scale: '0 1' }, { scale: '1 1' }], 820, 1120, EXPO);
+    rise('.axiom-num-1', 920, 860);
+    rise('.axiom-num-2', 990, 860);
+    lift('.axiom-lbl-1', 1030, '.6em', 520);
+    lift('.axiom-lbl-2', 1075, '.6em', 520);
+    runKeyframes('.axiom-slash', [{ scale: '1 0' }, { scale: '1 1' }], 700, 1010, EXPO);
+    settle('.axiom-meet', 1140, 820, 0.985, '1.2em');
+
+    return () => {
+      running.forEach(a => a.cancel());
+    };
   }, []);
 
   return (
-    <div className="min-h-screen bg-[#EFEFEF] text-gray-900 font-sans selection:bg-orange-500 selection:text-white">
+    <div className="min-h-screen bg-[var(--frame,#E6EDF6)] text-[var(--ink,#020C21)] font-sans selection:bg-[#4A78B0] selection:text-white overflow-x-hidden">
       {/* ========================================================================= */}
-      {/* SECTION 1: HERO (Full viewport height with Animated Shaders)               */}
+      {/* SECTION 1: HERO SECTION — Pixel-Measured Design-Unit Comp System          */}
       {/* ========================================================================= */}
-      <section className="relative min-h-screen flex flex-col justify-between overflow-hidden bg-[#EFEFEF]">
-        {/* Animated Shader Overlay */}
-        <div className="absolute inset-0 z-10 pointer-events-none overflow-hidden">
-          {!hasShaderError ? (
-            <Shader
-              className="w-full h-full"
-              onUnavailable={() => setHasShaderError(true)}
-            >
-              <Swirl colorA="#ffffff" colorB="#f0f0f0" detail={1.7} />
-              <ChromaFlow
-                baseColor="#ffffff"
-                downColor="#ff5f03"
-                leftColor="#ff5f03"
-                rightColor="#ff5f03"
-                upColor="#ff5f03"
-                momentum={13}
-                radius={3.5}
-              />
-              <FlutedGlass
-                aberration={0.61}
-                angle={31}
-                frequency={8}
-                highlight={0.12}
-                highlightSoftness={0}
-                lightAngle={-90}
-                refraction={4}
-                shape="rounded"
-                softness={1}
-                speed={0.15}
-              />
-              <FilmGrain strength={0.05} />
-            </Shader>
-          ) : (
-            <div className="w-full h-full bg-gradient-to-tr from-[#EFEFEF] via-[#F8F8F8] to-[#ff5f03]/10 opacity-70" />
-          )}
-        </div>
+      <section ref={heroRef} className="relative w-full h-screen min-h-[640px] overflow-hidden isolate select-none">
+        {/* CloudFront Video Background Plate with Traveling Caustics */}
+        <video
+          ref={videoRef}
+          className="bg"
+          autoPlay
+          muted
+          loop
+          playsInline
+          preload="auto"
+          disablePictureInPicture
+          aria-hidden="true"
+          poster="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260912_105822_bf7c2d53-9957-4521-bbbf-7c1ab7a70130.png"
+          src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260912_105953_21ad8049-9088-4a00-bad3-aee6b5575a2b.mp4"
+        />
+        <div className="tint" />
 
-        {/* Navigation (z-20, relative) */}
-        <header className="relative z-20 w-full max-w-[1440px] mx-auto p-2 sm:p-3">
-          <nav className="bg-white rounded-full p-[5px] flex items-center justify-between shadow-sm border border-gray-100/80">
-            {/* Left Nav */}
-            <div className="flex items-center gap-6 pl-1">
-              <a href="#hero" className="flex items-center gap-2.5 group">
-                <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full overflow-hidden shadow-xs border border-gray-200 bg-gray-900 flex items-center justify-center shrink-0">
+        <div className="card">
+          <div className="stack">
+            {/* ── HEADER ROW ── */}
+            <div className="row">
+              {/* BRAND: Custom Axiom Logo */}
+              <a
+                className="brand axiom-brand l t"
+                style={{ '--x': 68, '--y': 47 } as React.CSSProperties}
+                href="#hero"
+              >
+                <div className="h-[calc(38*var(--u))] px-2.5 rounded-2xl bg-white/90 backdrop-blur-md border border-white/80 shadow-xs flex items-center justify-center shrink-0">
                   <img
                     src="/axiom-logo.png"
-                    alt="Axiom Trade"
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                    alt="Axiom Trade Logo"
+                    className="h-[calc(26*var(--u))] w-auto object-contain"
                   />
                 </div>
-                <div className="flex flex-col">
-                  <span className="text-xs font-extrabold text-gray-900 tracking-tight leading-none">AXIOM</span>
-                  <span className="text-[9px] text-gray-600 font-semibold tracking-wider uppercase">TRADE</span>
-                </div>
+                <b className="sx" style={{ '--sx': 0.894 } as React.CSSProperties}>
+                  Axiom Trade
+                </b>
               </a>
 
-              <div className="hidden md:flex items-center gap-6">
-                <a href="#architecture" className="text-[14px] text-gray-900 hover:text-gray-500 transition-colors duration-300 font-medium">Architecture</a>
-                <a href="#modules" className="text-[14px] text-gray-900 hover:text-gray-500 transition-colors duration-300 font-medium">Modules</a>
-                <a href="#circuits" className="text-[14px] text-gray-900 hover:text-gray-500 transition-colors duration-300 font-medium">ZK Circuits</a>
-                <a href="https://explorer.1am.xyz?network=preprod" target="_blank" rel="noreferrer" className="text-[14px] text-gray-900 hover:text-gray-500 transition-colors duration-300 font-medium flex items-center gap-1">
-                  <span>1AM Explorer</span>
-                  <ExternalLink className="w-3 h-3 text-gray-400" />
+              {/* Mobile Burger Button */}
+              <button
+                className="burger md:hidden"
+                type="button"
+                aria-label="Toggle menu"
+                aria-expanded={mobileMenuOpen}
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              >
+                <i></i>
+                <i></i>
+              </button>
+
+              {/* NAV PILL — Centered Glass Capsule */}
+              <nav className="nav axiom-nav hidden md:block">
+                <a href="#hero" className="n-home" aria-label="Home">
+                  <svg viewBox="0 0 20 21" fill="none" aria-hidden="true" className="w-full h-full">
+                    <path
+                      d="M2 8.4 10 2l8 6.4V18a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1z"
+                      stroke="#202940"
+                      strokeWidth="1.7"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
                 </a>
+                <a href="#architecture" className="n-explore">
+                  <span>Architecture</span>
+                </a>
+                <hr className="n-div" />
+                <a href="#modules" className="n-grid" aria-label="Modules">
+                  <svg viewBox="0 0 20 20" fill="none" aria-hidden="true" className="w-full h-full">
+                    <rect x="1" y="1" width="7.4" height="7.4" rx="1.7" stroke="#202940" strokeWidth="1.7" />
+                    <rect x="11.6" y="1" width="7.4" height="7.4" rx="1.7" stroke="#202940" strokeWidth="1.7" />
+                    <rect x="1" y="11.6" width="7.4" height="7.4" rx="1.7" stroke="#202940" strokeWidth="1.7" />
+                    <rect x="11.6" y="11.6" width="7.4" height="7.4" rx="1.7" stroke="#202940" strokeWidth="1.7" />
+                  </svg>
+                </a>
+                <a href="#circuits" className="n-product">
+                  <span>ZK Circuits</span>
+                </a>
+                <hr className="n-div2" />
+                <button
+                  onClick={onEnterDashboard}
+                  className="n-app cursor-pointer border-none bg-transparent"
+                >
+                  <span className="font-bold text-[#3C1868]">Terminal →</span>
+                </button>
+              </nav>
 
-              </div>
-            </div>
-
-            {/* Right Nav */}
-            <div className="hidden md:flex items-center gap-4 sm:gap-5 pr-1">
-              <div className="flex items-center gap-2 text-[12px] font-semibold bg-emerald-50 text-emerald-800 px-3 py-1 rounded-full border border-emerald-200/80">
-                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                <span>Midnight Preprod & Preview Live</span>
-              </div>
-
-              <div className="flex items-center gap-1.5 text-[13px] text-gray-600 font-medium">
-                <Clock className="w-3.5 h-3.5 text-gray-500 shrink-0" />
-                <span>{londonTime ? `${londonTime} in London` : 'London'}</span>
-              </div>
-
-              {/* CTA Button with Text Roll */}
+              {/* PRIMARY CTA: Glass Knob Button */}
               <button
                 onClick={walletConnected ? onEnterDashboard : onConnectWallet}
-                className="bg-gray-900 hover:bg-black text-white text-[13px] font-medium rounded-full pl-5 pr-2 py-2 group flex items-center gap-3 transition-all duration-300 shadow-sm cursor-pointer"
+                className="cta axiom-cta l t r cursor-pointer border-none"
+                style={{ '--x': 58, '--y': 30 } as React.CSSProperties}
               >
-                <div className="flex flex-col overflow-hidden h-[20px]">
-                  <span className="transition-transform duration-500 ease-[cubic-bezier(0.25,0.1,0.25,1)] group-hover:-translate-y-full">
-                    {walletConnected ? 'Launch Dashboard' : 'Launch Axiom Trade'}
-                  </span>
-                  <span className="transition-transform duration-500 ease-[cubic-bezier(0.25,0.1,0.25,1)] group-hover:-translate-y-full">
-                    {walletConnected ? 'Enter Protocol' : 'Connect 1AM Wallet'}
-                  </span>
-                </div>
-
-                <div className="w-6 h-6 rounded-full bg-white flex items-center justify-center transition-transform duration-500 ease-[cubic-bezier(0.25,0.1,0.25,1)] group-hover:-rotate-45">
-                  <ArrowRight className="w-3 h-3 text-gray-900" />
-                </div>
+                <span>{walletConnected ? 'Open Terminal' : 'Launch Protocol'}</span>
+                <span className="knob">
+                  <svg viewBox="0 0 18 18" fill="none" aria-hidden="true">
+                    <path
+                      d="m6.6 3.6 6 5.4-6 5.4"
+                      stroke="#fff"
+                      strokeWidth="1.9"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                </span>
               </button>
             </div>
 
-            {/* Mobile Menu Button */}
-            <div className="md:hidden pr-1">
-              <button
-                onClick={() => setMobileMenuOpen(true)}
-                className="w-9 h-9 rounded-full bg-gray-900 text-white flex items-center justify-center cursor-pointer"
-                aria-label="Open menu"
-              >
-                <Menu className="w-4 h-4" />
-              </button>
-            </div>
-          </nav>
-        </header>
-
-        {/* Mobile Menu Overlay */}
-        {mobileMenuOpen && (
-          <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex flex-col justify-end animate-fadeIn">
-            <div className="bg-white rounded-2xl mx-3 mb-3 p-6 space-y-6 shadow-2xl transition-transform duration-500 ease-[cubic-bezier(0.32,0.72,0,1)]">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-1.5 text-xs text-gray-500 font-medium bg-gray-100 px-3 py-1 rounded-full">
-                  <Clock className="w-3 h-3 text-gray-600" />
-                  <span>{londonTime ? `${londonTime} in London` : 'London'}</span>
-                </div>
-
-                <button
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-800 flex items-center justify-center cursor-pointer"
-                >
-                  <X className="w-4 h-4" />
-                </button>
-              </div>
-
-              <div className="flex flex-col space-y-3 pt-2">
-                {[
-                  { name: 'Architecture', href: '#architecture' },
-                  { name: 'Modules', href: '#modules' },
-                  { name: 'ZK Circuits', href: '#circuits' },
-                  { name: 'Midnight Explorer', href: 'https://preview.midnightexplorer.com/transactions' }
-                ].map((link) => (
-                  <a
-                    key={link.name}
-                    href={link.href}
-                    onClick={() => setMobileMenuOpen(false)}
-                    className="text-[28px] sm:text-[32px] font-medium text-gray-900 hover:text-orange-600 transition-colors"
-                  >
-                    {link.name}
+            {/* Mobile Dropdown Menu */}
+            {mobileMenuOpen && (
+              <div className="menu md:hidden" data-open="">
+                <div className="nav">
+                  <a href="#architecture" onClick={() => setMobileMenuOpen(false)}>
+                    <span>Architecture</span>
                   </a>
-                ))}
+                  <a href="#modules" onClick={() => setMobileMenuOpen(false)}>
+                    <span>Modules</span>
+                  </a>
+                  <a href="#circuits" onClick={() => setMobileMenuOpen(false)}>
+                    <span>ZK Circuits</span>
+                  </a>
+                  <hr className="n-div" />
+                  <button
+                    onClick={() => {
+                      setMobileMenuOpen(false);
+                      onEnterDashboard();
+                    }}
+                    className="cta cursor-pointer"
+                  >
+                    <span>Launch Terminal</span>
+                    <span className="knob">
+                      <ArrowRight className="w-4 h-4 text-white" />
+                    </span>
+                  </button>
+                </div>
               </div>
+            )}
 
-              <div className="pt-2">
+            {/* ── HERO BLOCK ── */}
+            <div className="hero-blk">
+              <p
+                className="eyebrow axiom-eyebrow l c sx"
+                style={{ '--x': 65.7, '--y': -209.2, '--sx': 0.9293 } as React.CSSProperties}
+              >
+                Confidential AI-Orchestrated Trading Protocol
+              </p>
+
+              <h1
+                className="l c"
+                style={{ '--x': 62.6, '--y': -167.3 } as React.CSSProperties}
+              >
+                <span className="sx axiom-h1-1" style={{ '--sx': 0.9431 } as React.CSSProperties}>
+                  Confidential Trading
+                </span>
+                <br />
+                <span className="sx axiom-h1-2" style={{ '--sx': 0.9792 } as React.CSSProperties}>
+                  Proven in Zero-Knowledge
+                </span>
+              </h1>
+
+              <div className="tagrow">
                 <button
-                  onClick={() => {
-                    setMobileMenuOpen(false);
-                    if (walletConnected) onEnterDashboard();
-                    else onConnectWallet();
-                  }}
-                  className="w-full bg-[#F26522] hover:bg-[#e05a1a] text-white text-[15px] font-medium rounded-full py-3.5 px-6 flex items-center justify-between cursor-pointer transition-colors shadow-lg"
+                  onClick={onEnterDashboard}
+                  className="play axiom-play l c border-none"
+                  style={{ '--x': 66, '--y': 34 } as React.CSSProperties}
+                  aria-label="Enter App"
                 >
-                  <span>{walletConnected ? 'Launch Dashboard' : 'Connect 1AM Wallet'}</span>
-                  <div className="w-7 h-7 rounded-full bg-white flex items-center justify-center">
-                    <ArrowRight className="w-3.5 h-3.5 text-[#F26522]" />
-                  </div>
+                  <svg viewBox="0 0 13 14" fill="none" aria-hidden="true">
+                    <path d="M1.4 1.3 11.6 7 1.4 12.7z" fill="#0b1526" />
+                  </svg>
                 </button>
+                <span
+                  className="tag axiom-tag l c sx"
+                  style={{ '--x': 131, '--y': 48.7, '--sx': 0.8973 } as React.CSSProperties}
+                >
+                  Zero Strategy Rules Exposed to Mempools. Protect What Matters.
+                </span>
               </div>
+
+              {/* ── GLASS PANEL: AI Risk Guard & Scale Meter ── */}
+              <aside
+                className="panel axiom-panel l c r"
+                style={{ '--x': 58, '--y': -165 } as React.CSSProperties}
+              >
+                <span className="p-title sx" style={{ '--sx': 0.8707 } as React.CSSProperties}>
+                  AI-Driven
+                </span>
+                <span className="dot axiom-dot"></span>
+                <div className="shield axiom-shield">
+                  <svg viewBox="0 0 30 39" fill="none" aria-hidden="true">
+                    <path
+                      d="M15 1.2 1.6 6.6v13.1c0 6.6 5.1 12.6 13.4 17.9 8.3-5.3 13.4-11.3 13.4-17.9V6.6z"
+                      stroke="#101c33"
+                      strokeWidth="2"
+                      strokeLinejoin="round"
+                    />
+                    <path
+                      d="M2.1 18.9c4.6-1.1 8.9-1.6 12.9-1.6s8.3.5 12.9 1.6"
+                      stroke="#101c33"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                    />
+                  </svg>
+                </div>
+                <p className="p-sub sx" style={{ '--sx': 0.8899 } as React.CSSProperties}>
+                  Autonomous<br />
+                  ZK Risk Engine<br />
+                  & Execution Guard
+                </p>
+                <div className="scale">
+                  <span>1K</span>
+                  <span>10K</span>
+                  <span>50K</span>
+                  <span>100K</span>
+                </div>
+                <div className="track">
+                  <i className="axiom-track-bar"></i>
+                </div>
+              </aside>
             </div>
-          </div>
-        )}
 
-        {/* Hero Content (z-20, Bottom aligned) */}
-        <div id="hero" className="relative z-20 flex-1 flex flex-col justify-end max-w-[1440px] w-full mx-auto px-5 sm:px-8 lg:px-12 pb-14 sm:pb-16 lg:pb-20">
-          {/* Small Label */}
-          <div className="mb-5 sm:mb-8 flex items-center gap-2">
-            <span className="text-[13px] sm:text-[14px] text-gray-900 tracking-wide font-bold">Axiom Trade</span>
-            <span className="text-gray-400">•</span>
-            <span className="text-[12px] sm:text-[13px] text-gray-700 font-medium tracking-wide">Private moves. Public proof.</span>
-          </div>
-
-          {/* Main Headline */}
-          <h1 className="text-[clamp(1.75rem,7vw,4.2rem)] sm:text-[clamp(2.5rem,5vw,4.2rem)] font-medium leading-[1.08] tracking-[-0.03em] text-gray-900 max-w-5xl">
-            Autonomous trading with <br className="hidden sm:block" />
-            <span className="sm:hidden"> </span>zero-knowledge privacy <br className="hidden sm:block" />
-            <span className="sm:hidden"> </span>on Midnight Network.
-          </h1>
-
-          <p className="mt-4 sm:mt-6 text-[15px] sm:text-[17px] text-gray-700 max-w-2xl leading-relaxed font-normal">
-            Axiom combines client-side Gemini AI strategy synthesis, Compact smart contracts, and EZKL risk verification. Your trade secrets stay private — execution is proven on-chain.
-          </p>
-
-          {/* CTA Row */}
-          <div className="mt-8 sm:mt-10 flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-5">
-            {/* Orange Button */}
-            <button
-              onClick={walletConnected ? onEnterDashboard : onConnectWallet}
-              className="bg-[#F26522] hover:bg-[#e05a1a] text-white text-[13px] sm:text-[14px] font-medium rounded-full pl-5 sm:pl-6 pr-2 py-2 group flex items-center gap-3.5 transition-all duration-300 shadow-md cursor-pointer"
-            >
-              <div className="flex flex-col overflow-hidden h-[20px]">
-                <span className="transition-transform duration-500 ease-[cubic-bezier(0.25,0.1,0.25,1)] group-hover:-translate-y-full">
-                  {walletConnected ? 'Enter Trading App' : 'Launch Axiom Protocol'}
-                </span>
-                <span className="transition-transform duration-500 ease-[cubic-bezier(0.25,0.1,0.25,1)] group-hover:-translate-y-full">
-                  {walletConnected ? 'Launch Dashboard' : 'Connect 1AM Wallet'}
-                </span>
+            {/* ── STATS ROW & MEET AXIOM PILL ── */}
+            <div className="row">
+              <div className="stats">
+                <div className="stat">
+                  <span className="num axiom-num-1 l b sx" style={{ '--x': 64, '--y': 60.4, '--sx': 1 } as React.CSSProperties}>
+                    112+
+                  </span>
+                  <span className="lbl axiom-lbl-1 l b sx" style={{ '--x': 295, '--y': 73.2, '--sx': 0.9634 } as React.CSSProperties}>
+                    Markets<br />
+                    Protected<br />
+                    Globally
+                  </span>
+                </div>
+                <span className="slash axiom-slash l b" style={{ '--x': 418, '--y': 76 } as React.CSSProperties}></span>
+                <div className="stat">
+                  <span className="num axiom-num-2 l b sx" style={{ '--x': 480, '--y': 60.4, '--sx': 0.9858 } as React.CSSProperties}>
+                    55K+
+                  </span>
+                  <span className="lbl axiom-lbl-2 l b sx" style={{ '--x': 716, '--y': 96.7, '--sx': 0.9209 } as React.CSSProperties}>
+                    Trades<br />
+                    Secured
+                  </span>
+                </div>
               </div>
 
-              <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-white flex items-center justify-center transition-transform duration-500 ease-[cubic-bezier(0.25,0.1,0.25,1)] group-hover:-rotate-45">
-                <ArrowRight className="w-3.5 h-3.5 text-[#F26522]" />
-              </div>
-            </button>
-
-            {/* Midnight Featured Partner Badge */}
-            <a
-              href="https://midnight.network"
-              target="_blank"
-              rel="noreferrer"
-              className="bg-white shadow-[0_2px_8px_rgba(0,0,0,0.08)] hover:shadow-[0_4px_16px_rgba(0,0,0,0.12)] rounded-full px-4 py-2 flex items-center gap-2.5 transition-shadow cursor-pointer border border-gray-200/60"
-            >
-              <Shield className="w-4 h-4 text-[#F26522]" />
-              <span className="text-[13px] sm:text-[14px] font-semibold text-gray-900">Featured by Midnight Network</span>
-              <span className="text-[10px] sm:text-[11px] bg-gray-900 text-white px-2 py-0.5 rounded-full font-medium">Preprod & Preview</span>
-            </a>
+              {/* MEET AXIOM PILL */}
+              <button
+                onClick={onEnterDashboard}
+                className="meet axiom-meet l b r cursor-pointer border-none text-left"
+                style={{ '--x': 59, '--y': 66 } as React.CSSProperties}
+              >
+                <span className="thumb">
+                  <img
+                    alt="Axiom ZK Core"
+                    style={{ objectPosition: '60% 50%' }}
+                    src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260912_105822_bf7c2d53-9957-4521-bbbf-7c1ab7a70130.png"
+                  />
+                </span>
+                <b>Meet Axiom</b>
+                <span className="knob">
+                  <svg viewBox="0 0 18 18" fill="none" aria-hidden="true">
+                    <path
+                      d="m6.6 3.6 6 5.4-6 5.4"
+                      stroke="#fff"
+                      strokeWidth="1.9"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                </span>
+              </button>
+            </div>
           </div>
         </div>
       </section>
 
       {/* ========================================================================= */}
-      {/* SECTION 2: ARCHITECTURE (White background)                                */}
+      {/* SECTION 2: ARCHITECTURE & ZERO-KNOWLEDGE FOUNDATION                       */}
       {/* ========================================================================= */}
-      <section id="architecture" className="bg-white pt-16 sm:pt-20 lg:pt-32 pb-16 sm:pb-20 lg:pb-28 overflow-hidden">
-        <div className="max-w-[1440px] mx-auto px-5 sm:px-8 lg:px-12">
-          {/* Badge Row */}
-          <div className="flex items-center gap-3 mb-6 sm:mb-8">
-            <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-gray-900 text-white text-[11px] sm:text-[12px] font-semibold flex items-center justify-center">
-              1
+      <section id="architecture" className="relative bg-white/90 backdrop-blur-xl border-t border-white/60 py-20 sm:py-28 px-6 sm:px-10 lg:px-16">
+        <div className="max-w-[1320px] mx-auto space-y-12">
+          {/* Section Header */}
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 pb-8 border-b border-gray-200/80">
+            <div className="space-y-3">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#E6EDF6] text-[#020C21] text-xs font-semibold uppercase tracking-wider">
+                <Shield className="w-3.5 h-3.5 text-[#3C1868]" />
+                <span>Zero-Knowledge Architecture</span>
+              </div>
+              <h2 className="text-3xl sm:text-5xl font-light tracking-tight text-[#020C21]">
+                Confidential strategy execution, <br />
+                <span className="font-semibold text-[#3C1868]">mathematically proven on Midnight.</span>
+              </h2>
             </div>
-            <div className="text-[12px] sm:text-[13px] font-medium border border-gray-200 rounded-full px-3 sm:px-4 py-1 sm:py-1.5 text-gray-900">
-              The Axiom ZK Architecture
+
+            <div className="text-sm text-gray-500 max-w-sm leading-relaxed">
+              Traders define boundaries in natural language. Strategy parameters stay encrypted in local browser memory while execution integrity is verified by Compact ZK circuits.
             </div>
           </div>
 
-          {/* Heading h2 */}
-          <h2 className="text-[clamp(1.5rem,4vw,3.2rem)] font-medium leading-[1.12] tracking-[-0.02em] text-gray-900 mb-12 sm:mb-16 lg:mb-20 max-w-4xl">
-            Confidential strategy execution, <br className="hidden sm:block" />
-            mathematically proven on-chain.
-          </h2>
-
           {/* 3 Pillar Cards Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8">
-            {/* Pillar 1 */}
-            <div className="bg-[#F9F9F9] border border-gray-200/80 rounded-2xl p-6 sm:p-8 space-y-4 hover:shadow-md transition-shadow">
-              <div className="w-10 h-10 rounded-full bg-white border border-gray-200 flex items-center justify-center shadow-xs">
-                <Cpu className="w-5 h-5 text-orange-500" />
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {/* Card 1 */}
+            <div className="p-8 rounded-3xl bg-gradient-to-br from-white to-[#F5F8FC] border border-gray-200/80 shadow-sm hover:shadow-md transition-all space-y-4">
+              <div className="w-12 h-12 rounded-2xl bg-white border border-gray-200/80 shadow-xs flex items-center justify-center text-[#3C1868]">
+                <Cpu className="w-6 h-6" />
               </div>
-              <h3 className="text-lg font-bold text-gray-900">Client-Side AI Synthesis</h3>
-              <p className="text-xs sm:text-sm text-gray-600 leading-relaxed font-normal">
-                Gemini 2.5 Flash compiles natural language trading logic into local cryptographic parameters without exposing your alpha to external oracles or RPC nodes.
+              <h3 className="text-xl font-bold text-[#020C21]">Client-Side AI Strategy Synthesis</h3>
+              <p className="text-xs sm:text-sm text-[#59627E] leading-relaxed">
+                Gemini 2.5 Flash compiles natural language trading risk parameters into deterministic mathematical constraints without exposing your proprietary alpha to RPC nodes.
               </p>
               <div className="pt-2">
-                <span className="text-[11px] font-semibold text-gray-900 bg-white border border-gray-200 px-2.5 py-1 rounded-full">
-                  Zero Prompt Exposure
+                <span className="text-[11px] font-semibold text-[#020C21] bg-white border border-gray-200 px-3 py-1 rounded-full shadow-2xs">
+                  Zero Prompt Leakage
                 </span>
               </div>
             </div>
 
-            {/* Pillar 2 */}
-            <div className="bg-[#F9F9F9] border border-gray-200/80 rounded-2xl p-6 sm:p-8 space-y-4 hover:shadow-md transition-shadow">
-              <div className="w-10 h-10 rounded-full bg-white border border-gray-200 flex items-center justify-center shadow-xs">
-                <Shield className="w-5 h-5 text-orange-500" />
+            {/* Card 2 */}
+            <div className="p-8 rounded-3xl bg-gradient-to-br from-white to-[#F5F8FC] border border-gray-200/80 shadow-sm hover:shadow-md transition-all space-y-4">
+              <div className="w-12 h-12 rounded-2xl bg-white border border-gray-200/80 shadow-xs flex items-center justify-center text-[#3C1868]">
+                <Shield className="w-6 h-6" />
               </div>
-              <h3 className="text-lg font-bold text-gray-900">Compact ZK Smart Contracts</h3>
-              <p className="text-xs sm:text-sm text-gray-600 leading-relaxed font-normal">
-                Dual-shielded state machine running natively on Midnight. Enforces risk rules and executes trades via <code className="text-gray-900 font-semibold">commitStrategy</code> and <code className="text-gray-900 font-semibold">executeTrade</code>.
+              <h3 className="text-xl font-bold text-[#020C21]">Compact v1.3.0 Smart Contracts</h3>
+              <p className="text-xs sm:text-sm text-[#59627E] leading-relaxed">
+                Dual-shielded state machine running natively on Midnight Preprod. Enforces emergency circuit breakers, batch rebalancing, and MEV slippage protection in zero-knowledge.
               </p>
               <div className="pt-2">
-                <span className="text-[11px] font-semibold text-gray-900 bg-white border border-gray-200 px-2.5 py-1 rounded-full">
-                  Midnight Compact v0.24
+                <span className="text-[11px] font-semibold text-[#020C21] bg-white border border-gray-200 px-3 py-1 rounded-full shadow-2xs">
+                  Midnight Compact v0.24 ZKIR
                 </span>
               </div>
             </div>
 
-            {/* Pillar 3 */}
-            <div className="bg-[#F9F9F9] border border-gray-200/80 rounded-2xl p-6 sm:p-8 space-y-4 hover:shadow-md transition-shadow">
-              <div className="w-10 h-10 rounded-full bg-white border border-gray-200 flex items-center justify-center shadow-xs">
-                <Lock className="w-5 h-5 text-orange-500" />
+            {/* Card 3 */}
+            <div className="p-8 rounded-3xl bg-gradient-to-br from-white to-[#F5F8FC] border border-gray-200/80 shadow-sm hover:shadow-md transition-all space-y-4">
+              <div className="w-12 h-12 rounded-2xl bg-white border border-gray-200/80 shadow-xs flex items-center justify-center text-[#3C1868]">
+                <Lock className="w-6 h-6" />
               </div>
-              <h3 className="text-lg font-bold text-gray-900">EZKL Verifiable Risk Boundary</h3>
-              <p className="text-xs sm:text-sm text-gray-600 leading-relaxed font-normal">
-                Client-side halo2 zero-knowledge ML proofs ensure every trade respects strict volatility and drawdown limits before submitting transactions to the wallet.
+              <h3 className="text-xl font-bold text-[#020C21]">EZKL Halo2 Risk Boundary</h3>
+              <p className="text-xs sm:text-sm text-[#59627E] leading-relaxed">
+                Client-side Halo2 zero-knowledge ML proofs ensure every trade respects strict volatility, drawdown, and position size ceilings before submitting transactions to the wallet.
               </p>
               <div className="pt-2">
-                <span className="text-[11px] font-semibold text-gray-900 bg-white border border-gray-200 px-2.5 py-1 rounded-full">
+                <span className="text-[11px] font-semibold text-[#020C21] bg-white border border-gray-200 px-3 py-1 rounded-full shadow-2xs">
                   ZK-ML Proof Verification
                 </span>
               </div>
@@ -341,124 +508,175 @@ export const LandingPage: React.FC<LandingPageProps> = ({
       </section>
 
       {/* ========================================================================= */}
-      {/* SECTION 3: LIVE MODULES (Light gray background)                           */}
+      {/* SECTION 3: LIVE MODULES & PROTOCOL CAPABILITIES                           */}
       {/* ========================================================================= */}
-      <section id="modules" className="bg-[#F5F5F5] pt-16 sm:pt-20 lg:pt-28 pb-16 sm:pb-20 lg:pb-28">
-        <div className="max-w-[1440px] mx-auto">
-          {/* Badge Row */}
-          <div className="px-5 sm:px-8 lg:px-12 flex items-center gap-3 mb-6 sm:mb-8">
-            <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-gray-900 text-white text-[11px] sm:text-[12px] font-semibold flex items-center justify-center">
-              2
+      <section id="modules" className="py-20 sm:py-28 px-6 sm:px-10 lg:px-16 bg-[#E6EDF6]">
+        <div className="max-w-[1320px] mx-auto space-y-12">
+          {/* Section Header */}
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 pb-8 border-b border-gray-300">
+            <div className="space-y-3">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white text-[#020C21] text-xs font-semibold uppercase tracking-wider border border-gray-200 shadow-2xs">
+                <Layers className="w-3.5 h-3.5 text-[#3C1868]" />
+                <span>Live Preprod Modules</span>
+              </div>
+              <h2 className="text-3xl sm:text-5xl font-light tracking-tight text-[#020C21]">
+                Institutional-grade <br />
+                <span className="font-semibold text-[#3C1868]">protocol capabilities.</span>
+              </h2>
             </div>
-            <div className="text-[12px] sm:text-[13px] font-medium border border-gray-300 rounded-full px-3 sm:px-4 py-1 sm:py-1.5 text-gray-900">
-              Live Midnight Modules
-            </div>
+
+            <button
+              onClick={onEnterDashboard}
+              className="px-6 py-3 rounded-full bg-[#0F1B31] hover:bg-black text-white text-xs font-bold transition-all shadow-sm flex items-center gap-2 cursor-pointer w-fit"
+            >
+              <span>Explore All Modules in Terminal</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </button>
           </div>
 
-          {/* Heading h2 */}
-          <h2 className="text-[clamp(1.75rem,7vw,4.2rem)] sm:text-[clamp(2.5rem,5vw,4.2rem)] font-medium leading-[1.08] tracking-[-0.03em] text-gray-900 px-5 sm:px-8 lg:px-12 mb-10 sm:mb-14 lg:mb-16">
-            Protocol capabilities
-          </h2>
-
           {/* Cards Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-5 sm:gap-6 lg:gap-7 px-5 sm:px-8 lg:px-12">
-            {/* Card 1: Shielded Strategy Builder */}
-            <div className="flex flex-col bg-white border border-gray-200/80 rounded-2xl p-6 sm:p-8 space-y-4 shadow-sm hover:shadow-md transition-all">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Module 1: Shielded Strategy Builder */}
+            <div className="p-8 rounded-3xl bg-white border border-gray-200/80 shadow-sm hover:shadow-md transition-all space-y-4">
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2 font-bold text-gray-900">
-                  <Layers className="w-5 h-5 text-orange-500" />
-                  <span>Shielded Strategy Builder</span>
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-2xl bg-[#E6EDF6] flex items-center justify-center text-[#3C1868]">
+                    <Layers className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <h4 className="font-bold text-[#020C21]">Shielded Strategy Builder</h4>
+                    <span className="text-[11px] text-gray-500">Natural Language ZK Compilation</span>
+                  </div>
                 </div>
-                <span className="text-[10px] bg-gray-100 text-gray-800 px-2.5 py-0.5 rounded-full font-bold">MODULE 01</span>
+                <span className="text-[10px] px-2.5 py-0.5 rounded-full bg-gray-100 font-bold uppercase text-gray-700">
+                  MODULE 01
+                </span>
               </div>
-              <p className="text-xs sm:text-sm text-gray-600 leading-relaxed font-normal">
-                Synthesize high-frequency parameters from natural language prompts. Strategy hashes are committed to Midnight's ledger while threshold witnesses remain decrypted strictly on your device.
+              <p className="text-xs sm:text-sm text-[#59627E] leading-relaxed">
+                Synthesize high-frequency risk bounds from prompts. Strategy hashes are committed to Midnight's ledger while threshold witnesses remain decrypted strictly on your device.
               </p>
-              <div className="p-4 bg-gray-50 rounded-xl border border-gray-200 text-xs font-mono text-gray-700 space-y-1">
-                <div>Commitment Hash: <span className="text-orange-600 font-bold">0x811c9dc5…d9</span></div>
+              <div className="p-4 rounded-2xl bg-gray-50 border border-gray-200 text-xs font-mono text-gray-700 space-y-1">
+                <div>Commitment Hash: <span className="text-[#3C1868] font-bold">0x811c9dc5…d9</span></div>
                 <div>Witness Storage: <span className="text-emerald-700 font-bold">Client-Side Encrypted</span></div>
               </div>
             </div>
 
-            {/* Card 2: 1AM Wallet & Midnight Explorer */}
-            <div className="flex flex-col bg-white border border-gray-200/80 rounded-2xl p-6 sm:p-8 space-y-4 shadow-sm hover:shadow-md transition-all">
+            {/* Module 2: 1AM Wallet & ProofStation */}
+            <div className="p-8 rounded-3xl bg-white border border-gray-200/80 shadow-sm hover:shadow-md transition-all space-y-4">
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2 font-bold text-gray-900">
-                  <Zap className="w-5 h-5 text-orange-500" />
-                  <span>1AM Wallet & ProofStation</span>
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-2xl bg-[#E6EDF6] flex items-center justify-center text-[#3C1868]">
+                    <Zap className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <h4 className="font-bold text-[#020C21]">1AM Wallet & ProofStation</h4>
+                    <span className="text-[11px] text-gray-500">Zero-Gas Sponsored Proving</span>
+                  </div>
                 </div>
-                <span className="text-[10px] bg-gray-100 text-gray-800 px-2.5 py-0.5 rounded-full font-bold">MODULE 02</span>
+                <span className="text-[10px] px-2.5 py-0.5 rounded-full bg-gray-100 font-bold uppercase text-gray-700">
+                  MODULE 02
+                </span>
               </div>
-              <p className="text-xs sm:text-sm text-gray-600 leading-relaxed font-normal">
-                Direct integration with Midnight's 1AM wallet. Execute zero-gas sponsored transactions via ProofStation and track real-time confirmations on <a href="https://explorer.1am.xyz?network=preprod" target="_blank" rel="noreferrer" className="text-orange-600 underline font-medium">1AM Preprod & Preview Explorer</a>.
+              <p className="text-xs sm:text-sm text-[#59627E] leading-relaxed">
+                Direct integration with Midnight's 1AM wallet. Execute zero-gas sponsored transactions via ProofStation and track real-time confirmations on 1AM Preprod Explorer.
               </p>
-              <div className="p-4 bg-gray-50 rounded-xl border border-gray-200 text-xs font-mono text-gray-700 space-y-1">
+              <div className="p-4 rounded-2xl bg-gray-50 border border-gray-200 text-xs font-mono text-gray-700 space-y-1">
                 <div>Gas Model: <span className="text-emerald-700 font-bold">ProofStation Sponsored</span></div>
-                <div>Explorer Link: <span className="text-orange-600 font-bold">explorer.1am.xyz/tx/…</span></div>
+                <div>Explorer Link: <span className="text-[#3C1868] font-bold">explorer.1am.xyz/tx/…</span></div>
               </div>
             </div>
 
-            {/* Card 3: Shielded Vault (vUSD) */}
-            <div className="flex flex-col bg-white border border-gray-200/80 rounded-2xl p-6 sm:p-8 space-y-4 shadow-sm hover:shadow-md transition-all">
+            {/* Module 3: Shielded Vault (vUSD) */}
+            <div className="p-8 rounded-3xl bg-white border border-gray-200/80 shadow-sm hover:shadow-md transition-all space-y-4">
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2 font-bold text-gray-900">
-                  <Shield className="w-5 h-5 text-orange-500" />
-                  <span>Shielded Vault (vUSD)</span>
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-2xl bg-[#E6EDF6] flex items-center justify-center text-[#3C1868]">
+                    <Shield className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <h4 className="font-bold text-[#020C21]">Shielded Vault (vUSD)</h4>
+                    <span className="text-[11px] text-gray-500">Confidential Stablecoin Notes</span>
+                  </div>
                 </div>
-                <span className="text-[10px] bg-gray-100 text-gray-800 px-2.5 py-0.5 rounded-full font-bold">MODULE 03</span>
+                <span className="text-[10px] px-2.5 py-0.5 rounded-full bg-gray-100 font-bold uppercase text-gray-700">
+                  MODULE 03
+                </span>
               </div>
-              <p className="text-xs sm:text-sm text-gray-600 leading-relaxed font-normal">
+              <p className="text-xs sm:text-sm text-[#59627E] leading-relaxed">
                 Convert public tNIGHT collateral into private USDC-equivalent vault notes. Deposit, trade, and withdraw without linking your public wallet address to trading history.
               </p>
-              <div className="p-4 bg-gray-50 rounded-xl border border-gray-200 text-xs font-mono text-gray-700 space-y-1">
+              <div className="p-4 rounded-2xl bg-gray-50 border border-gray-200 text-xs font-mono text-gray-700 space-y-1">
                 <div>Circuits: <span className="text-gray-900 font-bold">mintVaultBalance • burnVaultBalance</span></div>
                 <div>Privacy Layer: <span className="text-emerald-700 font-bold">Zero Address Linkability</span></div>
               </div>
             </div>
 
-            {/* Card 4: Gemini Market Intelligence */}
-            <div className="flex flex-col bg-white border border-gray-200/80 rounded-2xl p-6 sm:p-8 space-y-4 shadow-sm hover:shadow-md transition-all">
+            {/* Module 4: Autonomous ZK Execution Bot */}
+            <div className="p-8 rounded-3xl bg-white border border-gray-200/80 shadow-sm hover:shadow-md transition-all space-y-4">
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2 font-bold text-gray-900">
-                  <Activity className="w-5 h-5 text-orange-500" />
-                  <span>Gemini Technical Signals</span>
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-2xl bg-[#E6EDF6] flex items-center justify-center text-[#3C1868]">
+                    <Activity className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <h4 className="font-bold text-[#020C21]">Autonomous ZK Execution Bot</h4>
+                    <span className="text-[11px] text-gray-500">Algorithmic Runner & Audit Studio</span>
+                  </div>
                 </div>
-                <span className="text-[10px] bg-gray-100 text-gray-800 px-2.5 py-0.5 rounded-full font-bold">MODULE 04</span>
+                <span className="text-[10px] px-2.5 py-0.5 rounded-full bg-gray-100 font-bold uppercase text-gray-700">
+                  MODULE 04
+                </span>
               </div>
-              <p className="text-xs sm:text-sm text-gray-600 leading-relaxed font-normal">
-                Live cryptocurrency price feeds and automated technical analysis generated by Gemini 2.5 Flash with custom prompt queries and risk metrics.
+              <p className="text-xs sm:text-sm text-[#59627E] leading-relaxed">
+                Algorithmic trading engine with 4 institutional stress scenarios, real-time MEV sandwich attack immunity tests, and cryptographically verifiable audit certificates.
               </p>
-              <div className="p-4 bg-gray-50 rounded-xl border border-gray-200 text-xs font-mono text-gray-700 space-y-1">
-                <div>Live Feeds: <span className="text-gray-900 font-bold">ADA • BTC • ETH • SOL • tNIGHT</span></div>
-                <div>Model: <span className="text-orange-600 font-bold">Gemini 2.5 Flash</span></div>
+              <div className="p-4 rounded-2xl bg-gray-50 border border-gray-200 text-xs font-mono text-gray-700 space-y-1">
+                <div>Scenarios: <span className="text-gray-900 font-bold">Flash Crash • Bull Surge • Choppy • MEV</span></div>
+                <div>Certificates: <span className="text-[#3C1868] font-bold">Compact v1.3.0 Verified</span></div>
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Footer minimal branding bar */}
-      <footer className="bg-white border-t border-gray-200 py-8 px-5 sm:px-8 lg:px-12 text-xs text-gray-500 font-sans">
-        <div className="max-w-[1440px] mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-2.5">
-            <img src="/axiom-logo.png" alt="Axiom Trade" className="w-6 h-6 rounded-full object-cover shadow-2xs" />
-            <span className="font-bold text-gray-900">AXIOM TRADE</span>
-            <span className="text-gray-400">•</span>
-            <span className="text-gray-600 font-medium">Private moves. Public proof.</span>
+      {/* ========================================================================= */}
+      {/* FOOTER BAR WITH NEW CUSTOM LOGO                                           */}
+      {/* ========================================================================= */}
+      <footer className="bg-white border-t border-gray-200 py-10 px-6 sm:px-10 lg:px-16 text-xs text-[#59627E]">
+        <div className="max-w-[1320px] mx-auto flex flex-col sm:flex-row items-center justify-between gap-6">
+          <div className="flex items-center gap-3">
+            <div className="h-9 px-2 rounded-xl bg-white border border-gray-200 shadow-2xs flex items-center justify-center shrink-0">
+              <img src="/axiom-logo.png" alt="Axiom Trade" className="h-6 w-auto object-contain" />
+            </div>
+            <div className="flex flex-col">
+              <span className="font-bold text-[#020C21] tracking-tight">AXIOM TRADE</span>
+              <span className="text-[10px] text-gray-500">Confidential AI-Orchestrated Trading Protocol • Midnight Preprod</span>
+            </div>
           </div>
 
           <div className="flex items-center gap-6">
-            <a href="https://explorer.1am.xyz?network=preprod" target="_blank" rel="noreferrer" className="text-gray-600 hover:text-gray-900 transition-colors">
-              1AM Explorer
+            <a
+              href="https://explorer.1am.xyz/contract/2428cd4ae7c2cd0bb501e1e9162de3003b103c1063c220e0d5cfc3f0b438e524?network=preprod"
+              target="_blank"
+              rel="noreferrer"
+              className="hover:text-[#020C21] transition-colors flex items-center gap-1 font-medium"
+            >
+              <span>1AM Preprod Explorer</span>
+              <ExternalLink className="w-3 h-3 text-gray-400" />
             </a>
-            <a href="https://faucet.preview.midnight.network" target="_blank" rel="noreferrer" className="text-gray-600 hover:text-gray-900 transition-colors">
-              Midnight Faucets
+            <a
+              href="https://docs.google.com/forms/d/1N8tk4NR4at56WroUt_5jyger578DWpgcueMCqPD2HEw"
+              target="_blank"
+              rel="noreferrer"
+              className="hover:text-[#020C21] transition-colors font-medium"
+            >
+              Feedback Form
             </a>
             <button
-              onClick={walletConnected ? onEnterDashboard : onConnectWallet}
-              className="text-orange-600 hover:text-orange-700 font-bold underline cursor-pointer"
+              onClick={onEnterDashboard}
+              className="px-4 py-2 rounded-full bg-[#0F1B31] text-white font-bold hover:bg-black transition-all cursor-pointer"
             >
-              {walletConnected ? 'Launch Dashboard →' : 'Connect 1AM Wallet →'}
+              Launch Dashboard →
             </button>
           </div>
         </div>
@@ -466,3 +684,5 @@ export const LandingPage: React.FC<LandingPageProps> = ({
     </div>
   );
 };
+
+export default LandingPage;

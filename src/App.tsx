@@ -140,16 +140,18 @@ export function App() {
           {activeTab === 'overview' && (
             <div className="space-y-6 max-w-6xl mx-auto font-sans">
               {/* Top Greeting Header (Indian Standard Time - IST) */}
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white border border-gray-200/80 rounded-2xl p-6 shadow-sm">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white/90 backdrop-blur-xl border border-white/80 rounded-3xl p-6 shadow-sm">
                 <div className="flex items-center gap-4">
-                  <img
-                    src="/axiom-logo.png"
-                    alt="Axiom"
-                    className="w-12 h-12 rounded-full object-cover shadow-sm bg-gray-900 shrink-0"
-                  />
+                  <div className="h-14 px-3.5 rounded-2xl bg-white border border-gray-200/80 shadow-xs flex items-center justify-center shrink-0">
+                    <img
+                      src="/axiom-logo.png"
+                      alt="Axiom Trade Logo"
+                      className="h-9 w-auto object-contain"
+                    />
+                  </div>
                   <div>
-                    <div className="text-[11px] text-gray-500 uppercase tracking-wider flex items-center gap-2 font-medium">
-                      <Clock className="w-3.5 h-3.5 text-orange-500" />
+                    <div className="text-[11px] text-[#59627E] uppercase tracking-wider flex items-center gap-2 font-medium">
+                      <Clock className="w-3.5 h-3.5 text-[#3C1868]" />
                       <span>{formatISTDate()} • {formatISTTime()}</span>
                       {latestBlock && (
                         <span className="text-emerald-700 font-semibold flex items-center gap-1">
@@ -157,15 +159,15 @@ export function App() {
                         </span>
                       )}
                     </div>
-                    <h1 className="text-xl sm:text-2xl font-extrabold text-gray-900 tracking-tight">
-                      Welcome back, <span className="text-orange-600">{displayGreetingAddr}</span>
+                    <h1 className="text-xl sm:text-2xl font-extrabold text-[#020C21] tracking-tight">
+                      Welcome back, <span className="text-[#3C1868]">{displayGreetingAddr}</span>
                     </h1>
                   </div>
                 </div>
 
-                <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-gray-100 border border-gray-200 text-gray-800 text-xs font-semibold shrink-0">
+                <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/80 border border-gray-200 text-[#020C21] text-xs font-semibold shrink-0 shadow-2xs">
                   <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                  <span className="uppercase">{networkId} TESTNET (IST)</span>
+                  <span className="uppercase font-bold">{networkId} TESTNET (IST)</span>
                 </div>
               </div>
 

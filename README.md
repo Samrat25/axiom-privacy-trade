@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="./public/axiom-logo.png" alt="Axiom Trade Logo" width="130" style="border-radius: 20px;" />
+  <img src="./public/axiom-logo.png" alt="Axiom Trade Logo" width="280" style="border-radius: 12px; background: #ffffff; padding: 12px; box-shadow: 0 4px 24px rgba(0,0,0,0.08);" />
 </p>
 
 <h1 align="center">Axiom — Confidential AI-Orchestrated Trading Protocol</h1>

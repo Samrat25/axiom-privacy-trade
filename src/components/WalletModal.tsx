@@ -82,20 +82,22 @@ export const WalletModal: React.FC<WalletModalProps> = ({
 
         {/* Modal Header */}
         <div className="flex items-center gap-3">
-          <img
-            src="/axiom-logo.png"
-            alt="Axiom Logo"
-            className="w-10 h-10 rounded-full object-cover shadow-sm bg-gray-900 shrink-0"
-          />
+          <div className="h-10 px-2.5 rounded-xl bg-white border border-gray-200 shadow-xs flex items-center justify-center shrink-0">
+            <img
+              src="/axiom-logo.png"
+              alt="Axiom Trade Logo"
+              className="h-6 w-auto object-contain"
+            />
+          </div>
           <div>
             <div className="flex items-center gap-2">
               <h2 className="text-base font-extrabold tracking-tight text-gray-900">1AM Midnight Wallet</h2>
-              <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-gray-900 text-white uppercase tracking-wider">
+              <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#0F1B31] text-white uppercase tracking-wider">
                 {networkId}
               </span>
             </div>
             <p className="text-xs text-gray-500 font-medium">
-              Private moves. Public proof.
+              Confidential AI-Orchestrated Trading Protocol
             </p>
           </div>
         </div>

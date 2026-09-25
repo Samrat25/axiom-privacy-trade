@@ -81,42 +81,42 @@ export const Layout: React.FC<LayoutProps> = ({
   ];
 
   return (
-    <div className="min-h-screen bg-[#EFEFEF] text-gray-900 flex flex-col font-sans selection:bg-orange-500 selection:text-white">
-      {/* Top Navbar — Pill Shape Matching Landing Page */}
+    <div className="min-h-screen bg-[var(--frame,#E6EDF6)] text-[var(--ink,#020C21)] flex flex-col font-sans selection:bg-[#4A78B0] selection:text-white">
+      {/* Top Navbar — Luxury Glass Pill Shape Matching Landing Page */}
       <header className="w-full max-w-[1440px] mx-auto p-2 sm:p-3 sticky top-0 z-50">
-        <nav className="bg-white rounded-full p-[5px] pl-3 pr-2 flex items-center justify-between shadow-sm border border-gray-200/80">
+        <nav className="bg-white/90 backdrop-blur-xl rounded-full p-[6px] pl-3.5 pr-2 flex items-center justify-between shadow-sm border border-white/80">
           <div className="flex items-center gap-3">
             <button
               onClick={() => setActiveTab('landing')}
               className="flex items-center gap-3 group cursor-pointer text-left"
             >
-              <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full overflow-hidden shadow-sm border border-gray-200/60 shrink-0 bg-gray-900">
+              <div className="h-10 px-2.5 rounded-2xl bg-white border border-gray-200/80 shadow-xs flex items-center justify-center shrink-0 group-hover:border-[#3C1868]/40 transition-colors">
                 <img
                   src="/axiom-logo.png"
-                  alt="Axiom Logo"
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                  alt="Axiom Trade Logo"
+                  className="h-7 w-auto object-contain group-hover:scale-105 transition-transform"
                 />
               </div>
               <div className="flex flex-col">
                 <div className="flex items-center gap-2">
-                  <span className="text-xs sm:text-sm font-extrabold text-gray-900 tracking-tight leading-none">
-                    AXIOM
+                  <span className="text-xs sm:text-sm font-extrabold text-[#020C21] tracking-tight leading-none">
+                    AXIOM TRADE
                   </span>
-                  <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-gray-900 text-white uppercase tracking-wider">
+                  <span className="text-[9px] font-bold px-2 py-0.5 rounded-full bg-[#0F1B31] text-white uppercase tracking-wider">
                     {networkId}
                   </span>
                 </div>
                 <span className="text-[10px] text-gray-500 font-medium hidden sm:block">
-                  Private moves. Public proof.
+                  Confidential AI-Orchestrated Protocol
                 </span>
               </div>
             </button>
           </div>
 
           {/* Header Center: Clean Breadcrumb / Active Module Indicator */}
-          <div className="hidden md:flex items-center gap-2 text-xs font-semibold text-gray-500">
+          <div className="hidden md:flex items-center gap-2 text-xs font-semibold px-4 py-1.5 rounded-full bg-white/70 border border-gray-200/80 shadow-2xs">
             <span className="text-gray-400">/</span>
-            <span className="text-gray-900 font-bold capitalize">
+            <span className="text-[#020C21] font-bold capitalize">
               {navItems.find((n) => n.id === activeTab)?.label || activeTab}
             </span>
           </div>
@@ -175,7 +175,7 @@ export const Layout: React.FC<LayoutProps> = ({
       {/* Main Container with Sidebar + Content */}
       <div className="w-full max-w-[1440px] mx-auto flex-1 flex overflow-hidden px-2 sm:px-4 pb-4 gap-4">
         {/* Sidebar (Desktop) */}
-        <aside className="w-64 bg-white border border-gray-200/80 rounded-2xl hidden md:flex flex-col justify-between p-4 shrink-0 shadow-sm">
+        <aside className="w-64 bg-white/90 backdrop-blur-xl border border-white/80 rounded-3xl hidden md:flex flex-col justify-between p-4 shrink-0 shadow-sm">
           <div className="space-y-1.5">
             <div className="px-3 py-1 text-[11px] font-semibold uppercase tracking-wider text-gray-500">
               Protocol Modules
@@ -187,18 +187,18 @@ export const Layout: React.FC<LayoutProps> = ({
                 <button
                   key={item.id}
                   onClick={() => setActiveTab(item.id)}
-                  className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-medium transition-all cursor-pointer ${
+                  className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-2xl text-xs font-semibold transition-all cursor-pointer ${
                     isActive
-                      ? 'bg-gray-900 text-white shadow-md'
-                      : 'text-gray-700 hover:text-gray-900 hover:bg-gray-100/80 border border-transparent'
+                      ? 'bg-[#0F1B31] text-white shadow-md'
+                      : 'text-gray-700 hover:text-gray-900 hover:bg-white/80 border border-transparent'
                   }`}
                 >
                   <div className="flex items-center gap-2.5">
-                    <Icon className={`w-4 h-4 ${isActive ? 'text-[#F26522]' : 'text-gray-500'}`} />
+                    <Icon className={`w-4 h-4 ${isActive ? 'text-[#A070D6]' : 'text-gray-500'}`} />
                     <span className="font-medium">{item.label}</span>
                   </div>
                   {item.highlight && (
-                    <span className="w-1.5 h-1.5 rounded-full bg-[#F26522]"></span>
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#3C1868] shadow-xs"></span>
                   )}
                 </button>
               );
@@ -206,13 +206,13 @@ export const Layout: React.FC<LayoutProps> = ({
           </div>
 
           {/* Sidebar Footer Info */}
-          <div className="bg-gray-50 border border-gray-200/80 rounded-xl p-3.5 space-y-2 text-xs">
+          <div className="bg-gradient-to-br from-white to-[#F5F8FC] border border-gray-200/80 rounded-2xl p-3.5 space-y-2 text-xs">
             <div className="flex items-center justify-between font-medium">
               <span className="text-gray-600 flex items-center gap-1.5">
-                <Sparkles className="w-3.5 h-3.5 text-[#F26522]" /> ZK Engine
+                <Sparkles className="w-3.5 h-3.5 text-[#3C1868]" /> ZK Engine
               </span>
-              <span className="text-gray-900 font-bold text-[10px] bg-white px-2 py-0.5 rounded border border-gray-200">
-                Compact v0.24
+              <span className="text-[#020C21] font-bold text-[10px] bg-white px-2 py-0.5 rounded-full border border-gray-200 shadow-2xs">
+                Compact v1.3.0
               </span>
             </div>
             <div className="text-[11px] text-gray-500 space-y-1 pt-1 border-t border-gray-200/60">
@@ -239,12 +239,12 @@ export const Layout: React.FC<LayoutProps> = ({
       </div>
 
       {/* Footer Ticker Matching Landing Page */}
-      <footer className="bg-white border-t border-gray-200 py-2.5 px-4 sm:px-6 text-xs text-gray-600 font-mono">
+      <footer className="bg-white/90 backdrop-blur-md border-t border-white/80 py-2.5 px-4 sm:px-6 text-xs text-gray-600 font-mono">
         <div className="max-w-[1440px] mx-auto flex flex-col sm:flex-row items-center justify-between gap-3">
           <div className="flex items-center gap-3 overflow-x-auto no-scrollbar">
-            <div className="flex items-center gap-1.5">
-              <img src="/axiom-logo.png" alt="Axiom" className="w-4 h-4 rounded-full object-cover" />
-              <span className="font-bold text-gray-900">AXIOM TRADE</span>
+            <div className="flex items-center gap-2">
+              <img src="/axiom-logo.png" alt="Axiom Trade Logo" className="h-4.5 w-auto object-contain" />
+              <span className="font-bold text-[#020C21]">AXIOM TRADE</span>
             </div>
             <span className="text-gray-300">•</span>
             {latestBlockHeight && (
@@ -261,7 +261,7 @@ export const Layout: React.FC<LayoutProps> = ({
           </div>
 
           <div className="flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
+            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
             <span className="text-gray-700 font-medium">Midnight {networkId === 'preprod' ? 'Preprod' : 'Preview'} Explorer API Active</span>
           </div>
         </div>
