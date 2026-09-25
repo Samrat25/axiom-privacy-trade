@@ -82,11 +82,11 @@ export const WalletModal: React.FC<WalletModalProps> = ({
 
         {/* Modal Header */}
         <div className="flex items-center gap-3">
-          <div className="h-10 px-2.5 rounded-xl bg-white border border-gray-200 shadow-xs flex items-center justify-center shrink-0">
+          <div className="h-12 px-3 rounded-2xl bg-white border border-gray-200/80 shadow-xs flex items-center justify-center shrink-0">
             <img
               src="/axiom-logo.png"
               alt="Axiom Trade Logo"
-              className="h-6 w-auto object-contain"
+              className="h-8 w-auto object-contain"
             />
           </div>
           <div>

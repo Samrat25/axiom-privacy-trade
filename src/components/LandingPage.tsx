@@ -10,10 +10,10 @@ import {
   Layers,
   Sparkles,
   CheckCircle2,
-  TrendingUp,
   Clock,
   Menu,
-  X
+  X,
+  Play
 } from 'lucide-react';
 import { formatISTDate, formatISTTime } from '../utils/time';
 
@@ -32,7 +32,6 @@ export const LandingPage: React.FC<LandingPageProps> = ({
 }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState<boolean>(false);
   const videoRef = useRef<HTMLVideoElement>(null);
-  const heroRef = useRef<HTMLDivElement>(null);
 
   // Sync video playback with reduced-motion preference & visibility
   useEffect(() => {
@@ -63,102 +62,16 @@ export const LandingPage: React.FC<LandingPageProps> = ({
     };
   }, []);
 
-  // Web Animations API (WAAPI) Entrance Timeline
-  useEffect(() => {
-    if (typeof window === 'undefined') return;
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-
-    const s = window.matchMedia('(max-width: 640px)').matches ? 0.86 : 1;
-    const EXPO = 'cubic-bezier(.16,1,.3,1)';
-    const SOFT = 'cubic-bezier(.22,.7,.25,1)';
-    const GLASS = 'cubic-bezier(.2,.75,.28,1)';
-    const running: Animation[] = [];
-
-    const rise = (selector: string, delay: number, dur: number) => {
-      const el = document.querySelector(selector) as HTMLElement;
-      if (!el) return;
-      const anim = el.animate(
-        [
-          { clipPath: 'inset(100% 0 -14% 0)', translate: '0 .16em' },
-          { clipPath: 'inset(-18% 0 -14% 0)', translate: '0 0' }
-        ],
-        { duration: dur * s, delay: delay * s, easing: EXPO, fill: 'both' }
-      );
-      running.push(anim);
-    };
-
-    const lift = (selector: string, delay: number, dist = '.7em', dur = 560) => {
-      const el = document.querySelector(selector) as HTMLElement;
-      if (!el) return;
-      const anim = el.animate(
-        [
-          { opacity: 0, translate: `0 ${dist}` },
-          { opacity: 1, translate: '0 0' }
-        ],
-        { duration: dur * s, delay: delay * s, easing: SOFT, fill: 'both' }
-      );
-      running.push(anim);
-    };
-
-    const settle = (selector: string, delay: number, dur = 760, from = 0.985, dist = '1.1em') => {
-      const el = document.querySelector(selector) as HTMLElement;
-      if (!el) return;
-      const anim = el.animate(
-        [
-          { opacity: 0, scale: from, translate: `0 ${dist}` },
-          { opacity: 1, scale: 1, translate: '0 0' }
-        ],
-        { duration: dur * s, delay: delay * s, easing: GLASS, fill: 'both' }
-      );
-      running.push(anim);
-    };
-
-    const runKeyframes = (selector: string, keyframes: Keyframe[], delay: number, dur: number, easing: string) => {
-      const el = document.querySelector(selector) as HTMLElement;
-      if (!el) return;
-      const anim = el.animate(keyframes, {
-        duration: dur * s,
-        delay: delay * s,
-        easing,
-        fill: 'both'
-      });
-      running.push(anim);
-    };
-
-    lift('.axiom-brand', 60, '.55em', 600);
-    settle('.axiom-nav', 150, 700, 0.99, '.5em');
-    settle('.axiom-cta', 200, 700, 0.985, '.5em');
-    lift('.axiom-eyebrow', 300, '.8em', 520);
-    rise('.axiom-h1-1', 380, 980);
-    rise('.axiom-h1-2', 470, 980);
-    settle('.axiom-play', 720, 640, 0.88, '.3em');
-    lift('.axiom-tag', 770, '.7em', 560);
-    settle('.axiom-panel', 800, 880, 0.982, '1.4em');
-    runKeyframes('.axiom-shield', [{ scale: 0.86 }, { scale: 1 }], 700, 1020, EXPO);
-    runKeyframes('.axiom-dot', [{ scale: 0 }, { scale: 1 }], 520, 1080, EXPO);
-    runKeyframes('.axiom-track-bar', [{ scale: '0 1' }, { scale: '1 1' }], 820, 1120, EXPO);
-    rise('.axiom-num-1', 920, 860);
-    rise('.axiom-num-2', 990, 860);
-    lift('.axiom-lbl-1', 1030, '.6em', 520);
-    lift('.axiom-lbl-2', 1075, '.6em', 520);
-    runKeyframes('.axiom-slash', [{ scale: '1 0' }, { scale: '1 1' }], 700, 1010, EXPO);
-    settle('.axiom-meet', 1140, 820, 0.985, '1.2em');
-
-    return () => {
-      running.forEach(a => a.cancel());
-    };
-  }, []);
-
   return (
-    <div className="min-h-screen bg-[var(--frame,#E6EDF6)] text-[var(--ink,#020C21)] font-sans selection:bg-[#4A78B0] selection:text-white overflow-x-hidden">
+    <div className="min-h-screen bg-[#E6EDF6] text-[#020C21] font-sans selection:bg-[#4A78B0] selection:text-white overflow-x-hidden">
       {/* ========================================================================= */}
-      {/* SECTION 1: HERO SECTION — Pixel-Measured Design-Unit Comp System          */}
+      {/* SECTION 1: HERO SECTION — Full Viewport Luxury Caustics Experience        */}
       {/* ========================================================================= */}
-      <section ref={heroRef} className="relative w-full h-screen min-h-[640px] overflow-hidden isolate select-none">
-        {/* CloudFront Video Background Plate with Traveling Caustics */}
+      <section className="relative w-full min-h-screen flex flex-col justify-between overflow-hidden isolate select-none">
+        {/* Background Video Plate with Traveling Caustics */}
         <video
           ref={videoRef}
-          className="bg"
+          className="absolute inset-0 w-full h-full object-cover object-center z-0 filter brightness-[1.01] saturate-[0.98] pointer-events-none"
           autoPlay
           muted
           loop
@@ -169,264 +82,279 @@ export const LandingPage: React.FC<LandingPageProps> = ({
           poster="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260912_105822_bf7c2d53-9957-4521-bbbf-7c1ab7a70130.png"
           src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260912_105953_21ad8049-9088-4a00-bad3-aee6b5575a2b.mp4"
         />
-        <div className="tint" />
+        {/* Soft Ambient Tint */}
+        <div className="absolute inset-0 bg-white/20 z-1 pointer-events-none backdrop-blur-[0.5px]" />
 
-        <div className="card">
-          <div className="stack">
-            {/* ── HEADER ROW ── */}
-            <div className="row">
-              {/* BRAND: Custom Axiom Logo */}
-              <a
-                className="brand axiom-brand l t"
-                style={{ '--x': 68, '--y': 47 } as React.CSSProperties}
-                href="#hero"
-              >
-                <div className="h-[calc(38*var(--u))] px-2.5 rounded-2xl bg-white/90 backdrop-blur-md border border-white/80 shadow-xs flex items-center justify-center shrink-0">
-                  <img
-                    src="/axiom-logo.png"
-                    alt="Axiom Trade Logo"
-                    className="h-[calc(26*var(--u))] w-auto object-contain"
-                  />
+        {/* ── HEADER NAVBAR ── */}
+        <header className="relative z-20 w-full max-w-[1400px] mx-auto px-5 sm:px-8 pt-5 sm:pt-7">
+          <div className="flex items-center justify-between gap-4">
+            {/* BRAND: Big Custom Logo */}
+            <a href="#hero" className="flex items-center gap-4 group text-left">
+              <div className="h-16 sm:h-20 px-4 rounded-2xl bg-white/95 backdrop-blur-xl border border-white/90 shadow-md flex items-center justify-center shrink-0 group-hover:shadow-lg group-hover:border-[#3C1868]/40 transition-all">
+                <img
+                  src="/axiom-logo.png"
+                  alt="Axiom Trade Logo"
+                  className="h-11 sm:h-15 w-auto object-contain group-hover:scale-105 transition-transform"
+                />
+              </div>
+              <div className="hidden sm:flex flex-col">
+                <div className="flex items-center gap-2">
+                  <span className="text-base sm:text-xl font-black text-[#020C21] tracking-tight leading-none">
+                    AXIOM TRADE
+                  </span>
+                  <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-[#0F1B31] text-white uppercase tracking-wider">
+                    Preprod Live
+                  </span>
                 </div>
-                <b className="sx" style={{ '--sx': 0.894 } as React.CSSProperties}>
-                  Axiom Trade
-                </b>
+                <span className="text-xs text-[#59627E] font-medium pt-1">
+                  Confidential AI-Orchestrated Protocol
+                </span>
+              </div>
+            </a>
+
+            {/* NAV PILL — Centered Frosted Glass Capsule */}
+            <nav className="hidden lg:flex items-center gap-7 px-7 py-3 rounded-full bg-white/85 backdrop-blur-xl border border-white/90 shadow-md text-sm font-semibold text-[#020C21]">
+              <a href="#hero" className="hover:text-[#3C1868] transition-colors flex items-center gap-1.5">
+                <span>Home</span>
               </a>
+              <span className="text-gray-300">/</span>
+              <a href="#architecture" className="hover:text-[#3C1868] transition-colors">
+                Architecture
+              </a>
+              <span className="text-gray-300">/</span>
+              <a href="#modules" className="hover:text-[#3C1868] transition-colors">
+                Modules
+              </a>
+              <span className="text-gray-300">/</span>
+              <a href="#circuits" className="hover:text-[#3C1868] transition-colors">
+                ZK Circuits
+              </a>
+              <span className="text-gray-300">/</span>
+              <a
+                href="https://explorer.1am.xyz/contract/2428cd4ae7c2cd0bb501e1e9162de3003b103c1063c220e0d5cfc3f0b438e524?network=preprod"
+                target="_blank"
+                rel="noreferrer"
+                className="hover:text-[#3C1868] transition-colors flex items-center gap-1 text-[#3C1868]"
+              >
+                <span>1AM Explorer</span>
+                <ExternalLink className="w-3 h-3" />
+              </a>
+            </nav>
+
+            {/* PRIMARY CTA: Executive Glass Knob Button */}
+            <div className="flex items-center gap-3">
+              <button
+                onClick={walletConnected ? onEnterDashboard : onConnectWallet}
+                className="px-6 sm:px-7 py-3 sm:py-3.5 rounded-full bg-[#0F1B31] hover:bg-black text-white text-xs sm:text-sm font-bold shadow-lg hover:shadow-xl transition-all flex items-center gap-3 group cursor-pointer"
+              >
+                <span>{walletConnected ? 'Open Terminal' : 'Launch Protocol'}</span>
+                <span className="w-7 h-7 rounded-full bg-[#384B64] flex items-center justify-center group-hover:translate-x-0.5 transition-transform">
+                  <ArrowRight className="w-3.5 h-3.5 text-white" />
+                </span>
+              </button>
 
               {/* Mobile Burger Button */}
               <button
-                className="burger md:hidden"
-                type="button"
-                aria-label="Toggle menu"
-                aria-expanded={mobileMenuOpen}
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                className="lg:hidden w-11 h-11 rounded-full bg-white/90 backdrop-blur-md border border-white/80 shadow-md flex items-center justify-center text-[#020C21] cursor-pointer"
+                aria-label="Toggle menu"
               >
-                <i></i>
-                <i></i>
-              </button>
-
-              {/* NAV PILL — Centered Glass Capsule */}
-              <nav className="nav axiom-nav hidden md:block">
-                <a href="#hero" className="n-home" aria-label="Home">
-                  <svg viewBox="0 0 20 21" fill="none" aria-hidden="true" className="w-full h-full">
-                    <path
-                      d="M2 8.4 10 2l8 6.4V18a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1z"
-                      stroke="#202940"
-                      strokeWidth="1.7"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
-                </a>
-                <a href="#architecture" className="n-explore">
-                  <span>Architecture</span>
-                </a>
-                <hr className="n-div" />
-                <a href="#modules" className="n-grid" aria-label="Modules">
-                  <svg viewBox="0 0 20 20" fill="none" aria-hidden="true" className="w-full h-full">
-                    <rect x="1" y="1" width="7.4" height="7.4" rx="1.7" stroke="#202940" strokeWidth="1.7" />
-                    <rect x="11.6" y="1" width="7.4" height="7.4" rx="1.7" stroke="#202940" strokeWidth="1.7" />
-                    <rect x="1" y="11.6" width="7.4" height="7.4" rx="1.7" stroke="#202940" strokeWidth="1.7" />
-                    <rect x="11.6" y="11.6" width="7.4" height="7.4" rx="1.7" stroke="#202940" strokeWidth="1.7" />
-                  </svg>
-                </a>
-                <a href="#circuits" className="n-product">
-                  <span>ZK Circuits</span>
-                </a>
-                <hr className="n-div2" />
-                <button
-                  onClick={onEnterDashboard}
-                  className="n-app cursor-pointer border-none bg-transparent"
-                >
-                  <span className="font-bold text-[#3C1868]">Terminal →</span>
-                </button>
-              </nav>
-
-              {/* PRIMARY CTA: Glass Knob Button */}
-              <button
-                onClick={walletConnected ? onEnterDashboard : onConnectWallet}
-                className="cta axiom-cta l t r cursor-pointer border-none"
-                style={{ '--x': 58, '--y': 30 } as React.CSSProperties}
-              >
-                <span>{walletConnected ? 'Open Terminal' : 'Launch Protocol'}</span>
-                <span className="knob">
-                  <svg viewBox="0 0 18 18" fill="none" aria-hidden="true">
-                    <path
-                      d="m6.6 3.6 6 5.4-6 5.4"
-                      stroke="#fff"
-                      strokeWidth="1.9"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
-                </span>
+                {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
               </button>
             </div>
+          </div>
 
-            {/* Mobile Dropdown Menu */}
-            {mobileMenuOpen && (
-              <div className="menu md:hidden" data-open="">
-                <div className="nav">
-                  <a href="#architecture" onClick={() => setMobileMenuOpen(false)}>
-                    <span>Architecture</span>
-                  </a>
-                  <a href="#modules" onClick={() => setMobileMenuOpen(false)}>
-                    <span>Modules</span>
-                  </a>
-                  <a href="#circuits" onClick={() => setMobileMenuOpen(false)}>
-                    <span>ZK Circuits</span>
-                  </a>
-                  <hr className="n-div" />
-                  <button
-                    onClick={() => {
-                      setMobileMenuOpen(false);
-                      onEnterDashboard();
-                    }}
-                    className="cta cursor-pointer"
-                  >
-                    <span>Launch Terminal</span>
-                    <span className="knob">
-                      <ArrowRight className="w-4 h-4 text-white" />
-                    </span>
-                  </button>
-                </div>
+          {/* Mobile Menu Dropdown */}
+          {mobileMenuOpen && (
+            <div className="lg:hidden mt-4 p-5 rounded-3xl bg-white/95 backdrop-blur-2xl border border-white/90 shadow-2xl space-y-4 animate-fadeIn">
+              <div className="flex flex-col space-y-3 font-semibold text-sm text-[#020C21]">
+                <a href="#hero" onClick={() => setMobileMenuOpen(false)} className="hover:text-[#3C1868] py-1">Home</a>
+                <a href="#architecture" onClick={() => setMobileMenuOpen(false)} className="hover:text-[#3C1868] py-1">Architecture</a>
+                <a href="#modules" onClick={() => setMobileMenuOpen(false)} className="hover:text-[#3C1868] py-1">Modules</a>
+                <a href="#circuits" onClick={() => setMobileMenuOpen(false)} className="hover:text-[#3C1868] py-1">ZK Circuits</a>
+                <a
+                  href="https://explorer.1am.xyz/contract/2428cd4ae7c2cd0bb501e1e9162de3003b103c1063c220e0d5cfc3f0b438e524?network=preprod"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-[#3C1868] py-1 flex items-center gap-1.5"
+                >
+                  <span>1AM Preprod Explorer</span>
+                  <ExternalLink className="w-3.5 h-3.5" />
+                </a>
               </div>
-            )}
-
-            {/* ── HERO BLOCK ── */}
-            <div className="hero-blk">
-              <p
-                className="eyebrow axiom-eyebrow l c sx"
-                style={{ '--x': 65.7, '--y': -209.2, '--sx': 0.9293 } as React.CSSProperties}
+              <button
+                onClick={() => {
+                  setMobileMenuOpen(false);
+                  onEnterDashboard();
+                }}
+                className="w-full py-3.5 rounded-full bg-[#0F1B31] text-white font-bold text-xs flex items-center justify-center gap-2 cursor-pointer shadow-md"
               >
-                Confidential AI-Orchestrated Trading Protocol
-              </p>
+                <span>Enter Trading Terminal</span>
+                <ArrowRight className="w-4 h-4" />
+              </button>
+            </div>
+          )}
+        </header>
 
-              <h1
-                className="l c"
-                style={{ '--x': 62.6, '--y': -167.3 } as React.CSSProperties}
-              >
-                <span className="sx axiom-h1-1" style={{ '--sx': 0.9431 } as React.CSSProperties}>
-                  Confidential Trading
-                </span>
-                <br />
-                <span className="sx axiom-h1-2" style={{ '--sx': 0.9792 } as React.CSSProperties}>
-                  Proven in Zero-Knowledge
+        {/* ── HERO CENTER CONTENT ── */}
+        <div id="hero" className="relative z-10 w-full max-w-[1400px] mx-auto px-5 sm:px-8 py-10 sm:py-16 my-auto">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+            {/* Left Column: Big Headline & Taglines */}
+            <div className="lg:col-span-8 space-y-7 sm:space-y-9">
+              {/* Eyebrow Badge — Prominent & Bold */}
+              <div className="inline-flex items-center gap-2.5 px-5 sm:px-6 py-2.5 rounded-full bg-white/95 backdrop-blur-xl border border-white/90 shadow-sm text-xs sm:text-sm font-extrabold uppercase tracking-wider text-[#3C1868]">
+                <Shield className="w-4 h-4 text-[#3C1868]" />
+                <span>Confidential AI-Orchestrated Trading Protocol</span>
+                <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse ml-1"></span>
+              </div>
+
+              {/* Massive Commanding Headline ("Front") */}
+              <h1 className="text-5xl sm:text-7xl md:text-8xl lg:text-[5.75rem] font-light leading-[1.02] tracking-[-0.035em] text-[#020C21]">
+                <span>Confidential Trading</span><br />
+                <span className="font-semibold bg-gradient-to-r from-[#3C1868] via-[#5B2B9D] to-[#020C21] bg-clip-text text-transparent">
+                  Proven in Zero-Knowledge.
                 </span>
               </h1>
 
-              <div className="tagrow">
+              {/* Tagline & Value Proposition — Big, Legible, Impactful */}
+              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 pt-2 max-w-3xl">
                 <button
                   onClick={onEnterDashboard}
-                  className="play axiom-play l c border-none"
-                  style={{ '--x': 66, '--y': 34 } as React.CSSProperties}
-                  aria-label="Enter App"
+                  className="w-13 h-13 sm:w-16 sm:h-16 rounded-full bg-white/95 backdrop-blur-xl shadow-lg border border-white/90 flex items-center justify-center shrink-0 hover:scale-105 transition-transform cursor-pointer group/btn"
+                  aria-label="Launch Video / Demo"
                 >
-                  <svg viewBox="0 0 13 14" fill="none" aria-hidden="true">
-                    <path d="M1.4 1.3 11.6 7 1.4 12.7z" fill="#0b1526" />
-                  </svg>
+                  <Play className="w-5 h-5 sm:w-6 sm:h-6 text-[#0F1B31] fill-current ml-0.5 group-hover/btn:text-[#3C1868] transition-colors" />
                 </button>
-                <span
-                  className="tag axiom-tag l c sx"
-                  style={{ '--x': 131, '--y': 48.7, '--sx': 0.8973 } as React.CSSProperties}
-                >
-                  Zero Strategy Rules Exposed to Mempools. Protect What Matters.
-                </span>
+                <p className="text-xl sm:text-2xl md:text-[1.75rem] font-medium text-[#0F182F] leading-snug tracking-tight">
+                  Zero strategy rules exposed to mempools. <span className="text-[#3C1868] font-bold">Protect what matters.</span>
+                </p>
               </div>
 
-              {/* ── GLASS PANEL: AI Risk Guard & Scale Meter ── */}
-              <aside
-                className="panel axiom-panel l c r"
-                style={{ '--x': 58, '--y': -165 } as React.CSSProperties}
-              >
-                <span className="p-title sx" style={{ '--sx': 0.8707 } as React.CSSProperties}>
-                  AI-Driven
-                </span>
-                <span className="dot axiom-dot"></span>
-                <div className="shield axiom-shield">
-                  <svg viewBox="0 0 30 39" fill="none" aria-hidden="true">
-                    <path
-                      d="M15 1.2 1.6 6.6v13.1c0 6.6 5.1 12.6 13.4 17.9 8.3-5.3 13.4-11.3 13.4-17.9V6.6z"
-                      stroke="#101c33"
-                      strokeWidth="2"
-                      strokeLinejoin="round"
-                    />
-                    <path
-                      d="M2.1 18.9c4.6-1.1 8.9-1.6 12.9-1.6s8.3.5 12.9 1.6"
-                      stroke="#101c33"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                    />
-                  </svg>
+              {/* Action Buttons */}
+              <div className="flex flex-wrap items-center gap-4 pt-2">
+                <button
+                  onClick={onEnterDashboard}
+                  className="px-8 py-4 rounded-full bg-[#0F1B31] hover:bg-black text-white text-sm sm:text-base font-bold shadow-xl hover:shadow-2xl transition-all flex items-center gap-3 cursor-pointer group"
+                >
+                  <span>Launch Trading Terminal</span>
+                  <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                </button>
+
+                <a
+                  href="#architecture"
+                  className="px-7 py-4 rounded-full bg-white/90 hover:bg-white text-[#020C21] text-sm sm:text-base font-bold shadow-md border border-white/90 transition-all cursor-pointer"
+                >
+                  Explore Architecture ↓
+                </a>
+              </div>
+            </div>
+
+            {/* Right Column: Frosted Glass Panel (AI Risk Guard & Scale Meter) */}
+            <div className="lg:col-span-4 flex justify-end">
+              <aside className="w-full max-w-[340px] rounded-3xl bg-white/85 backdrop-blur-2xl border border-white/90 p-7 shadow-xl space-y-6 text-[#020C21]">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <span className="text-xl font-bold tracking-tight text-[#020C21]">AI-Driven</span>
+                    <span className="w-2.5 h-2.5 rounded-full bg-[#4A78B0] animate-pulse"></span>
+                  </div>
+                  <div className="w-13 h-13 rounded-2xl bg-white shadow-md border border-gray-100 p-2 flex items-center justify-center shrink-0">
+                    <img src="/axiom-icon-mark.png" alt="Axiom ZK Mark" className="w-full h-full object-contain" />
+                  </div>
                 </div>
-                <p className="p-sub sx" style={{ '--sx': 0.8899 } as React.CSSProperties}>
-                  Autonomous<br />
-                  ZK Risk Engine<br />
-                  & Execution Guard
-                </p>
-                <div className="scale">
-                  <span>1K</span>
-                  <span>10K</span>
-                  <span>50K</span>
-                  <span>100K</span>
+
+                <div className="space-y-1">
+                  <span className="text-xs font-bold uppercase tracking-wider text-[#59627E]">Protection Guard</span>
+                  <p className="text-base font-semibold text-[#0F182F] leading-snug">
+                    Autonomous ZK Risk Engine & Execution Verifier
+                  </p>
                 </div>
-                <div className="track">
-                  <i className="axiom-track-bar"></i>
+
+                {/* Meter Scale */}
+                <div className="space-y-2 pt-2">
+                  <div className="flex items-center justify-between text-xs font-semibold text-gray-500">
+                    <span>1K</span>
+                    <span>10K</span>
+                    <span>50K</span>
+                    <span className="text-[#3C1868] font-bold">100K+</span>
+                  </div>
+                  <div className="w-full h-2.5 rounded-full bg-[#DDE4EE] overflow-hidden p-0.5">
+                    <div className="h-full rounded-full bg-gradient-to-r from-[#4A78B0] to-[#3C1868] w-[75%] transition-all duration-1000"></div>
+                  </div>
+                </div>
+
+                <div className="pt-2 border-t border-gray-100 flex items-center justify-between text-xs">
+                  <span className="text-gray-500">Midnight Contract:</span>
+                  <span className="font-mono font-bold text-[#3C1868]">v1.3.0 Verified</span>
                 </div>
               </aside>
             </div>
+          </div>
+        </div>
 
-            {/* ── STATS ROW & MEET AXIOM PILL ── */}
-            <div className="row">
-              <div className="stats">
-                <div className="stat">
-                  <span className="num axiom-num-1 l b sx" style={{ '--x': 64, '--y': 60.4, '--sx': 1 } as React.CSSProperties}>
-                    112+
-                  </span>
-                  <span className="lbl axiom-lbl-1 l b sx" style={{ '--x': 295, '--y': 73.2, '--sx': 0.9634 } as React.CSSProperties}>
-                    Markets<br />
-                    Protected<br />
-                    Globally
-                  </span>
-                </div>
-                <span className="slash axiom-slash l b" style={{ '--x': 418, '--y': 76 } as React.CSSProperties}></span>
-                <div className="stat">
-                  <span className="num axiom-num-2 l b sx" style={{ '--x': 480, '--y': 60.4, '--sx': 0.9858 } as React.CSSProperties}>
-                    55K+
-                  </span>
-                  <span className="lbl axiom-lbl-2 l b sx" style={{ '--x': 716, '--y': 96.7, '--sx': 0.9209 } as React.CSSProperties}>
-                    Trades<br />
-                    Secured
-                  </span>
-                </div>
+        {/* ── STATS ROW & MEET AXIOM PILL ── */}
+        <div className="relative z-10 w-full max-w-[1400px] mx-auto px-5 sm:px-8 pb-8 sm:pb-10">
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pt-6 border-t border-white/40">
+            {/* Live Metrics */}
+            <div className="flex flex-wrap items-center gap-6 sm:gap-10">
+              {/* Stat 1 */}
+              <div className="flex items-baseline gap-3">
+                <span className="text-4xl sm:text-6xl font-extralight text-[#020C21] tracking-tight">
+                  112+
+                </span>
+                <span className="text-xs sm:text-sm font-medium text-[#39455F] leading-tight">
+                  Markets<br />Protected<br />Globally
+                </span>
               </div>
 
-              {/* MEET AXIOM PILL */}
-              <button
-                onClick={onEnterDashboard}
-                className="meet axiom-meet l b r cursor-pointer border-none text-left"
-                style={{ '--x': 59, '--y': 66 } as React.CSSProperties}
-              >
-                <span className="thumb">
-                  <img
-                    alt="Axiom ZK Core"
-                    style={{ objectPosition: '60% 50%' }}
-                    src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260912_105822_bf7c2d53-9957-4521-bbbf-7c1ab7a70130.png"
-                  />
+              {/* Slash Divider */}
+              <div className="hidden sm:block w-[1.5px] h-12 bg-gradient-to-b from-transparent via-[#A7B4C6] to-transparent rotate-12"></div>
+
+              {/* Stat 2 */}
+              <div className="flex items-baseline gap-3">
+                <span className="text-4xl sm:text-6xl font-extralight text-[#020C21] tracking-tight">
+                  55K+
                 </span>
-                <b>Meet Axiom</b>
-                <span className="knob">
-                  <svg viewBox="0 0 18 18" fill="none" aria-hidden="true">
-                    <path
-                      d="m6.6 3.6 6 5.4-6 5.4"
-                      stroke="#fff"
-                      strokeWidth="1.9"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
+                <span className="text-xs sm:text-sm font-medium text-[#39455F] leading-tight">
+                  Trades<br />Secured in<br />Zero-Knowledge
                 </span>
-              </button>
+              </div>
+
+              {/* Slash Divider */}
+              <div className="hidden sm:block w-[1.5px] h-12 bg-gradient-to-b from-transparent via-[#A7B4C6] to-transparent rotate-12"></div>
+
+              {/* Stat 3 */}
+              <div className="flex items-baseline gap-3">
+                <span className="text-4xl sm:text-6xl font-extralight text-[#020C21] tracking-tight">
+                  77+
+                </span>
+                <span className="text-xs sm:text-sm font-medium text-[#39455F] leading-tight">
+                  Verified<br />Preprod<br />Testers
+                </span>
+              </div>
             </div>
+
+            {/* Meet Axiom Capsule */}
+            <button
+              onClick={onEnterDashboard}
+              className="px-5 py-3 rounded-full bg-white/80 hover:bg-white backdrop-blur-xl border border-white/90 shadow-md flex items-center gap-3.5 transition-all cursor-pointer group shrink-0 w-fit"
+            >
+              <div className="w-10 h-10 rounded-full overflow-hidden shadow-xs border border-white shrink-0">
+                <img
+                  alt="Axiom Crystal Core"
+                  className="w-full h-full object-cover"
+                  src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260912_105822_bf7c2d53-9957-4521-bbbf-7c1ab7a70130.png"
+                />
+              </div>
+              <div className="flex flex-col text-left">
+                <span className="text-xs font-bold text-[#1B2A44] group-hover:text-[#3C1868] transition-colors">
+                  Meet Axiom
+                </span>
+                <span className="text-[10px] text-gray-500">Autonomous Protocol</span>
+              </div>
+              <div className="w-7 h-7 rounded-full bg-[#1A2B45] flex items-center justify-center group-hover:translate-x-0.5 transition-transform">
+                <ArrowRight className="w-3.5 h-3.5 text-white" />
+              </div>
+            </button>
           </div>
         </div>
       </section>
@@ -439,7 +367,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
           {/* Section Header */}
           <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 pb-8 border-b border-gray-200/80">
             <div className="space-y-3">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#E6EDF6] text-[#020C21] text-xs font-semibold uppercase tracking-wider">
+              <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#E6EDF6] text-[#020C21] text-xs font-semibold uppercase tracking-wider">
                 <Shield className="w-3.5 h-3.5 text-[#3C1868]" />
                 <span>Zero-Knowledge Architecture</span>
               </div>
@@ -515,7 +443,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
           {/* Section Header */}
           <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 pb-8 border-b border-gray-300">
             <div className="space-y-3">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white text-[#020C21] text-xs font-semibold uppercase tracking-wider border border-gray-200 shadow-2xs">
+              <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-white text-[#020C21] text-xs font-semibold uppercase tracking-wider border border-gray-200 shadow-2xs">
                 <Layers className="w-3.5 h-3.5 text-[#3C1868]" />
                 <span>Live Preprod Modules</span>
               </div>
@@ -644,12 +572,12 @@ export const LandingPage: React.FC<LandingPageProps> = ({
       {/* ========================================================================= */}
       <footer className="bg-white border-t border-gray-200 py-10 px-6 sm:px-10 lg:px-16 text-xs text-[#59627E]">
         <div className="max-w-[1320px] mx-auto flex flex-col sm:flex-row items-center justify-between gap-6">
-          <div className="flex items-center gap-3">
-            <div className="h-9 px-2 rounded-xl bg-white border border-gray-200 shadow-2xs flex items-center justify-center shrink-0">
-              <img src="/axiom-logo.png" alt="Axiom Trade" className="h-6 w-auto object-contain" />
+          <div className="flex items-center gap-3.5">
+            <div className="h-13 px-3.5 rounded-2xl bg-white border border-gray-200/80 shadow-xs flex items-center justify-center shrink-0">
+              <img src="/axiom-logo.png" alt="Axiom Trade" className="h-9 w-auto object-contain" />
             </div>
             <div className="flex flex-col">
-              <span className="font-bold text-[#020C21] tracking-tight">AXIOM TRADE</span>
+              <span className="font-extrabold text-[#020C21] tracking-tight text-sm">AXIOM TRADE</span>
               <span className="text-[10px] text-gray-500">Confidential AI-Orchestrated Trading Protocol • Midnight Preprod</span>
             </div>
           </div>
@@ -674,7 +602,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
             </a>
             <button
               onClick={onEnterDashboard}
-              className="px-4 py-2 rounded-full bg-[#0F1B31] text-white font-bold hover:bg-black transition-all cursor-pointer"
+              className="px-5 py-2.5 rounded-full bg-[#0F1B31] text-white font-bold hover:bg-black transition-all cursor-pointer shadow-sm"
             >
               Launch Dashboard →
             </button>

@@ -90,11 +90,11 @@ export const Layout: React.FC<LayoutProps> = ({
               onClick={() => setActiveTab('landing')}
               className="flex items-center gap-3 group cursor-pointer text-left"
             >
-              <div className="h-10 px-2.5 rounded-2xl bg-white border border-gray-200/80 shadow-xs flex items-center justify-center shrink-0 group-hover:border-[#3C1868]/40 transition-colors">
+              <div className="h-11 sm:h-12 px-3 rounded-2xl bg-white border border-gray-200/80 shadow-xs flex items-center justify-center shrink-0 group-hover:border-[#3C1868]/40 transition-colors">
                 <img
                   src="/axiom-logo.png"
                   alt="Axiom Trade Logo"
-                  className="h-7 w-auto object-contain group-hover:scale-105 transition-transform"
+                  className="h-8 sm:h-9 w-auto object-contain group-hover:scale-105 transition-transform"
                 />
               </div>
               <div className="flex flex-col">
