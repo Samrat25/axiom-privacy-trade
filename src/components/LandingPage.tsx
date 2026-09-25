@@ -185,7 +185,6 @@ export const LandingPage: React.FC<LandingPageProps> = ({
             <div className="row">
               <a className="brand l t" style={{ '--x': 68, '--y': 47 } as React.CSSProperties} href="#hero">
                 <img className="mark" src="/axiom-logo.png" alt="Axiom Trade Logo" />
-                <b className="sx" style={{ '--sx': 0.894 } as React.CSSProperties}>Axiom Trade</b>
               </a>
 
               <button
