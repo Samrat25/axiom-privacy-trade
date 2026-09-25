@@ -310,17 +310,20 @@ The Axiom repository runs an automated 5-job GitHub Actions CI/CD matrix on ever
 ### 5. Shielded Trading Vault (vUSD) & 1AM Balance Matrix
 ![Shielded Vault](./screenshots/vault.png)
 
-### 6. Zero-Knowledge Protocol Architecture & State Machine
-![Architecture](./screenshots/architecture.png)
+### 6. Shielded Portfolio & Client-Side Decrypted P&L Analytics
+![Shielded Portfolio & PnL Analytics](./screenshots/portfolio.png)
 
-### 7. AI Market Signals & ZK Trade Execution
+### 7. Midnight Explorer Transaction Logs & On-Chain Proofs
+![Trade History & Explorer](./screenshots/trade_history.png)
+
+### 8. AI Market Signals & ZK Trade Execution
 ![Market Insights & ZK Trade](./screenshots/market_execute_trade.png)
 
-### 8. Verifiable Deployed Contract on Midnight Preprod Explorer
-![Deployed Contract on Midnight Explorer](./screenshots/contract_deployment.png)
+### 9. Zero-Knowledge Protocol Architecture & State Machine
+![Architecture](./screenshots/architecture.png)
 
-### 9. Midnight Explorer Transaction Logs & On-Chain Proofs
-![Trade History & Explorer](./screenshots/trade_history.png)
+### 10. Verifiable Deployed Contract on Midnight Preprod Explorer
+![Deployed Contract on Midnight Explorer](./screenshots/contract_deployment.png)
 
 ---
 
