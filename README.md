@@ -295,28 +295,31 @@ The Axiom repository runs an automated 5-job GitHub Actions CI/CD matrix on ever
 
 ## 📸 Application Screenshots
 
-### 1. Landing Page & Feature Architecture
+### 1. Luxury Landing Page & Protocol Visual Identity
 ![Landing Page](./screenshots/landing_page.png)
 
-### 2. Zero-Knowledge Protocol Architecture & State Machine
-![Architecture](./screenshots/architecture.png)
-
-### 3. Live Protocol Dashboard & Real-Time IST Telemetry
+### 2. Live Protocol Dashboard & Real-Time IST Telemetry
 ![Dashboard & Telemetry](./screenshots/dashboard_monitoring.png)
+
+### 3. Autonomous ZK Execution Bot & Institutional Stress Studio
+![ZK Execution Bot & Stress Studio](./screenshots/zk_bot_execution.png)
 
 ### 4. Natural-Language Strategy Builder & Pre-Commit AI Risk Engine
 ![Strategy Builder](./screenshots/strategy.png)
 
-### 5. AI Market Signals & ZK Trade Execution
-![Market Insights & ZK Trade](./screenshots/market_execute_trade.png)
-
-### 6. Shielded Trading Vault (vUSD) & 1AM Balance Matrix
+### 5. Shielded Trading Vault (vUSD) & 1AM Balance Matrix
 ![Shielded Vault](./screenshots/vault.png)
 
-### 7. Verifiable Deployed Contract on Midnight Preprod Explorer
+### 6. Zero-Knowledge Protocol Architecture & State Machine
+![Architecture](./screenshots/architecture.png)
+
+### 7. AI Market Signals & ZK Trade Execution
+![Market Insights & ZK Trade](./screenshots/market_execute_trade.png)
+
+### 8. Verifiable Deployed Contract on Midnight Preprod Explorer
 ![Deployed Contract on Midnight Explorer](./screenshots/contract_deployment.png)
 
-### 8. Midnight Explorer Transaction Logs & On-Chain Proofs
+### 9. Midnight Explorer Transaction Logs & On-Chain Proofs
 ![Trade History & Explorer](./screenshots/trade_history.png)
 
 ---
