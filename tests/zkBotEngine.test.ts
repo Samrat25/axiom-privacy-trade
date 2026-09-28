@@ -69,7 +69,7 @@ describe('Axiom ZK Execution Bot & Institutional Backtest Studio', () => {
     const cert = generateZKAuditCertificate(mockConfig, result);
 
     expect(cert.certificateId).toMatch(/^AXIOM-CERT-[A-Z0-9]+-\d+$/);
-    expect(cert.contractAddress).toBe('0x2428cd4ae7c2cd0bb501e1e9162de3003b103c1063c220e0d5cfc3f0b438e524');
+    expect(cert.contractAddress).toBe('0x5a89909bb8d9b9b0418d88a87957e084333d68df7e34037aac308719e2c2bd1b');
     expect(cert.network).toBe('Midnight Preprod Testnet');
     expect(cert.strategyCommitmentHash).toMatch(/^0x[a-f0-9]{64}$/);
     expect(cert.verificationHash).toMatch(/^0x[a-f0-9]{64}$/);

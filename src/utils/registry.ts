@@ -24,12 +24,12 @@ export function getActiveContractAddress(network: 'preview' | 'preprod' | string
   if (netKey === 'preprod') {
     return (
       (typeof import.meta !== 'undefined' && (import.meta.env?.['VITE_PREPROD_CONTRACT_ADDRESS'] as string)) ||
-      '0x2428cd4ae7c2cd0bb501e1e9162de3003b103c1063c220e0d5cfc3f0b438e524'
+      '0x5a89909bb8d9b9b0418d88a87957e084333d68df7e34037aac308719e2c2bd1b'
     );
   }
   return (
     (typeof import.meta !== 'undefined' && (import.meta.env?.['VITE_PREVIEW_CONTRACT_ADDRESS'] as string)) ||
-    '0x62a27ceda5eb600263e208768d5d285c659d47f2cd6b14a20c62b160f4da46f3'
+    '0x0f064205a7609cc679f4b697ac6f4e7f47acd6485966c92bbd7c07fb5385080d'
   );
 }
 

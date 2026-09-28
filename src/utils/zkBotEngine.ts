@@ -14,6 +14,8 @@
  * ============================================================================
  */
 
+import { getActiveContractAddress } from './registry';
+
 /**
  * Fast self-contained SHA-256 implementation without external npm dependencies.
  * Produces deterministic 0x-prefixed 32-byte (64-character) hex strings.
@@ -357,7 +359,7 @@ export function runScenarioBacktest(config: BotConfig, scenarioId: StressScenari
 export function generateZKAuditCertificate(config: BotConfig, result: BacktestResult): ZKAuditCertificate {
   const timestamp = new Date().toISOString();
   const certId = `AXIOM-CERT-${Date.now().toString(36).toUpperCase()}-${Math.floor(Math.random() * 9000 + 1000)}`;
-  const contractAddress = '0x2428cd4ae7c2cd0bb501e1e9162de3003b103c1063c220e0d5cfc3f0b438e524';
+  const contractAddress = getActiveContractAddress('preprod');
 
   // Compute 32-byte strategy commitment hash identical to Compact circuit logic
   const strategyPreimage = `${config.maxPositionPct}-${config.stopLossPct}-${config.expiryHours}`;

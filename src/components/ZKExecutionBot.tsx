@@ -36,6 +36,7 @@ import {
   generateProofHash
 } from '../utils/zkBotEngine';
 import { getMidnightExplorerTxUrl } from '../utils/midnightApi';
+import { getActiveContractAddress } from '../utils/registry';
 
 interface ZKExecutionBotProps {
   walletConnected: boolean;
@@ -94,7 +95,7 @@ export const ZKExecutionBot: React.FC<ZKExecutionBotProps> = ({
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const tickCounterRef = useRef<number>(1);
 
-  const effectiveAgentId = walletAddress || '0x2428cd4ae7c2cd0bb501e1e9162de3003b103c1063c220e0d5cfc3f0b438e524';
+  const effectiveAgentId = walletAddress || getActiveContractAddress('preprod');
 
   const currentConfig: BotConfig = {
     agentId: effectiveAgentId,
