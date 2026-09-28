@@ -260,11 +260,32 @@ export function useMidnight() {
 
   // ─── Check proof server health ─────────────────────────────────────
   useEffect(() => {
-    checkProofServerHealth().then(setProofServerUp);
-    const interval = setInterval(() => {
-      checkProofServerHealth().then(setProofServerUp);
-    }, 10000);
-    return () => clearInterval(interval);
+    let isMounted = true;
+    let interval: NodeJS.Timeout | null = null;
+
+    checkProofServerHealth().then((isUp) => {
+      if (!isMounted) return;
+      setProofServerUp(isUp);
+
+      // Only poll continuously if a proof server was actually detected online
+      // or if an explicit VITE_PROOF_SERVER_URL was set in .env.
+      // This eliminates the endless localhost:6300 net::ERR_CONNECTION_REFUSED
+      // spam in DevTools console when running with 1AM wallet's ProofStation.
+      const hasCustomUrl = Boolean(typeof import.meta !== 'undefined' && import.meta.env?.VITE_PROOF_SERVER_URL);
+      if (isUp || hasCustomUrl) {
+        interval = setInterval(() => {
+          if (!isMounted) return;
+          checkProofServerHealth().then((up) => {
+            if (isMounted) setProofServerUp(up);
+          });
+        }, 30000);
+      }
+    });
+
+    return () => {
+      isMounted = false;
+      if (interval) clearInterval(interval);
+    };
   }, []);
 
   // ─── Fetch live block analytics ────────────────────────────────────

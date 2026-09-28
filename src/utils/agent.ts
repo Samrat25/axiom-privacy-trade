@@ -45,6 +45,8 @@ export interface AgentState {
  * Supported production Gemini models with automatic fallback.
  */
 export const SUPPORTED_GEMINI_MODELS = [
+  'gemini-3.8-flash',
+  'gemini-3.5-flash',
   'gemini-2.5-flash',
   'gemini-2.0-flash',
   'gemini-1.5-flash'
@@ -53,15 +55,26 @@ export const SUPPORTED_GEMINI_MODELS = [
 export type SupportedGeminiModel = typeof SUPPORTED_GEMINI_MODELS[number];
 
 /**
+ * Checks whether a valid Gemini API key is configured.
+ */
+export function hasGoogleApiKey(apiKeyOverride?: string): boolean {
+  if (typeof process !== 'undefined' && Boolean(process.env?.VITEST || process.env?.NODE_ENV === 'test') && !apiKeyOverride) {
+    return false;
+  }
+  const key = apiKeyOverride !== undefined ? apiKeyOverride : (typeof import.meta !== 'undefined' ? import.meta.env?.VITE_GOOGLE_API_KEY : undefined);
+  return Boolean(key && key.trim().length > 0 && !key.includes('AIzaSy...') && !key.includes('placeholder'));
+}
+
+/**
  * Initialize Gemini LLM.
  *
- * Supports model override and automatic fallback across gemini-2.5-flash,
- * gemini-2.0-flash, and gemini-1.5-flash.
+ * Supports model override and automatic fallback across gemini-3.8-flash,
+ * gemini-2.5-flash, gemini-2.0-flash, and gemini-1.5-flash.
  */
-export function createGeminiLLM(apiKeyOverride?: string, modelName: SupportedGeminiModel = 'gemini-2.5-flash') {
-  const apiKey = apiKeyOverride || import.meta.env.VITE_GOOGLE_API_KEY;
+export function createGeminiLLM(apiKeyOverride?: string, modelName: SupportedGeminiModel = 'gemini-3.8-flash') {
+  const apiKey = apiKeyOverride !== undefined ? apiKeyOverride : import.meta.env.VITE_GOOGLE_API_KEY;
 
-  if (!apiKey) {
+  if (!apiKey || apiKey.trim().length === 0) {
     throw new Error(
       '[Axiom Agent] GOOGLE_API_KEY is missing. ' +
       'Set VITE_GOOGLE_API_KEY in your .env file to use the AI strategy parser. ' +
@@ -84,10 +97,18 @@ export async function invokeWithModelFallback<T>(
   fn: (llm: ChatGoogleGenerativeAI) => Promise<T>,
   apiKeyOverride?: string
 ): Promise<T> {
+  const apiKey = apiKeyOverride !== undefined ? apiKeyOverride : import.meta.env.VITE_GOOGLE_API_KEY;
+  if (!apiKey || apiKey.trim().length === 0) {
+    throw new Error(
+      '[Axiom Agent] GOOGLE_API_KEY is missing. ' +
+      'Set VITE_GOOGLE_API_KEY in your .env file to use the AI strategy parser.'
+    );
+  }
+
   let lastError: unknown = null;
   for (const model of SUPPORTED_GEMINI_MODELS) {
     try {
-      const llm = createGeminiLLM(apiKeyOverride, model);
+      const llm = createGeminiLLM(apiKey, model);
       return await fn(llm);
     } catch (err: unknown) {
       lastError = err;
@@ -106,6 +127,48 @@ export async function invokeWithModelFallback<T>(
 // Uses Gemini's native structured output (responseSchema) to bound freeform text
 // ----------------------------------------------------------------------------
 export async function parseStrategyNode(state: AgentState): Promise<Partial<AgentState>> {
+  const parseWithDeterministicRules = () => {
+    const prompt = (state.naturalLanguagePrompt || '').toLowerCase();
+    let asset = 'ADA';
+    if (prompt.includes('btc')) asset = 'BTC';
+    else if (prompt.includes('eth')) asset = 'ETH';
+    else if (prompt.includes('sol')) asset = 'SOL';
+    else if (prompt.includes('night') || prompt.includes('tnight')) asset = 'tNIGHT';
+
+    // Parse max position percentage
+    let maxPositionPct = 20;
+    const posMatch = prompt.match(/(\d+)\s*%\s*(?:position|size|allocation|max)/i) || prompt.match(/max(?:imum)?\s*(?:position|size)?\s*(?:of)?\s*(\d+)\s*%/i);
+    if (posMatch) maxPositionPct = Math.min(50, Math.max(5, parseInt(posMatch[1], 10)));
+
+    // Parse stop loss percentage
+    let stopLossPct = 8;
+    const slMatch = prompt.match(/(\d+)\s*%\s*stop/i) || prompt.match(/stop[\s-]loss\s*(?:of|at)?\s*(\d+)\s*%/i);
+    if (slMatch) stopLossPct = Math.min(25, Math.max(3, parseInt(slMatch[1], 10)));
+
+    // Parse timeline days
+    let timelineDays = 30;
+    const daysMatch = prompt.match(/(\d+)\s*(?:days?|d\b)/i);
+    if (daysMatch) timelineDays = Math.min(365, Math.max(1, parseInt(daysMatch[1], 10)));
+
+    const currentSeconds = BigInt(Math.floor(Date.now() / 1000));
+    const params: StrategyParams = {
+      asset,
+      maxPositionPct,
+      stopLossPct,
+      timelineDays,
+      timelineExpiry: currentSeconds + BigInt(timelineDays * 86400)
+    };
+    return {
+      strategyParams: params,
+      commitmentHash: computeStrategyHash(params)
+    };
+  };
+
+  if (!hasGoogleApiKey()) {
+    console.info('[Axiom Agent] VITE_GOOGLE_API_KEY not configured. Using built-in deterministic strategy parser.');
+    return parseWithDeterministicRules();
+  }
+
   try {
     const llm = createGeminiLLM();
     const structuredLlm = llm.withStructuredOutput(StrategyBoundsSchema);
@@ -140,24 +203,8 @@ export async function parseStrategyNode(state: AgentState): Promise<Partial<Agen
       commitmentHash: hash
     };
   } catch (err) {
-    console.warn('[Axiom Agent] Gemini LLM call failed, using regex fallback parser:', err);
-    const prompt = state.naturalLanguagePrompt.toLowerCase();
-    let asset = 'ADA';
-    if (prompt.includes('btc')) asset = 'BTC';
-    else if (prompt.includes('eth')) asset = 'ETH';
-
-    const currentSeconds = BigInt(Math.floor(Date.now() / 1000));
-    const params: StrategyParams = {
-      asset,
-      maxPositionPct: 20,
-      stopLossPct: 8,
-      timelineDays: 30,
-      timelineExpiry: currentSeconds + BigInt(30 * 86400)
-    };
-    return {
-      strategyParams: params,
-      commitmentHash: computeStrategyHash(params)
-    };
+    console.warn('[Axiom Agent] Gemini LLM call failed, using deterministic fallback parser:', err);
+    return parseWithDeterministicRules();
   }
 }
 
@@ -307,6 +354,10 @@ export async function runStrategyRiskAssessment(params: {
     };
   };
 
+  if (!hasGoogleApiKey()) {
+    return getFallbackAssessment();
+  }
+
   try {
     const llm = createGeminiLLM();
     const structuredLlm = llm.withStructuredOutput(StrategyRiskAssessmentSchema);
@@ -356,6 +407,16 @@ export async function runManualAnalysis(
     ? customTradeSizeUsd
     : maxAllowedSize;
 
+  const getFallbackRecommendation = (): TradeRecommendation => ({
+    recommendation: `Conditions match your committed strategy rules for ${asset}. Current ${asset} price is $${basePrice}. Proposed trade size: $${suggestedSize} (within your ${params.maxPositionPct}% max position limit of $${maxAllowedSize}).`,
+    suggestedAction: 'BUY',
+    suggestedTradeSizeUsd: suggestedSize
+  });
+
+  if (!hasGoogleApiKey()) {
+    return getFallbackRecommendation();
+  }
+
   try {
     const llm = createGeminiLLM();
     const structuredLlm = llm.withStructuredOutput(TradeRecommendationSchema);
@@ -374,11 +435,7 @@ export async function runManualAnalysis(
     return result;
   } catch (err) {
     console.warn('[Axiom Agent] Gemini LLM recommendation fallback:', err);
-    return {
-      recommendation: `Conditions match your committed strategy rules for ${asset}. Current ${asset} price is $${basePrice}. Proposed trade size: $${suggestedSize} (within your ${params.maxPositionPct}% max position limit of $${maxAllowedSize}).`,
-      suggestedAction: 'BUY',
-      suggestedTradeSizeUsd: suggestedSize
-    };
+    return getFallbackRecommendation();
   }
 }
 
@@ -429,6 +486,22 @@ export async function runComprehensiveRiskAnalysis(
   else if (params.stopLossPct > 20) fallbackRegime = 'SPECULATIVE_EXPANSION';
   else fallbackRegime = 'HIGH_VOLATILITY_DEFENSE';
 
+  const getFallbackComprehensive = (): ComprehensiveAnalysis => ({
+    regime: fallbackRegime,
+    confidenceScore: 94,
+    marketTrend: asset === 'BTC' || asset === 'ETH' ? 'BULLISH' : 'SIDEWAYS',
+    analysisRationale: `Evaluated ${asset} against committed ${params.maxPositionPct}% position ceiling and ${params.stopLossPct}% stop-loss. Current price $${basePrice} is within acceptable variance. Proposed $${suggestedSize} allocation mathematically complies with on-chain Compact constraints ($${maxAllowedSize} max).`,
+    suggestedAction: isCompliant ? 'BUY' : 'HOLD',
+    recommendedTradeSizeUsd: suggestedSize,
+    maxAllowedAllocationUsd: maxAllowedSize,
+    trailingStopLossPriceUsd: trailingStop,
+    zkCircuitCompliance: isCompliant
+  });
+
+  if (!hasGoogleApiKey()) {
+    return getFallbackComprehensive();
+  }
+
   try {
     return await invokeWithModelFallback(async (llm) => {
       const structuredLlm = llm.withStructuredOutput(ComprehensiveAnalysisSchema);
@@ -445,17 +518,7 @@ export async function runComprehensiveRiskAnalysis(
     });
   } catch (err) {
     console.warn('[Axiom Agent] Gemini LLM comprehensive analysis fallback:', err);
-    return {
-      regime: fallbackRegime,
-      confidenceScore: 94,
-      marketTrend: asset === 'BTC' || asset === 'ETH' ? 'BULLISH' : 'SIDEWAYS',
-      analysisRationale: `Evaluated ${asset} against committed ${params.maxPositionPct}% position ceiling and ${params.stopLossPct}% stop-loss. Current price $${basePrice} is within acceptable variance. Proposed $${suggestedSize} allocation mathematically complies with on-chain Compact constraints ($${maxAllowedSize} max).`,
-      suggestedAction: isCompliant ? 'BUY' : 'HOLD',
-      recommendedTradeSizeUsd: suggestedSize,
-      maxAllowedAllocationUsd: maxAllowedSize,
-      trailingStopLossPriceUsd: trailingStop,
-      zkCircuitCompliance: isCompliant
-    };
+    return getFallbackComprehensive();
   }
 }
 

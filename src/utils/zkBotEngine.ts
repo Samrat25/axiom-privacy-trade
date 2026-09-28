@@ -114,6 +114,9 @@ export interface ExecutionTick {
   pnlUsd: number;
   pnlPct: number;
   reason: string;
+  executionMode?: 'SIMULATION' | 'ON_CHAIN';
+  onChainTxHash?: string;
+  onChainStatus?: 'idle' | 'pending' | 'confirmed' | 'failed';
 }
 
 export type StressScenarioId = 

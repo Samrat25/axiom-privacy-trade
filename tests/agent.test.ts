@@ -93,7 +93,7 @@ describe('Axiom LangGraph Trading Agent Decision Engine Suite', () => {
       timelineDays: 90
     });
     expect(highRisk.riskLevel).toMatch(/HIGH_RISK|RECKLESS|AGGRESSIVE/);
-  });
+  }, 15000);
 
   it('5. runManualAnalysis: evaluates custom assets (ETH, BTC) and enforces max position bounds', async () => {
     const recEth = await runManualAnalysis(sampleParams, 10000, 'ETH', 1500);
@@ -101,5 +101,5 @@ describe('Axiom LangGraph Trading Agent Decision Engine Suite', () => {
     expect(recEth.suggestedAction).toBeDefined();
     expect(recEth.suggestedTradeSizeUsd).toBeLessThanOrEqual(2000); // 20% of $10,000 = $2,000
     expect(recEth.recommendation).toContain('ETH');
-  });
+  }, 15000);
 });

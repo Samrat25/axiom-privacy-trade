@@ -37,7 +37,7 @@
 //    - Lifecycle Invariant: assert(strategyActive.lookup(agentId))
 // ============================================================================
 
-pragma language_version >= 0.16 && <= 0.25;
+pragma language_version >= 0.16 && <= 0.23;
 import CompactStandardLibrary;
 
 // ---------- PUBLIC LEDGER STATE (ON-CHAIN STATE MACHINE) ----------
@@ -72,9 +72,9 @@ export circuit commitStrategy(agentId: Bytes<32>): [] {
   const callerId = disclose(persistentHash<Vector<2, Bytes<32>>>([localSecretKey(), agentId]));
   const strategyHash = disclose(
     persistentHash<Vector<3, Bytes<32>>>([
-      getMaxPositionPct() as Field as Bytes<32>,
-      getStopLossPct() as Field as Bytes<32>,
-      getStrategyExpiry() as Field as Bytes<32>
+      (getMaxPositionPct() as Field) as Bytes<32>,
+      (getStopLossPct() as Field) as Bytes<32>,
+      (getStrategyExpiry() as Field) as Bytes<32>
     ])
   );
   agentCommitment.insert(disclose(agentId), strategyHash);
@@ -115,16 +115,16 @@ export circuit executeTrade(agentId: Bytes<32>, tradeId: Bytes<32>, currentTime:
   // Recompute commitment hash inside ZK circuit from private witnesses
   const recomputedHash = disclose(
     persistentHash<Vector<3, Bytes<32>>>([
-      getMaxPositionPct() as Field as Bytes<32>,
-      getStopLossPct() as Field as Bytes<32>,
-      getStrategyExpiry() as Field as Bytes<32>
+      (getMaxPositionPct() as Field) as Bytes<32>,
+      (getStopLossPct() as Field) as Bytes<32>,
+      (getStrategyExpiry() as Field) as Bytes<32>
     ])
   );
   assert(agentCommitment.lookup(disclose(agentId)) == recomputedHash, "trade does not match committed strategy");
   assert(currentTime <= getStrategyExpiry(), "strategy timeline expired");
 
   // Dynamic position-size constraint measured against live Shielded Vault balance (getPortfolioValue)
-  assert((getTradeSizeUsd() * (100 as Uint<64>)) <= (getPortfolioValue() * (getMaxPositionPct() as Uint<64>)), "exceeds max position size");
+  assert(((getTradeSizeUsd() * 100) as Uint<64>) <= ((getPortfolioValue() * (getMaxPositionPct() as Uint<64>)) as Uint<64>), "exceeds max position size");
   assert(getRiskCheckPassed(), "risk model check failed");
 
   // Confidential slippage verification: proves execution slippage <= max private tolerance in ZK
@@ -143,14 +143,14 @@ export circuit executeBatchRebalance(agentId: Bytes<32>, batchId: Bytes<32>, tot
 
   const recomputedHash = disclose(
     persistentHash<Vector<3, Bytes<32>>>([
-      getMaxPositionPct() as Field as Bytes<32>,
-      getStopLossPct() as Field as Bytes<32>,
-      getStrategyExpiry() as Field as Bytes<32>
+      (getMaxPositionPct() as Field) as Bytes<32>,
+      (getStopLossPct() as Field) as Bytes<32>,
+      (getStrategyExpiry() as Field) as Bytes<32>
     ])
   );
   assert(agentCommitment.lookup(disclose(agentId)) == recomputedHash, "batch does not match committed strategy");
   assert(currentTime <= getStrategyExpiry(), "strategy timeline expired");
-  assert((totalRebalanceUsd * (100 as Uint<64>)) <= (getPortfolioValue() * (getMaxPositionPct() as Uint<64>)), "batch exceeds max position size");
+  assert(((totalRebalanceUsd * 100) as Uint<64>) <= ((getPortfolioValue() * (getMaxPositionPct() as Uint<64>)) as Uint<64>), "batch exceeds max position size");
 
   tradeStatus.insert(disclose(batchId), disclose(4 as Uint<8>));
   tradeCount.increment(1);

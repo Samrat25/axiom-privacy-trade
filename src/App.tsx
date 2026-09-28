@@ -207,6 +207,18 @@ export function App() {
               <ZKExecutionBot
                 walletConnected={walletConnected}
                 walletAddress={walletAddress}
+                networkId={networkId}
+                vaultBalance={vaultBalance}
+                isProofGenerating={isProofGenerating}
+                onExecuteTrade={async (asset, amount, action) => {
+                  return await executeProvenTrade(
+                    activeStrategies[0]?.agentId || walletAddress || '0xagent_bot',
+                    amount,
+                    asset,
+                    action || 'BUY'
+                  );
+                }}
+                onConnectWallet={() => setIsModalOpen(true)}
                 onNavigateToBuilder={() => setActiveTab('strategy-builder')}
               />
             </div>

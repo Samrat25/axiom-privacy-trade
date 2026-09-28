@@ -36,16 +36,21 @@ export function setLiveSession(session: LiveWalletSession | null): void {
 
 // ─── Proof Server Health ──────────────────────────────────────────────────────
 
-const PROOF_SERVER_URL = "http://localhost:6300";
+const PROOF_SERVER_URL =
+  (typeof import.meta !== "undefined" && import.meta.env?.["VITE_PROOF_SERVER_URL"]) ||
+  "http://localhost:6300";
 
 /**
  * Check if the local proof server (Docker) is running on port 6300.
  * Returns true if healthy, false otherwise.
+ *
+ * NOTE: 1AM wallet handles zero-knowledge proofs via ProofStation remotely,
+ * so a local Docker proof server on port 6300 is optional.
  */
 export async function checkProofServerHealth(): Promise<boolean> {
   try {
     const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 2000);
+    const timeout = setTimeout(() => controller.abort(), 1200);
     await fetch(PROOF_SERVER_URL, { signal: controller.signal, mode: "no-cors" });
     clearTimeout(timeout);
     return true;

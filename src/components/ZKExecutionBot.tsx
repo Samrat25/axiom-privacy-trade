@@ -18,7 +18,10 @@ import {
   Zap,
   ExternalLink,
   Layers,
-  Clock
+  Clock,
+  Wallet,
+  Coins,
+  RefreshCw
 } from 'lucide-react';
 import {
   type SupportedAsset,
@@ -32,19 +35,37 @@ import {
   generateZKAuditCertificate,
   generateProofHash
 } from '../utils/zkBotEngine';
+import { getMidnightExplorerTxUrl } from '../utils/midnightApi';
 
 interface ZKExecutionBotProps {
   walletConnected: boolean;
   walletAddress: string | null;
+  networkId?: string;
+  vaultBalance?: number;
+  isProofGenerating?: boolean;
+  onExecuteTrade?: (asset: SupportedAsset, amount: number, action: 'BUY' | 'SELL') => Promise<any>;
+  onConnectWallet?: () => void;
   onNavigateToBuilder?: () => void;
 }
 
 export const ZKExecutionBot: React.FC<ZKExecutionBotProps> = ({
   walletConnected,
   walletAddress,
+  networkId = 'preview',
+  vaultBalance = 10000,
+  isProofGenerating = false,
+  onExecuteTrade,
+  onConnectWallet,
   onNavigateToBuilder
 }) => {
   const [activeSubTab, setActiveSubTab] = useState<'bot' | 'backtest' | 'certificate'>('bot');
+
+  // Execution Engine Mode
+  const [executionMode, setExecutionMode] = useState<'simulation' | 'onchain'>('simulation');
+  const [autoSubmitOnChain, setAutoSubmitOnChain] = useState<boolean>(false);
+  const [isExecutingTrade, setIsExecutingTrade] = useState<boolean>(false);
+  const [onChainTxCount, setOnChainTxCount] = useState<number>(0);
+  const [onChainError, setOnChainError] = useState<string | null>(null);
 
   // Bot State
   const [asset, setAsset] = useState<SupportedAsset>('tNIGHT');
@@ -112,6 +133,41 @@ export const ZKExecutionBot: React.FC<ZKExecutionBotProps> = ({
     };
   }, [botStatus, portfolioValue, peakPortfolio, asset, maxPositionPct, stopLossPct]);
 
+  const handleExecuteTickOnChain = async (tick: ExecutionTick) => {
+    if (!walletConnected) {
+      onConnectWallet?.();
+      return;
+    }
+    if (!onExecuteTrade) return;
+
+    setIsExecutingTrade(true);
+    setOnChainError(null);
+    try {
+      const targetSize = Math.max(10, Math.min(tick.sizeUsd || 100, vaultBalance || 1000));
+      const res = await onExecuteTrade(tick.asset, targetSize, tick.action === 'SELL' ? 'SELL' : 'BUY');
+      const txHash = (res && typeof res === 'object' && 'txHash' in res) ? (res as any).txHash : (typeof res === 'string' ? res : '');
+
+      if (txHash) {
+        setOnChainTxCount(prev => prev + 1);
+        setExecutionTicks(prev => prev.map(t => t.id === tick.id ? {
+          ...t,
+          executionMode: 'ON_CHAIN',
+          onChainTxHash: txHash,
+          onChainStatus: 'confirmed'
+        } : t));
+      }
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : String(err);
+      setOnChainError(msg);
+      setExecutionTicks(prev => prev.map(t => t.id === tick.id ? {
+        ...t,
+        onChainStatus: 'failed'
+      } : t));
+    } finally {
+      setIsExecutingTrade(false);
+    }
+  };
+
   const executeAutonomousTick = () => {
     const tickNum = tickCounterRef.current++;
     // Generate realistic simulated price tick
@@ -140,7 +196,9 @@ export const ZKExecutionBot: React.FC<ZKExecutionBotProps> = ({
         portfolioValueUsd: portfolioValue,
         pnlUsd: portfolioValue - initialCapital,
         pnlPct: Number((((portfolioValue - initialCapital) / initialCapital) * 100).toFixed(2)),
-        reason: `Drawdown limit tripped (${currentDrawdownPct.toFixed(1)}% >= ${stopLossPct}%). Circuit breaker engaged.`
+        reason: `Drawdown limit tripped (${currentDrawdownPct.toFixed(1)}% >= ${stopLossPct}%). Circuit breaker engaged.`,
+        executionMode: executionMode === 'onchain' ? 'ON_CHAIN' : 'SIMULATION',
+        onChainStatus: 'idle'
       };
       setExecutionTicks(prev => [haltTick, ...prev.slice(0, 49)]);
       return;
@@ -153,13 +211,14 @@ export const ZKExecutionBot: React.FC<ZKExecutionBotProps> = ({
     let proofStatus: 'VALIDATED_ZK' | 'REJECTED_BOUNDS' | 'SHIELDED_HOLD' = 'SHIELDED_HOLD';
 
     const rand = Math.random();
-    const maxAllowedSize = (portfolioValue * maxPositionPct) / 100;
+    const effectiveVault = executionMode === 'onchain' ? Math.max(vaultBalance, 100) : portfolioValue;
+    const maxAllowedSize = (effectiveVault * maxPositionPct) / 100;
 
     if (rand > 0.65) {
       action = 'BUY';
       sizeUsd = Number((maxAllowedSize * (0.6 + Math.random() * 0.35)).toFixed(2));
       proofStatus = 'VALIDATED_ZK';
-      reason = `Momentum signal confirmed. Position ${((sizeUsd / portfolioValue) * 100).toFixed(1)}% <= ${maxPositionPct}% ceiling.`;
+      reason = `Momentum signal confirmed. Position ${((sizeUsd / effectiveVault) * 100).toFixed(1)}% <= ${maxPositionPct}% ceiling.`;
       setProofsCount(prev => prev + 1);
     } else if (rand < 0.25 && portfolioValue > initialCapital) {
       action = 'SELL';
@@ -202,10 +261,17 @@ export const ZKExecutionBot: React.FC<ZKExecutionBotProps> = ({
       portfolioValueUsd: updatedPortfolio,
       pnlUsd: Number((updatedPortfolio - initialCapital).toFixed(2)),
       pnlPct: Number((((updatedPortfolio - initialCapital) / initialCapital) * 100).toFixed(2)),
-      reason
+      reason,
+      executionMode: executionMode === 'onchain' ? 'ON_CHAIN' : 'SIMULATION',
+      onChainStatus: 'idle'
     };
 
     setExecutionTicks(prev => [tick, ...prev.slice(0, 49)]);
+
+    // If in Live On-Chain mode and auto-dispatch is enabled, prompt 1AM popup for trade
+    if (executionMode === 'onchain' && autoSubmitOnChain && (action === 'BUY' || action === 'SELL') && walletConnected && !isExecutingTrade) {
+      void handleExecuteTickOnChain(tick);
+    }
   };
 
   const handleStartBot = () => {
@@ -364,6 +430,87 @@ export const ZKExecutionBot: React.FC<ZKExecutionBotProps> = ({
               </span>
             </div>
 
+            {/* Execution Engine Mode Selector */}
+            <div className="space-y-2 p-3 bg-gray-50 border border-gray-200/80 rounded-2xl">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-bold text-gray-800">Execution Engine</span>
+                <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
+                  executionMode === 'onchain' ? 'bg-orange-100 text-orange-700 border border-orange-200' : 'bg-blue-100 text-blue-700 border border-blue-200'
+                }`}>
+                  {executionMode === 'onchain' ? '⚡ 1AM On-Chain' : '🧪 Simulation'}
+                </span>
+              </div>
+
+              <div className="grid grid-cols-2 gap-1.5">
+                <button
+                  type="button"
+                  onClick={() => setExecutionMode('simulation')}
+                  className={`py-2 px-2.5 rounded-xl text-xs font-bold transition-all text-center cursor-pointer ${
+                    executionMode === 'simulation'
+                      ? 'bg-white text-gray-900 shadow-xs border border-gray-300'
+                      : 'text-gray-500 hover:text-gray-900 hover:bg-white/50'
+                  }`}
+                >
+                  🧪 Simulation
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setExecutionMode('onchain')}
+                  className={`py-2 px-2.5 rounded-xl text-xs font-bold transition-all text-center cursor-pointer ${
+                    executionMode === 'onchain'
+                      ? 'bg-white text-orange-600 shadow-xs border border-orange-300 font-extrabold'
+                      : 'text-gray-500 hover:text-gray-900 hover:bg-white/50'
+                  }`}
+                >
+                  ⚡ Live On-Chain
+                </button>
+              </div>
+
+              {executionMode === 'onchain' ? (
+                <div className="space-y-2 pt-1 border-t border-gray-200/60">
+                  <div className="flex items-center justify-between text-[11px]">
+                    <span className="text-gray-500">Shielded Vault:</span>
+                    <span className="font-bold text-gray-900">${(vaultBalance ?? 0).toLocaleString()} vUSD</span>
+                  </div>
+                  <div className="flex items-center justify-between text-[11px]">
+                    <span className="text-gray-500">Active Network:</span>
+                    <span className="font-bold uppercase text-orange-600">{networkId}</span>
+                  </div>
+
+                  {!walletConnected ? (
+                    <button
+                      onClick={onConnectWallet}
+                      className="w-full py-1.5 px-3 bg-gray-900 hover:bg-black text-white text-[11px] font-bold rounded-lg flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+                    >
+                      <Wallet className="w-3.5 h-3.5 text-orange-400" />
+                      Connect 1AM Wallet
+                    </button>
+                  ) : (
+                    <label className="flex items-center gap-2 cursor-pointer pt-1">
+                      <input
+                        type="checkbox"
+                        checked={autoSubmitOnChain}
+                        onChange={e => setAutoSubmitOnChain(e.target.checked)}
+                        className="rounded accent-orange-500 w-3.5 h-3.5 cursor-pointer"
+                      />
+                      <span className="text-[11px] text-gray-700 font-medium select-none">
+                        Auto-dispatch BUY/SELL to 1AM
+                      </span>
+                    </label>
+                  )}
+                  {vaultBalance <= 0 && (
+                    <p className="text-[10px] text-amber-700 bg-amber-50 p-1.5 rounded-lg border border-amber-200">
+                      💡 Shielded Vault is empty. Mint vUSD in the <strong>Vault & Withdraw</strong> tab to back real orders.
+                    </p>
+                  )}
+                </div>
+              ) : (
+                <p className="text-[11px] text-gray-500 leading-tight">
+                  Zero gas fees. Models client-side Halo2 ZK proofs and backtests algorithmic bounds locally.
+                </p>
+              )}
+            </div>
+
             {/* Asset Selection */}
             <div className="space-y-1.5">
               <label className="text-xs font-semibold text-gray-600">Trading Asset</label>
@@ -470,7 +617,7 @@ export const ZKExecutionBot: React.FC<ZKExecutionBotProps> = ({
                   className="flex-1 py-2.5 px-4 bg-orange-500 hover:bg-orange-600 text-white rounded-xl text-xs font-bold transition-all shadow-sm flex items-center justify-center gap-1.5 cursor-pointer"
                 >
                   <Play className="w-3.5 h-3.5 fill-current" />
-                  {botStatus === 'PAUSED' ? 'Resume Bot' : 'Start ZK Bot'}
+                  {botStatus === 'PAUSED' ? 'Resume Bot' : executionMode === 'onchain' ? 'Start Live ZK Bot' : 'Start ZK Bot'}
                 </button>
               ) : (
                 <button
@@ -484,7 +631,7 @@ export const ZKExecutionBot: React.FC<ZKExecutionBotProps> = ({
 
               <button
                 onClick={handleResetBot}
-                title="Reset simulation"
+                title="Reset bot"
                 className="p-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl transition-colors cursor-pointer"
               >
                 <RotateCcw className="w-4 h-4" />
@@ -500,6 +647,21 @@ export const ZKExecutionBot: React.FC<ZKExecutionBotProps> = ({
                 </div>
               </div>
             )}
+
+            {onChainError && (
+              <div className="p-3 bg-rose-50 border border-rose-200 rounded-xl flex items-start justify-between gap-2">
+                <div className="text-xs text-rose-800">
+                  <span className="font-bold">On-Chain Trade Notice:</span>
+                  <p className="mt-0.5 break-words">{onChainError}</p>
+                </div>
+                <button
+                  onClick={() => setOnChainError(null)}
+                  className="text-rose-500 hover:text-rose-700 font-bold text-xs shrink-0 cursor-pointer"
+                >
+                  ×
+                </button>
+              </div>
+            )}
           </div>
 
           {/* Live Performance & Execution Stream */}
@@ -507,20 +669,22 @@ export const ZKExecutionBot: React.FC<ZKExecutionBotProps> = ({
             {/* Live Metrics Grid */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
               <div className="bg-white rounded-2xl p-4 border border-gray-200 shadow-sm">
-                <div className="text-[11px] font-semibold text-gray-500 uppercase tracking-wider">Vault Balance</div>
+                <div className="text-[11px] font-semibold text-gray-500 uppercase tracking-wider">
+                  {executionMode === 'onchain' ? 'Vault Collateral' : 'Vault Balance'}
+                </div>
                 <div className="text-lg font-extrabold text-gray-900 mt-1">
-                  ${portfolioValue.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                  ${(executionMode === 'onchain' ? vaultBalance : portfolioValue).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                 </div>
                 <div className={`text-xs font-bold flex items-center gap-0.5 mt-0.5 ${
                   netPnl >= 0 ? 'text-emerald-600' : 'text-rose-600'
                 }`}>
                   {netPnl >= 0 ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />}
-                  {netPnl >= 0 ? '+' : ''}{netPnlPct.toFixed(2)}%
+                  {netPnl >= 0 ? '+' : ''}{netPnlPct.toFixed(2)}% {executionMode === 'onchain' ? '(Live)' : ''}
                 </div>
               </div>
 
               <div className="bg-white rounded-2xl p-4 border border-gray-200 shadow-sm">
-                <div className="text-[11px] font-semibold text-gray-500 uppercase tracking-wider">Simulated Price</div>
+                <div className="text-[11px] font-semibold text-gray-500 uppercase tracking-wider">Market Price</div>
                 <div className="text-lg font-extrabold text-gray-900 mt-1">
                   ${lastPrice.toFixed(4)}
                 </div>
@@ -541,12 +705,16 @@ export const ZKExecutionBot: React.FC<ZKExecutionBotProps> = ({
               </div>
 
               <div className="bg-white rounded-2xl p-4 border border-gray-200 shadow-sm">
-                <div className="text-[11px] font-semibold text-gray-500 uppercase tracking-wider">MEV Extracted</div>
-                <div className="text-lg font-extrabold text-emerald-600 mt-1">
-                  $0.00
+                <div className="text-[11px] font-semibold text-gray-500 uppercase tracking-wider">
+                  {executionMode === 'onchain' ? 'On-Chain Txs' : 'MEV Extracted'}
+                </div>
+                <div className={`text-lg font-extrabold mt-1 ${
+                  executionMode === 'onchain' ? 'text-orange-600' : 'text-emerald-600'
+                }`}>
+                  {executionMode === 'onchain' ? `${onChainTxCount} Confirmed` : '$0.00'}
                 </div>
                 <div className="text-xs font-bold text-emerald-600 mt-0.5">
-                  100% Protected
+                  {executionMode === 'onchain' ? `Midnight ${networkId.toUpperCase()}` : '100% Protected'}
                 </div>
               </div>
             </div>
@@ -559,12 +727,20 @@ export const ZKExecutionBot: React.FC<ZKExecutionBotProps> = ({
                   <h3 className="text-sm font-bold text-gray-900">Autonomous Execution Stream</h3>
                   <span className="text-xs text-gray-400">({executionTicks.length} ticks)</span>
                 </div>
-                {botStatus === 'RUNNING' && (
-                  <div className="flex items-center gap-1.5 text-xs text-emerald-600 font-bold">
-                    <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping" />
-                    Listening to ticks
-                  </div>
-                )}
+                <div className="flex items-center gap-3">
+                  {isExecutingTrade && (
+                    <div className="flex items-center gap-1 text-xs text-orange-600 font-bold animate-pulse">
+                      <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                      <span>1AM Signing...</span>
+                    </div>
+                  )}
+                  {botStatus === 'RUNNING' && (
+                    <div className="flex items-center gap-1.5 text-xs text-emerald-600 font-bold">
+                      <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping" />
+                      Listening to ticks
+                    </div>
+                  )}
+                </div>
               </div>
 
               <div className="overflow-x-auto max-h-[380px] overflow-y-auto">
@@ -577,20 +753,20 @@ export const ZKExecutionBot: React.FC<ZKExecutionBotProps> = ({
                   <table className="w-full text-left border-collapse text-xs">
                     <thead>
                       <tr className="bg-gray-50/75 border-b border-gray-100 text-gray-500 font-semibold uppercase text-[10px] tracking-wider">
-                        <th className="py-2.5 px-4">Tick</th>
-                        <th className="py-2.5 px-3">Action</th>
-                        <th className="py-2.5 px-3">Price</th>
-                        <th className="py-2.5 px-3">Order Size</th>
-                        <th className="py-2.5 px-3">ZK Status</th>
-                        <th className="py-2.5 px-3">Latency</th>
-                        <th className="py-2.5 px-4">Proof Hash</th>
+                        <th className="py-2.5 px-3">Tick</th>
+                        <th className="py-2.5 px-2">Action</th>
+                        <th className="py-2.5 px-2">Price</th>
+                        <th className="py-2.5 px-2">Order Size</th>
+                        <th className="py-2.5 px-2">ZK Status</th>
+                        <th className="py-2.5 px-2">Proof Hash</th>
+                        <th className="py-2.5 px-3 text-right">Settlement / Explorer</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-100">
                       {executionTicks.map(tick => (
                         <tr key={tick.id} className="hover:bg-gray-50/60 transition-colors">
-                          <td className="py-2.5 px-4 font-mono text-gray-400 font-bold">#{tick.tickNumber}</td>
-                          <td className="py-2.5 px-3">
+                          <td className="py-2.5 px-3 font-mono text-gray-400 font-bold">#{tick.tickNumber}</td>
+                          <td className="py-2.5 px-2">
                             <span className={`px-2 py-0.5 rounded-full font-bold text-[10px] ${
                               tick.action === 'BUY'
                                 ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
@@ -603,11 +779,11 @@ export const ZKExecutionBot: React.FC<ZKExecutionBotProps> = ({
                               {tick.action}
                             </span>
                           </td>
-                          <td className="py-2.5 px-3 font-semibold text-gray-900">${tick.price.toFixed(4)}</td>
-                          <td className="py-2.5 px-3 font-medium text-gray-700">
+                          <td className="py-2.5 px-2 font-semibold text-gray-900">${tick.price.toFixed(4)}</td>
+                          <td className="py-2.5 px-2 font-medium text-gray-700">
                             {tick.sizeUsd > 0 ? `$${tick.sizeUsd.toLocaleString()} (${tick.positionPct}%)` : '—'}
                           </td>
-                          <td className="py-2.5 px-3">
+                          <td className="py-2.5 px-2">
                             <span className={`px-2 py-0.5 rounded text-[10px] font-mono font-bold ${
                               tick.zkProofStatus === 'VALIDATED_ZK'
                                 ? 'bg-purple-50 text-purple-700 border border-purple-200'
@@ -618,8 +794,7 @@ export const ZKExecutionBot: React.FC<ZKExecutionBotProps> = ({
                               {tick.zkProofStatus}
                             </span>
                           </td>
-                          <td className="py-2.5 px-3 font-mono text-gray-500">{tick.proofLatencyMs}ms</td>
-                          <td className="py-2.5 px-4">
+                          <td className="py-2.5 px-2">
                             <button
                               onClick={() => copyToClipboard(tick.proofHash, 'hash')}
                               className="font-mono text-gray-500 hover:text-orange-600 flex items-center gap-1 group cursor-pointer"
@@ -631,6 +806,35 @@ export const ZKExecutionBot: React.FC<ZKExecutionBotProps> = ({
                                 <Copy className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity" />
                               )}
                             </button>
+                          </td>
+                          <td className="py-2.5 px-3 text-right">
+                            {tick.onChainTxHash ? (
+                              <a
+                                href={getMidnightExplorerTxUrl(tick.onChainTxHash, networkId)}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 text-[10px] font-bold hover:bg-emerald-100 transition-colors shadow-2xs"
+                                title="Open Midnight Explorer for this transaction"
+                              >
+                                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                                <span>Tx: {tick.onChainTxHash.slice(0, 6)}…</span>
+                                <ExternalLink className="w-3 h-3 text-emerald-600" />
+                              </a>
+                            ) : (tick.action === 'BUY' || tick.action === 'SELL') ? (
+                              <button
+                                onClick={() => handleExecuteTickOnChain(tick)}
+                                disabled={isExecutingTrade || isProofGenerating}
+                                className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-orange-50 hover:bg-orange-100 text-orange-700 border border-orange-200 text-[10px] font-bold transition-all cursor-pointer shadow-2xs hover:scale-105 active:scale-95 disabled:opacity-50"
+                                title="Authorize and dispatch this trade on Midnight using 1AM wallet"
+                              >
+                                <Zap className="w-3 h-3 text-orange-500" />
+                                <span>{isExecutingTrade ? 'Signing…' : 'Settle On-Chain'}</span>
+                              </button>
+                            ) : (
+                              <span className="text-[10px] text-gray-400 font-mono italic">
+                                {tick.action === 'HOLD' ? 'Shielded Witness' : 'Halted'}
+                              </span>
+                            )}
                           </td>
                         </tr>
                       ))}
