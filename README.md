@@ -38,8 +38,8 @@
 
 | Network | Version | Contract Address | Explorer Link | Status |
 |:--------|:--------|:-----------------|:--------------|:-------|
-| **Midnight Preprod Testnet** | `v1.3.0` | `0x5a89909bb8d9b9b0418d88a87957e084333d68df7e34037aac308719e2c2bd1b` | [View on 1AM Preprod Explorer ↗](https://explorer.1am.xyz/tx/0xb2d453700f4a3b1a4c50826d1c57b44180d96100001d4b5717d098f14faeebe8?network=preprod) | 🟢 **ACTIVE PREPROD MVP (v1.3.0 Supermoon)** |
-| **Midnight Preview Testnet** | `v1.3.0` | `0x0f064205a7609cc679f4b697ac6f4e7f47acd6485966c92bbd7c07fb5385080d` | [View on 1AM Preview Explorer ↗](https://explorer.1am.xyz/tx/0x6a08d53b7bf2afa1536e9289d0a6adca1db369fd3c96a2733a44b7d8612d5a8d?network=preview) | 🟢 **ACTIVE PREVIEW MVP (v1.3.0 Supermoon)** |
+| **Midnight Preprod Testnet** | `v1.3.0` | `0x5a89909bb8d9b9b0418d88a87957e084333d68df7e34037aac308719e2c2bd1b` | [View on 1AM Preprod Explorer ↗](https://explorer.1am.xyz/tx/9aa408aead43dda81a1772501f9180e1e54b64f74fd2c70ce827fbf1d1c40f55?network=preprod) | 🟢 **ACTIVE PREPROD MVP (v1.3.0 Supermoon)** |
+| **Midnight Preview Testnet** | `v1.3.0` | `0x0f064205a7609cc679f4b697ac6f4e7f47acd6485966c92bbd7c07fb5385080d` | [View on 1AM Preview Explorer ↗](https://explorer.1am.xyz/tx/e848f14ad74a93e81193832fa537e016c2913f32d50f1565c7958cf8fe899c89?network=preview) | 🟢 **ACTIVE PREVIEW MVP (v1.3.0 Supermoon)** |
 | **Historical Deployment** | `v1.2.0` | `0x2428cd4ae7c2cd0bb501e1e9162de3003b103c1063c220e0d5cfc3f0b438e524` | [View on 1AM Explorer ↗](https://explorer.1am.xyz/contract/2428cd4ae7c2cd0bb501e1e9162de3003b103c1063c220e0d5cfc3f0b438e524?network=preprod) | 🟡 *Historical (v1.2.0)* |
 | **Historical Deployment** | `v1.0.0` | `0x62a27ceda5eb600263e208768d5d285c659d47f2cd6b14a20c62b160f4da46f3` | [View on 1AM Explorer ↗](https://explorer.1am.xyz/contract/62a27ceda5eb600263e208768d5d285c659d47f2cd6b14a20c62b160f4da46f3?network=preview) | 🟡 *Historical (Vault v1)* |
 
@@ -51,8 +51,8 @@
   Managed Bindings : ./managed/axiom.ts
   Preprod Contract : 0x5a89909bb8d9b9b0418d88a87957e084333d68df7e34037aac308719e2c2bd1b
   Preview Contract : 0x0f064205a7609cc679f4b697ac6f4e7f47acd6485966c92bbd7c07fb5385080d
-  Preprod Tx       : 0xb2d453700f4a3b1a4c50826d1c57b44180d96100001d4b5717d098f14faeebe8
-  Preprod Block    : #2748874
+  Preprod Tx       : 9aa408aead43dda81a1772501f9180e1e54b64f74fd2c70ce827fbf1d1c40f55
+  Preprod Block    : #2749105
   Active Circuits  : commitStrategy, tripCircuitBreaker, resetCircuitBreaker,
                      executeTrade, executeBatchRebalance, revokeStrategy,
                      mintVaultBalance, burnVaultBalance, unshieldWithdraw

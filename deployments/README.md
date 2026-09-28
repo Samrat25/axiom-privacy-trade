@@ -12,9 +12,9 @@ This directory contains versioned deployment records for Axiom's Compact ZK circ
 | Field | Value |
 |:------|:------|
 | **Deployer Wallet** | `@axiom_night` — [x.com/axiom_night](https://x.com/axiom_night) |
-| **Preprod Deployment TX (v1.3.0)** | [`0xb2d453700f4a3b1a4c50826d1c57b44180d96100001d4b5717d098f14faeebe8`](https://explorer.1am.xyz/tx/0xb2d453700f4a3b1a4c50826d1c57b44180d96100001d4b5717d098f14faeebe8?network=preprod) |
+| **Preprod Deployment TX (v1.3.0)** | [`9aa408aead43dda81a1772501f9180e1e54b64f74fd2c70ce827fbf1d1c40f55`](https://explorer.1am.xyz/tx/9aa408aead43dda81a1772501f9180e1e54b64f74fd2c70ce827fbf1d1c40f55?network=preprod) |
 | **Preprod Contract Address (v1.3.0)** | [`0x5a89909bb8d9b9b0418d88a87957e084333d68df7e34037aac308719e2c2bd1b`](https://explorer.1am.xyz/contract/5a89909bb8d9b9b0418d88a87957e084333d68df7e34037aac308719e2c2bd1b?network=preprod) |
-| **Block** | `2748874` |
+| **Block** | `2749105` |
 | **Deployed At** | `2026-09-28T15:55:32Z` |
 | **Funded With** | tDUST (Midnight Preprod gas token) via the Preprod faucet |
 | **Faucet Used** | [https://midnight-tmnight-preprod.nethermind.dev](https://midnight-tmnight-preprod.nethermind.dev) |
@@ -22,7 +22,7 @@ This directory contains versioned deployment records for Axiom's Compact ZK circ
 The deployer wallet is the wallet address that:
 1. Received tNIGHT and tDUST from the Midnight Preprod faucet
 2. Signed and funded the `deployContract` transaction for `contracts/axiom.compact`
-3. Has the deployment TX `0xb2d453...eebe8` in its 1AM wallet transaction history
+3. Has the deployment TX `9aa408ae...` in its 1AM wallet transaction history
 
 All subsequent user interactions (strategy commits, vault mints, trade executions) via [axiom-night.vercel.app](https://axiom-night.vercel.app) appear as separate transactions in each user's own 1AM wallet history, linked to the same contract.
 
@@ -42,7 +42,7 @@ All subsequent user interactions (strategy commits, vault mints, trade execution
 
 | Version | Contract Address | Deployment TX | Block | Deployed At | Circuits | Status |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| `1.3.0` | `0x5a89909bb8d9b9b0418d88a87957e084333d68df7e34037aac308719e2c2bd1b` | `0xb2d45370...eebe8` | `2748874` | 2026-09-28 | `commitStrategy`, `tripCircuitBreaker`, `resetCircuitBreaker`, `revokeStrategy`, `executeTrade`, `executeBatchRebalance`, `mintVaultBalance`, `burnVaultBalance`, `unshieldWithdraw` | **Active (Verified v1.3.0 Supermoon)** |
+| `1.3.0` | `0x5a89909bb8d9b9b0418d88a87957e084333d68df7e34037aac308719e2c2bd1b` | [`9aa408ae...`](https://explorer.1am.xyz/tx/9aa408aead43dda81a1772501f9180e1e54b64f74fd2c70ce827fbf1d1c40f55?network=preprod) | `2749105` | 2026-09-28 | `commitStrategy`, `tripCircuitBreaker`, `resetCircuitBreaker`, `revokeStrategy`, `executeTrade`, `executeBatchRebalance`, `mintVaultBalance`, `burnVaultBalance`, `unshieldWithdraw` | **Active (Verified v1.3.0 Supermoon)** |
 | `1.2.0` | `0x2428cd4ae7c2cd0bb501e1e9162de3003b103c1063c220e0d5cfc3f0b438e524` | `0x27ffe1f7...cd28645` | `2098826` | 2026-08-14 | `commitStrategy`, `executeTrade`, `mintVaultBalance`, `burnVaultBalance`, `unshieldWithdraw` | Historical (v1.2.0) |
 | `1.0.0` | `0x62a27ceda5eb600263e208768d5d285c659d47f2cd6b14a20c62b160f4da46f3` | — | — | 2026-08-12 | `commitStrategy`, `executeTrade`, `unshieldWithdraw` | Historical |
 

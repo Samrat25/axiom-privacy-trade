@@ -41,8 +41,8 @@
       {
         "version": "1.3.0",
         "contractAddress": "0x0f064205a7609cc679f4b697ac6f4e7f47acd6485966c92bbd7c07fb5385080d",
-        "deploymentTx": "0x6a08d53b7bf2afa1536e9289d0a6adca1db369fd3c96a2733a44b7d8612d5a8d",
-        "block": 1065414,
+        "deploymentTx": "0xe848f14ad74a93e81193832fa537e016c2913f32d50f1565c7958cf8fe899c89",
+        "block": 1065659,
         "deployedAt": "2026-09-28T15:55:46.291Z",
         "commitHash": "0x8b26e1e25ad21d6819e2286f31cdc7eb",
         "circuits": [
@@ -88,8 +88,8 @@
       {
         "version": "1.3.0",
         "contractAddress": "0x5a89909bb8d9b9b0418d88a87957e084333d68df7e34037aac308719e2c2bd1b",
-        "deploymentTx": "0xb2d453700f4a3b1a4c50826d1c57b44180d96100001d4b5717d098f14faeebe8",
-        "block": 2748874,
+        "deploymentTx": "0x9aa408aead43dda81a1772501f9180e1e54b64f74fd2c70ce827fbf1d1c40f55",
+        "block": 2749105,
         "deployedAt": "2026-09-28T15:55:32.691Z",
         "commitHash": "0x8b26e1e25ad21d6819e2286f31cdc7eb",
         "circuits": [
